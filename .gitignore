@@ -26,5 +26,4 @@
 /.nb-gradle/
 
 ### Gradle Wrapper ###
-gradlew*
 gradle/
