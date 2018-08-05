@@ -25,5 +25,3 @@
 /nbdist/
 /.nb-gradle/
 
-### Gradle Wrapper ###
-gradle/
