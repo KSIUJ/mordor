@@ -54,6 +54,7 @@ dependencies {
     compile('org.springframework.session:spring-session-core')
     compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     compile("org.jetbrains.kotlin:kotlin-reflect")
+    compile("de.neuland-bfi:spring-jade4j:1.2.7")
 
     // Remove devtools for release
     runtime('org.springframework.boot:spring-boot-devtools')
