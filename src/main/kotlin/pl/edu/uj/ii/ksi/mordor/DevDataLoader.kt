@@ -19,7 +19,7 @@ class DevDataLoader : ApplicationRunner {
 
 
     override fun run(args: ApplicationArguments?) {
-        if (userRepository.findByUsername("admin") == null) {
+        if (userRepository.findByUserName("admin") == null) {
             log.warn("Creating admin user: admin:test")
             userRepository.save(User(0, "admin", "{noop}test", "", "", "",
                     true, Role.ROLE_ADMIN))

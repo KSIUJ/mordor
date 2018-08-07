@@ -9,10 +9,9 @@ data class User(
         var id: Long? = null,
 
         @Column(nullable = false, unique = true)
-        var username: String,
+        var userName: String,
 
-        @Column(nullable = false)
-        var password: String,
+        var password: String?,
 
         var email: String?,
 
