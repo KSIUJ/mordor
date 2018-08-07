@@ -2,6 +2,7 @@ package pl.edu.uj.ii.ksi.mordor.controllers
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.ApplicationEventPublisher
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
@@ -26,9 +27,6 @@ class UserRegistrationController {
 
     @Autowired
     lateinit var eventPublisher: ApplicationEventPublisher
-
-    @Autowired
-    lateinit var passwordEncoder: PasswordEncoder
 
     @GetMapping("/register/")
     fun registerForm(model: Model): ModelAndView {
@@ -74,7 +72,8 @@ class UserRegistrationController {
         }
 
         val user = token.user!!
-        user.password = passwordEncoder.encode(password)
+        // TODO: move password logic to service
+        user.password = BCryptPasswordEncoder().encode(password)
         user.enabled = true
         if (user.role == Role.ROLE_NOBODY) {
             user.role = Role.ROLE_USER
