@@ -51,6 +51,7 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter-validation')
     compile('org.springframework.boot:spring-boot-starter-web')
     compile('org.springframework.boot:spring-boot-starter-thymeleaf')
+    compile('nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:2.3.0')
     compile('com.fasterxml.jackson.module:jackson-module-kotlin')
     compile('org.springframework.session:spring-session-core')
     compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
@@ -65,7 +66,6 @@ dependencies {
     runtime('com.h2database:h2')
     runtime('org.postgresql:postgresql')
     compileOnly('org.springframework.boot:spring-boot-configuration-processor')
-    compileOnly('org.projectlombok:lombok')
     testCompile('org.springframework.boot:spring-boot-starter-test')
     testCompile('org.springframework.security:spring-security-test')
 }
