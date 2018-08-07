@@ -38,7 +38,7 @@ class EmailVerificationProcessor(val mailSender: JavaMailSender, val tokenReposi
         helper.setTo(user.email!!)
         helper.setSubject("Verify your email")
         val confirmationUri = SITE_ADDRESS + "/register/activate/?token=" + token.token
-        val content = "Go to <a href=\"$confirmationUri\">$confirmationUri<\\a>"
+        val content = "Go to <a href=\"$confirmationUri\">$confirmationUri</a>"
         message.setContent(content, "text/html")
         mailSender.send(message)
     }
