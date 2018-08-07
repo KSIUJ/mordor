@@ -84,4 +84,20 @@ class UserRegistrationController {
 
         return ModelAndView("registration/account_activated")
     }
+
+    @GetMapping("/register/reset/")
+    fun requestPasswordReset(): String {
+        return "registration/reset_password"
+    }
+
+    @PostMapping("/register/reset/")
+    fun requestPasswordResetPost(@ModelAttribute("email") email: String): String {
+        val user = userRepository.findByEmail(email)
+        if (user == null) {
+            //TODO: gracefully handle this.
+            throw RuntimeException("Unknown email address")
+        }
+        eventPublisher.publishEvent(OnEmailVerificationRequestedEvent(user))
+        return "registration/verify_email"
+    }
 }

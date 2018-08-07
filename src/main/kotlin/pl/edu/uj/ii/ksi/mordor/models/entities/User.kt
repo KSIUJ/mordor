@@ -13,6 +13,7 @@ data class User(
 
         var password: String?,
 
+        @Column(unique = true)
         var email: String?,
 
         var firstName: String?,
