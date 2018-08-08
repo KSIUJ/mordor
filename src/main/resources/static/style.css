@@ -30,6 +30,25 @@ header > a:hover {
     background: #f76a18;
 }
 
+header > form > .logout {
+    display: inline;
+    font: inherit;
+    color: white !important;
+    text-decoration: none !important;
+    box-sizing: border-box;
+    height: 40px;
+    padding: 0px 10px;
+    border: none;
+    background:none;
+    cursor: pointer;
+
+    transition: background-color 0.2s ease-in;
+}
+
+header > form > .logout:hover {
+    background: #f76a18;
+}
+
 .logo {
     margin-right: 20px;
     font-weight: bolder;
@@ -48,6 +67,14 @@ body {
     padding-top: 40px;
     font-family: 'Lato', sans-serif;
     color: #444;
+}
+
+.error {
+    color: #ff4837;
+}
+
+.info {
+    color: #f76a18;
 }
 
 .nice-form p {

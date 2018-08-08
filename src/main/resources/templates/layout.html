@@ -20,7 +20,10 @@
 
     <div class=spacer></div>
 
-    <a href="#">Logout</a>
+    <a sec:authorize="!isAuthenticated()" th:href="@{/login/}">Login</a>
+    <form sec:authorize="isAuthenticated()" name="logoutForm" th:action="@{/logout/}" method="post">
+      <input type="submit" value="Logout" class="logout"/>
+    </form>
   </header>
   <div layout:fragment="content" id=content>
 

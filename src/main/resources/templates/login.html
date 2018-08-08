@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Register account</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <h1>Login</h1>
+    <div th:if="${param.error}">
+        <p class="error">Invalid username and password.</p>
+    </div>
+    <div th:if="${param.logout}">
+        <p class="info">You have been logged out.</p>
+    </div>
+    <form th:action="@{/login/}" method="post" class="nice-form">
+        <p><label th:for="username">Username: </label> <input type="text" th:name="username"/></p>
+        <p><label th:for="password">Password: </label> <input type="password" th:name="password"/></p>
+        <p><input type="submit" value="Submit">
+    </form>
+</div>
+</body>
+</html>
