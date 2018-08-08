@@ -1,0 +1,68 @@
+
+header {
+    display: flex;
+    background: #333;
+    color: white;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 40px;
+    box-sizing: border-box;
+
+    padding-left: 15px;
+    padding-right: 15px;
+    align-items: center;
+}
+
+header > a {
+    color: white !important;
+    text-decoration: none !important;
+    box-sizing: border-box;
+    height: 40px;
+    padding: 0px 10px;
+    padding-top: 10px;
+
+    transition: background-color 0.2s ease-in;
+}
+
+header > a:hover {
+    background: #f76a18;
+}
+
+.logo {
+    margin-right: 20px;
+    font-weight: bolder;
+}
+
+.spacer {
+    flex-grow: 1;
+}
+
+#content {
+    margin: auto;
+    max-width: 700px;
+}
+
+body {
+    padding-top: 40px;
+    font-family: 'Lato', sans-serif;
+    color: #444;
+}
+
+.nice-form p {
+    margin: 0;
+    padding: 0;
+    margin-bottom: 6px;
+}
+
+.nice-form label {
+    width: 8em;
+    display: inline-block;
+}
+
+input[type=text], input[type=password], input[type=email] {
+    font-size: 1em;
+    border-radius: 3px;
+    border: 1px solid #999;
+}

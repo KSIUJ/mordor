@@ -1,17 +1,19 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" layout:decorate="~{layout}">
 <head>
     <meta charset="UTF-8">
     <title>Register account</title>
 </head>
 <body>
-<h1>Create a new account</h1>
-<form th:action="@{/register/}" th:object="${user}" method="post">
-    <p><label th:for="userName">Username: </label> <input type="text" th:field="*{userName}"/></p>
-    <p><label th:for="firstName">First Name: </label> <input type="text" th:field="*{firstName}"/></p>
-    <p><label th:for="lastName">Last Name: </label> <input type="text" th:field="*{lastName}"/></p>
-    <p><label th:for="email">Email: </label> <input type="text" th:field="*{email}"/></p>
-    <p><input type="submit" value="Submit">
-</form>
+    <div layout:fragment="content">
+        <h1>Create a new account</h1>
+        <form th:action="@{/register/}" th:object="${user}" method="post" class=nice-form>
+            <p><label th:for="userName">Username: </label> <input type="text" th:field="*{userName}"/></p>
+            <p><label th:for="firstName">First Name: </label> <input type="text" th:field="*{firstName}"/></p>
+            <p><label th:for="lastName">Last Name: </label> <input type="text" th:field="*{lastName}"/></p>
+            <p><label th:for="email">Email: </label> <input type="email" th:field="*{email}"/></p>
+            <p><input type="submit" value="Submit">
+        </form>
+    </div>
 </body>
 </html>
