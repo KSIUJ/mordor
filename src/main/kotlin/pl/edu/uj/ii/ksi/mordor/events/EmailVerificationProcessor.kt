@@ -12,14 +12,11 @@ import pl.edu.uj.ii.ksi.mordor.models.repositories.EmailVerificationTokenReposit
 import java.util.*
 
 @Component
-class EmailVerificationProcessor(val mailSender: JavaMailSender, val tokenRepository: EmailVerificationTokenRepository) {
+class EmailVerificationProcessor(private val mailSender: JavaMailSender,
+                                 private val tokenRepository: EmailVerificationTokenRepository,
+                                 @Value("\${mordor.mail.from}") private val emailFrom: String,
+                                 @Value("\${mordor.site.address}") private val siteAddress: String) {
     private val EXPIRATION_TIME_S = 60 * 60 * 24
-
-    @Value("\${mordor.mail.from}")
-    private lateinit var VERIFICATION_EMAIL_FROM: String
-
-    @Value("\${mordor.site.address}")
-    private lateinit var SITE_ADDRESS: String
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
@@ -34,11 +31,12 @@ class EmailVerificationProcessor(val mailSender: JavaMailSender, val tokenReposi
 
         val message = mailSender.createMimeMessage()
         val helper = MimeMessageHelper(message, false, "utf-8")
-        helper.setFrom(VERIFICATION_EMAIL_FROM)
+        helper.setFrom(emailFrom)
         helper.setTo(user.email!!)
         helper.setSubject("Verify your email")
-        val confirmationUri = SITE_ADDRESS + "/register/activate/?token=" + token.token
-        val content = "Go to <a href=\"$confirmationUri\">$confirmationUri</a>"
+        val confirmationUri = siteAddress + "/register/activate/?token=" + token.token
+        val content = "Hello ${user.firstName} ${user.lastName}!<br>" +
+                "Please go to <a href=\"$confirmationUri\">$confirmationUri</a> to verify your email"
         message.setContent(content, "text/html")
         mailSender.send(message)
     }

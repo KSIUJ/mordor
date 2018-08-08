@@ -1,9 +1,7 @@
 package pl.edu.uj.ii.ksi.mordor.controllers
 
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
-import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
@@ -18,15 +16,9 @@ import pl.edu.uj.ii.ksi.mordor.models.repositories.EmailVerificationTokenReposit
 import pl.edu.uj.ii.ksi.mordor.models.repositories.UserRepository
 
 @Controller
-class UserRegistrationController {
-    @Autowired
-    lateinit var userRepository: UserRepository
-
-    @Autowired
-    lateinit var emailVerificationTokenRepository: EmailVerificationTokenRepository
-
-    @Autowired
-    lateinit var eventPublisher: ApplicationEventPublisher
+class UserRegistrationController(private val userRepository: UserRepository,
+                                 private val emailVerificationTokenRepository: EmailVerificationTokenRepository,
+                                 private val eventPublisher: ApplicationEventPublisher) {
 
     @GetMapping("/register/")
     fun registerForm(model: Model): ModelAndView {

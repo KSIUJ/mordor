@@ -69,4 +69,5 @@ dependencies {
     compileOnly('org.springframework.boot:spring-boot-configuration-processor')
     testCompile('org.springframework.boot:spring-boot-starter-test')
     testCompile('org.springframework.security:spring-security-test')
+    testCompile('com.nhaarman.mockitokotlin2:mockito-kotlin:2.0.0-RC1')
 }

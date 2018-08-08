@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service
 import pl.edu.uj.ii.ksi.mordor.models.repositories.UserRepository
 
 @Service
-class LocalUserService(val userRepository: UserRepository)
+class LocalUserService(private val userRepository: UserRepository)
     : UserDetailsService {
 
     override fun loadUserByUsername(userName: String): UserDetails {
