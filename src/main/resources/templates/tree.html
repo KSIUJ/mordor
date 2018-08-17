@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en"
+      layout:decorate="~{layout}">
+<head>
+    <title>Mordor (homepage)</title>
+</head>
+<body>
+    <div layout:fragment="content">
+       <h1>tree</h1>
+       foo
+       <ul>
+         <li th:each="entry : ${children}">
+           <a th:attr="href='/file/'+${entry.path}" th:text="${entry.name}"></span>
+         </li>
+       </ul>
+    </div>
+</body>
+</html>

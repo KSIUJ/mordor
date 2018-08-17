@@ -60,6 +60,7 @@ dependencies {
     compile("com.sun.xml.bind:jaxb-impl:2.3.0.1")
     compile("com.sun.xml.bind:jaxb-core:2.3.0.1")
     compile("javax.xml:jaxb-api:2.1")
+    compile("commons-io:commons-io:2.6")
 
     // Remove devtools for release
     runtime('org.springframework.boot:spring-boot-devtools')
