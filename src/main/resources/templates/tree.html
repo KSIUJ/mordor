@@ -6,11 +6,22 @@
 </head>
 <body>
     <div layout:fragment="content">
-       <h1>tree</h1>
+       <h1>tree <span th:text="${path}"></span></h1>
 
-       <table>
+       <div class=actions>
+         <a href=".." th:if="${path != ''}">
+           <i class="fas fa-level-up-alt"></i>
+           up
+         </a>
+       </div>
+
+       <div th:if="${children.empty}">
+         <div>There are no files here.</div>
+       </div>
+
+       <table class=fs-table>
          <tr th:each="entry : ${children}" class=clickable-row>
-           <td>
+           <td class=icon>
              <i th:attr="class='fas fa-' + ${entry.iconName}"></i>
            </td>
            <td>

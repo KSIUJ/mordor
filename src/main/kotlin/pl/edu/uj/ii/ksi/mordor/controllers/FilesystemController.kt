@@ -7,6 +7,7 @@ import javax.servlet.http.*
 import org.springframework.web.bind.annotation.*
 import org.springframework.beans.factory.annotation.*
 import org.apache.commons.io.*
+import java.util.*
 
 @Controller
 class FilesystemController() {
@@ -40,8 +41,12 @@ class FilesystemController() {
     @GetMapping("/file/**")
     fun fileIndex(request: HttpServletRequest): ModelAndView {
         val path = getRequestPath(request);
+        val relativePath = rootPath.relativize(path).toString();
 
         if(Files.isDirectory (path)) {
+            if (!request.getServletPath().endsWith("/"))
+               return ModelAndView("redirect:" + request.getServletPath() + "/")
+
             val stream = Files.newDirectoryStream(path);
             var children = mutableListOf<FileEntry>()
 
@@ -53,7 +58,11 @@ class FilesystemController() {
                 }
             }
 
-            return ModelAndView("tree", "children", children);
+            val sortedChildren = children.sortedWith(compareBy({it.iconName != "folder"}, {it.name}));
+
+            return ModelAndView("tree",
+               mapOf("children" to sortedChildren,
+                     "path" to relativePath));
         } else {
             return ModelAndView("redirect:/download/" + rootPath.relativize(path).toString());
         }
