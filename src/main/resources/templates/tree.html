@@ -7,11 +7,16 @@
 <body>
     <div layout:fragment="content">
        <h1>tree</h1>
-       foo
-       <ul>
-         <li th:each="entry : ${children}">
-           <a th:attr="href='/file/'+${entry.path}" th:text="${entry.name}"></span>
-         </li>
+
+       <table>
+         <tr th:each="entry : ${children}" class=clickable-row>
+           <td>
+             <i th:attr="class='fas fa-' + ${entry.iconName}"></i>
+           </td>
+           <td>
+             <a th:attr="href='/file/'+${entry.path}" th:text="${entry.name}"></a>
+           </td>
+         </tr>
        </ul>
     </div>
 </body>

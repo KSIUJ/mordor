@@ -33,7 +33,8 @@ class FilesystemController() {
 
     data class FileEntry (
         val path: String,
-        val name: String
+        val name: String,
+        val iconName: String
     )
 
     @GetMapping("/file/**")
@@ -47,7 +48,8 @@ class FilesystemController() {
             stream.use {
                 for (file in stream) {
                     children.add(FileEntry(
-                            rootPath.relativize(file).toString(), file.getFileName().toString()));
+                            rootPath.relativize(file).toString(), file.getFileName().toString(),
+                            getIconName(file)));
                 }
             }
 
@@ -61,7 +63,8 @@ class FilesystemController() {
     fun download(request: HttpServletRequest, response: HttpServletResponse) {
         val path = getRequestPath(request);
 
-        response.setContentType("application/octet-stream");
+        response.addHeader("X-Content-Type-Options", "nosniff");
+        response.setContentType(getMimeForPath(path.toString()));
 
         val stream = Files.newInputStream(path);
         stream.use {
@@ -70,6 +73,42 @@ class FilesystemController() {
         response.flushBuffer();
     }
 
+    fun getIconName(path: Path): String {
+        if(Files.isDirectory (path)) {
+            return "folder";
+        }
+
+        val exts = mapOf(
+           ".pdf" to "file-pdf"
+        )
+
+        for ((ext, icon) in exts) {
+            if (path.toString().toLowerCase().endsWith(ext)) {
+                return icon;
+            }
+        }
+
+        return "file";
+    }
+
+    fun getMimeForPath(path: String): String {
+        // careful about XSS!
+        val exts = mapOf(
+           ".pdf" to "application/pdf",
+           ".png" to "image/png",
+           ".jpg" to "image/jpeg",
+           ".jpeg" to "image/jpeg"
+        )
+
+        for ((ext, mime) in exts) {
+            if (path.toLowerCase().endsWith(ext)) {
+                return mime;
+            }
+        }
+
+        return "application/octet-stream";
+    }
+    
     @GetMapping("/file/info")
     @ResponseBody
     fun fileInfo(): String {
