@@ -41,7 +41,7 @@ repositories {
 
 
 dependencies {
-    compile('org.springframework.boot:spring-boot-starter-actuator')
+//    compile('org.springframework.boot:spring-boot-starter-actuator')
     compile('org.springframework.boot:spring-boot-starter-cache')
     compile('org.springframework.boot:spring-boot-starter-data-jpa')
 //	compile('org.springframework.boot:spring-boot-starter-data-ldap')
@@ -54,7 +54,7 @@ dependencies {
     compile('nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:2.3.0')
     compile('org.thymeleaf.extras:thymeleaf-extras-springsecurity4:3.0.2.RELEASE')
     compile('com.fasterxml.jackson.module:jackson-module-kotlin')
-    compile('org.springframework.session:spring-session-core')
+//    compile('org.springframework.session:spring-session-core')
     compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     compile("org.jetbrains.kotlin:kotlin-reflect")
     compile("com.sun.xml.bind:jaxb-impl:2.3.0.1")

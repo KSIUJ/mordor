@@ -16,7 +16,7 @@ data class EmailVerificationToken(
         @Temporal(TemporalType.TIMESTAMP)
         var expireData: Date?,
 
-        @OneToOne(optional = false)
+        @ManyToOne(optional = false)
         var user: User?
 ) {
     constructor() : this(null, null, null, null)

@@ -2,7 +2,7 @@
 <html lang="en" layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Register account</title>
+    <title>Login</title>
 </head>
 <body>
 <div layout:fragment="content">
@@ -16,6 +16,7 @@
     <form th:action="@{/login/}" method="post" class="nice-form">
         <p><label th:for="username">Username: </label> <input type="text" th:name="username"/></p>
         <p><label th:for="password">Password: </label> <input type="password" th:name="password"/></p>
+        <p><label th:for="remember-me">Remember me: </label><input type="checkbox" th:name="remember-me" /></p>
         <p><input type="submit" value="Submit">
     </form>
 </div>
