@@ -65,7 +65,7 @@ class UserRegistrationController(private val userRepository: UserRepository,
 
         val user = token.user!!
         // TODO: move password logic to service
-        user.password = BCryptPasswordEncoder().encode(password)
+        user.password = "{bcrypt}" + BCryptPasswordEncoder().encode(password)
         user.enabled = true
         if (user.role == Role.ROLE_NOBODY) {
             user.role = Role.ROLE_USER

@@ -6,12 +6,15 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.builders.WebSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
+import pl.edu.uj.ii.ksi.mordor.models.repositories.RememberMePersistentTokenRepository
 import pl.edu.uj.ii.ksi.mordor.services.LocalUserService
 
 
 @Configuration
 @EnableWebSecurity
-class WebSecurityConfig(val userService: LocalUserService, @Value("\${mordor.secret}") val secret: String)
+class WebSecurityConfig(val tokenRepository: RememberMePersistentTokenRepository,
+                        val userService: LocalUserService,
+                        @Value("\${mordor.secret}") val secret: String)
     : WebSecurityConfigurerAdapter() {
 
     override fun configure(http: HttpSecurity) {
@@ -19,7 +22,7 @@ class WebSecurityConfig(val userService: LocalUserService, @Value("\${mordor.sec
                 .anyRequest().authenticated()
                 .and().formLogin().loginPage("/login/").permitAll()
                 .and().logout().logoutUrl("/logout/").permitAll()
-                .and().rememberMe().key(secret).userDetailsService(userService)
+                .and().rememberMe().key(secret).tokenRepository(tokenRepository).userDetailsService(userService)
     }
 
     override fun configure(web: WebSecurity) {
