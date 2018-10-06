@@ -6,18 +6,27 @@
 </head>
 <body>
 <div layout:fragment="content">
-    <h1>Login</h1>
     <div th:if="${param.error}">
-        <p class="error">Invalid username and password.</p>
+        <p class="alert alert-danger" role="alert">Invalid username or password.</p>
     </div>
     <div th:if="${param.logout}">
-        <p class="info">You have been logged out.</p>
+        <p class="alert alert-warning" role="alert">You have been logged out.</p>
     </div>
-    <form th:action="@{/login/}" method="post" class="nice-form">
-        <p><label th:for="username">Username: </label> <input type="text" th:name="username"/></p>
-        <p><label th:for="password">Password: </label> <input type="password" th:name="password"/></p>
-        <p><label th:for="remember-me">Remember me: </label><input type="checkbox" th:name="remember-me" /></p>
-        <p><input type="submit" value="Submit">
+    <h1>Login</h1>
+    <form th:action="@{/login/}" method="post">
+        <div class="form-group">
+            <label th:for="username">Username</label>
+            <input type="text" class="form-control" th:name="username"/>
+        </div>
+        <div class="form-group">
+            <label th:for="password">Password</label>
+            <input type="password" class="form-control" th:name="password"/>
+        </div>
+        <div class="form-group form-check">
+            <input type="checkbox" class="form-check-input" th:name="remember-me"/>
+            <label th:for="remember-me" class="form-check-label">Remember me</label>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
     </form>
 </div>
 </body>

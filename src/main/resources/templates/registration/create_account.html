@@ -5,15 +5,27 @@
     <title>Register account</title>
 </head>
 <body>
-    <div layout:fragment="content">
-        <h1>Create a new account</h1>
-        <form th:action="@{/register/}" th:object="${user}" method="post" class=nice-form>
-            <p><label th:for="userName">Username: </label> <input type="text" th:field="*{userName}"/></p>
-            <p><label th:for="firstName">First Name: </label> <input type="text" th:field="*{firstName}"/></p>
-            <p><label th:for="lastName">Last Name: </label> <input type="text" th:field="*{lastName}"/></p>
-            <p><label th:for="email">Email: </label> <input type="email" th:field="*{email}"/></p>
-            <p><input type="submit" value="Submit">
-        </form>
-    </div>
+<div layout:fragment="content">
+    <h1>Create a new account</h1>
+    <form th:action="@{/register/}" th:object="${user}" method="post">
+        <div class="form-group">
+            <label th:for="userName">Username: </label>
+            <input type="text" class="form-control" th:field="*{userName}"/>
+        </div>
+        <div class="form-group">
+            <label th:for="firstName">First Name: </label>
+            <input type="text" class="form-control" th:field="*{firstName}"/>
+        </div>
+        <div class="form-group">
+            <label th:for="lastName">Last Name: </label>
+            <input type="text" class="form-control" th:field="*{lastName}"/>
+        </div>
+        <div class="form-group">
+            <label th:for="email">Email: </label>
+            <input type="email" class="form-control" th:field="*{email}"/>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
 </body>
 </html>
