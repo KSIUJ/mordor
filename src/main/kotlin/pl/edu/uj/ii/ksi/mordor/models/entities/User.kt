@@ -26,6 +26,5 @@ data class User(
         @Column(nullable = false)
         var role: Role = Role.ROLE_NOBODY
 ) {
-    // Empty constructor for JPA
     constructor() : this(null, "", "", null, null, null, false, Role.ROLE_NOBODY)
 }

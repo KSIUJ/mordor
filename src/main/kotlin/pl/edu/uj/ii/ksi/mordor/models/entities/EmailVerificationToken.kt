@@ -19,8 +19,6 @@ data class EmailVerificationToken(
         @ManyToOne(optional = false)
         var user: User?
 ) {
-    constructor() : this(null, null, null, null)
-
     fun isValid(): Boolean {
         return expireData!!.after(Date())
     }

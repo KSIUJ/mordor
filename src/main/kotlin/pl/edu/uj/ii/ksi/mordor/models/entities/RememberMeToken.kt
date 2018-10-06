@@ -19,8 +19,6 @@ data class RememberMeToken(
         @OneToOne(optional = false)
         var user: User?
 ) {
-    constructor() : this(null, null, null, null)
-
     fun getToken(): PersistentRememberMeToken {
         return PersistentRememberMeToken(user?.userName, series, value, date)
     }
