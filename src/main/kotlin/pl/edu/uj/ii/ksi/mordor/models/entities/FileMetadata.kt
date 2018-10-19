@@ -5,6 +5,10 @@ import javax.persistence.*
 @Entity
 data class FileMetadata(
         @Id
+        @GeneratedValue(strategy = GenerationType.AUTO)
+        var id: Long? = null,
+
+        @Column(unique = true, nullable = false)
         var fileHash: String?,
 
         var title: String?,
@@ -15,10 +19,12 @@ data class FileMetadata(
 
         var mimeType: String?,
 
-        @Suppress("ArrayInDataClass")
-        @Column(length = 200 * 1024)
-        var thumbnail: ByteArray?,
+        @OneToOne(mappedBy = "file", orphanRemoval = true, cascade = [CascadeType.REMOVE], fetch = FetchType.EAGER)
+        var thumbnail: FileThumbnail?,
 
-        @OneToMany(orphanRemoval = true)
+        @OneToOne(mappedBy = "file", orphanRemoval = true, cascade = [CascadeType.REMOVE], fetch = FetchType.LAZY)
+        var content: FileContent?,
+
+        @OneToMany(mappedBy = "metadata", orphanRemoval = true)
         var files: List<FileEntry>?
 )
