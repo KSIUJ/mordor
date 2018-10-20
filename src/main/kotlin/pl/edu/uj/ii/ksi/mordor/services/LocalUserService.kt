@@ -5,7 +5,7 @@ import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Service
-import pl.edu.uj.ii.ksi.mordor.models.repositories.UserRepository
+import pl.edu.uj.ii.ksi.mordor.persistence.repositories.UserRepository
 
 @Service
 class LocalUserService(private val userRepository: UserRepository)

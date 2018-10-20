@@ -1,9 +1,9 @@
-package pl.edu.uj.ii.ksi.mordor.models.repositories
+package pl.edu.uj.ii.ksi.mordor.persistence.repositories
 
 import org.springframework.security.web.authentication.rememberme.PersistentRememberMeToken
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository
 import org.springframework.stereotype.Repository
-import pl.edu.uj.ii.ksi.mordor.models.entities.RememberMeToken
+import pl.edu.uj.ii.ksi.mordor.persistence.entities.RememberMeToken
 import java.util.*
 
 @Repository

@@ -1,7 +1,7 @@
-package pl.edu.uj.ii.ksi.mordor.models.repositories
+package pl.edu.uj.ii.ksi.mordor.persistence.repositories
 
 import org.springframework.data.jpa.repository.JpaRepository
-import pl.edu.uj.ii.ksi.mordor.models.entities.RememberMeToken
+import pl.edu.uj.ii.ksi.mordor.persistence.entities.RememberMeToken
 
 interface RememberMeTokenRepository : JpaRepository<RememberMeToken, String> {
     fun findByUser_userName(userName: String): List<RememberMeToken>

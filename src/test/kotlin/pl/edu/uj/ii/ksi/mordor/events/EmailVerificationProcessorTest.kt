@@ -8,10 +8,10 @@ import org.junit.Test
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.eq
 import org.springframework.mail.javamail.JavaMailSender
-import pl.edu.uj.ii.ksi.mordor.models.entities.EmailVerificationToken
-import pl.edu.uj.ii.ksi.mordor.models.entities.Role
-import pl.edu.uj.ii.ksi.mordor.models.entities.User
-import pl.edu.uj.ii.ksi.mordor.models.repositories.EmailVerificationTokenRepository
+import pl.edu.uj.ii.ksi.mordor.persistence.entities.EmailVerificationToken
+import pl.edu.uj.ii.ksi.mordor.persistence.entities.Role
+import pl.edu.uj.ii.ksi.mordor.persistence.entities.User
+import pl.edu.uj.ii.ksi.mordor.persistence.repositories.EmailVerificationTokenRepository
 import javax.mail.internet.MimeMessage
 
 class EmailVerificationProcessorTest {

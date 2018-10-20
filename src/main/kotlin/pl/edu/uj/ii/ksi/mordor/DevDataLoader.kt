@@ -6,9 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.ApplicationRunner
 import org.springframework.stereotype.Component
-import pl.edu.uj.ii.ksi.mordor.models.entities.Role
-import pl.edu.uj.ii.ksi.mordor.models.entities.User
-import pl.edu.uj.ii.ksi.mordor.models.repositories.UserRepository
+import pl.edu.uj.ii.ksi.mordor.persistence.entities.Role
+import pl.edu.uj.ii.ksi.mordor.persistence.entities.User
+import pl.edu.uj.ii.ksi.mordor.persistence.repositories.UserRepository
 
 @Component
 class DevDataLoader : ApplicationRunner {

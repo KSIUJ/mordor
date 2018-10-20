@@ -1,4 +1,4 @@
-package pl.edu.uj.ii.ksi.mordor.models.entities
+package pl.edu.uj.ii.ksi.mordor.persistence.entities
 
 import javax.persistence.*
 
@@ -19,11 +19,11 @@ data class FileMetadata(
 
         var mimeType: String?,
 
-        @OneToOne(mappedBy = "file", orphanRemoval = true, cascade = [CascadeType.REMOVE], fetch = FetchType.EAGER)
+        @OneToOne(mappedBy = "file", orphanRemoval = true, cascade = [CascadeType.REMOVE], fetch = FetchType.LAZY)
         var thumbnail: FileThumbnail?,
 
         @OneToOne(mappedBy = "file", orphanRemoval = true, cascade = [CascadeType.REMOVE], fetch = FetchType.LAZY)
-        var content: FileContent?,
+        var crawledContent: FileContent?,
 
         @OneToMany(mappedBy = "metadata", orphanRemoval = true)
         var files: List<FileEntry>?

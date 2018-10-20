@@ -6,7 +6,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.builders.WebSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
-import pl.edu.uj.ii.ksi.mordor.models.repositories.RememberMePersistentTokenRepository
+import pl.edu.uj.ii.ksi.mordor.persistence.repositories.RememberMePersistentTokenRepository
 import pl.edu.uj.ii.ksi.mordor.services.LocalUserService
 
 

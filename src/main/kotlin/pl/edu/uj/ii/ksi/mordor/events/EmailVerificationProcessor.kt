@@ -7,8 +7,8 @@ import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.mail.javamail.MimeMessageHelper
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Component
-import pl.edu.uj.ii.ksi.mordor.models.entities.EmailVerificationToken
-import pl.edu.uj.ii.ksi.mordor.models.repositories.EmailVerificationTokenRepository
+import pl.edu.uj.ii.ksi.mordor.persistence.entities.EmailVerificationToken
+import pl.edu.uj.ii.ksi.mordor.persistence.repositories.EmailVerificationTokenRepository
 import java.util.*
 
 @Component

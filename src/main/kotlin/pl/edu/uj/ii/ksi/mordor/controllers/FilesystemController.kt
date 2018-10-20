@@ -1,127 +1,94 @@
 package pl.edu.uj.ii.ksi.mordor.controllers
 
+import org.apache.commons.io.IOUtils
 import org.springframework.stereotype.Controller
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.servlet.ModelAndView
-import java.nio.file.*
-import javax.servlet.http.*
-import org.springframework.web.bind.annotation.*
-import org.springframework.beans.factory.annotation.*
-import org.apache.commons.io.*
-import java.util.*
+import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryDirectory
+import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryEntity
+import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryFile
+import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryService
+import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.HttpServletResponse
 
 @Controller
-class FilesystemController() {
-    lateinit var rootPath: Path
-
-    @Value("\${mordor.root_path}")
-    fun setRootPath(rootPath: String) {
-        this.rootPath = Paths.get(rootPath);
-    }
-
-    fun getRequestPath(request: HttpServletRequest): Path {
-        var parts = request.getServletPath().split("/");
-        var current = rootPath;
-        for (i in 2..(parts.size-1)) {
-            var part = parts[i];
-            if (part == "." || part == "..")
-                throw RuntimeException("invalid path");
-
-            if (part != "")
-                current = current.resolve(part);
-        }
-        return current;
-    }
-
-    data class FileEntry (
-        val path: String,
-        val name: String,
-        val iconName: String
+class FilesystemController(val repoService: RepositoryService) {
+    data class FileEntry(
+            val path: String,
+            val name: String,
+            val iconName: String
     )
 
     @GetMapping("/file/**")
     fun fileIndex(request: HttpServletRequest): ModelAndView {
-        val path = getRequestPath(request);
-        val relativePath = rootPath.relativize(path).toString();
+        val entity = repoService.getEntity(request.servletPath) ?: throw java.lang.RuntimeException("not found")
 
-        if(Files.isDirectory (path)) {
-            if (!request.getServletPath().endsWith("/"))
-               return ModelAndView("redirect:" + request.getServletPath() + "/")
+        if (entity is RepositoryDirectory) {
+            if (!request.servletPath.endsWith("/"))
+                return ModelAndView("redirect:" + request.servletPath + "/")
 
-            val stream = Files.newDirectoryStream(path);
-            var children = mutableListOf<FileEntry>()
-
-            stream.use {
-                for (file in stream) {
-                    children.add(FileEntry(
-                            rootPath.relativize(file).toString(), file.getFileName().toString(),
-                            getIconName(file)));
-                }
-            }
-
-            val sortedChildren = children.sortedWith(compareBy({it.iconName != "folder"}, {it.name}));
+            val sortedChildren = entity.getChildren().sortedWith(compareBy({ it !is RepositoryDirectory }, { it.name }))
+                    .map { ch -> FileEntry(ch.relativePath, ch.name, getIconName(ch)) }
 
             return ModelAndView("tree",
-               mapOf("children" to sortedChildren,
-                     "path" to relativePath));
+                    mapOf("children" to sortedChildren,
+                            "path" to entity.relativePath))
         } else {
-            return ModelAndView("redirect:/download/" + rootPath.relativize(path).toString());
+            return ModelAndView("redirect:/download/" + entity.relativePath)
         }
     }
 
     @GetMapping("/download/**")
     fun download(request: HttpServletRequest, response: HttpServletResponse) {
-        val path = getRequestPath(request);
+        val entity = (repoService.getEntity(request.servletPath)
+                ?: throw java.lang.RuntimeException("not found")) as? RepositoryFile
+                ?: throw java.lang.RuntimeException("not a file")
 
-        response.addHeader("X-Content-Type-Options", "nosniff");
-        response.setContentType(getMimeForPath(path.toString()));
+        response.addHeader("X-Content-Type-Options", "nosniff")
+        response.contentType = getMimeForPath(entity.relativePath)
 
-        val stream = Files.newInputStream(path);
+        val stream = entity.newInputStream()
         stream.use {
-            IOUtils.copy(stream, response.getOutputStream());
+            IOUtils.copy(stream, response.outputStream)
         }
-        response.flushBuffer();
+        response.flushBuffer()
     }
 
-    fun getIconName(path: Path): String {
-        if(Files.isDirectory (path)) {
-            return "folder";
+    // TODO: move to a service
+    fun getIconName(entity: RepositoryEntity): String {
+        if (entity is RepositoryDirectory) {
+            return "folder"
         }
 
         val exts = mapOf(
-           ".pdf" to "file-pdf"
+                ".pdf" to "file-pdf"
         )
 
         for ((ext, icon) in exts) {
-            if (path.toString().toLowerCase().endsWith(ext)) {
-                return icon;
+            if (entity.name.toLowerCase().endsWith(ext)) {
+                return icon
             }
         }
 
-        return "file";
+        return "file"
     }
 
+    // TODO: move to a service
     fun getMimeForPath(path: String): String {
         // careful about XSS!
         val exts = mapOf(
-           ".pdf" to "application/pdf",
-           ".png" to "image/png",
-           ".jpg" to "image/jpeg",
-           ".jpeg" to "image/jpeg"
+                ".pdf" to "application/pdf",
+                ".png" to "image/png",
+                ".jpg" to "image/jpeg",
+                ".jpeg" to "image/jpeg"
         )
 
         for ((ext, mime) in exts) {
             if (path.toLowerCase().endsWith(ext)) {
-                return mime;
+                return mime
             }
         }
 
-        return "application/octet-stream";
+        return "application/octet-stream"
     }
-    
-    @GetMapping("/file/info")
-    @ResponseBody
-    fun fileInfo(): String {
-        return rootPath.toString()
-    }
-
 }

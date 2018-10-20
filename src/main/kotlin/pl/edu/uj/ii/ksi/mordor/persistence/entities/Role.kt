@@ -1,4 +1,4 @@
-package pl.edu.uj.ii.ksi.mordor.models.entities
+package pl.edu.uj.ii.ksi.mordor.persistence.entities
 
 enum class Role(val permissions: List<Permission>) {
     ROLE_NOBODY(listOf()),

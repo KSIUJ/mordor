@@ -6,9 +6,9 @@ import org.junit.Test
 
 import org.junit.Assert.*
 import org.springframework.security.core.userdetails.UsernameNotFoundException
-import pl.edu.uj.ii.ksi.mordor.models.entities.Role
-import pl.edu.uj.ii.ksi.mordor.models.entities.User
-import pl.edu.uj.ii.ksi.mordor.models.repositories.UserRepository
+import pl.edu.uj.ii.ksi.mordor.persistence.entities.Role
+import pl.edu.uj.ii.ksi.mordor.persistence.entities.User
+import pl.edu.uj.ii.ksi.mordor.persistence.repositories.UserRepository
 
 class LocalUserServiceTest {
     val USER1 = User(0, "jsmith", "passwd", "jsmith@example.com", "John",

@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.servlet.ModelAndView
 import pl.edu.uj.ii.ksi.mordor.events.OnEmailVerificationRequestedEvent
-import pl.edu.uj.ii.ksi.mordor.models.entities.Role
-import pl.edu.uj.ii.ksi.mordor.models.entities.User
-import pl.edu.uj.ii.ksi.mordor.models.repositories.EmailVerificationTokenRepository
-import pl.edu.uj.ii.ksi.mordor.models.repositories.UserRepository
+import pl.edu.uj.ii.ksi.mordor.persistence.entities.Role
+import pl.edu.uj.ii.ksi.mordor.persistence.entities.User
+import pl.edu.uj.ii.ksi.mordor.persistence.repositories.EmailVerificationTokenRepository
+import pl.edu.uj.ii.ksi.mordor.persistence.repositories.UserRepository
 
 @Controller
 class UserRegistrationController(private val userRepository: UserRepository,

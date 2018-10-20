@@ -1,4 +1,4 @@
-package pl.edu.uj.ii.ksi.mordor.models.entities
+package pl.edu.uj.ii.ksi.mordor.persistence.entities
 
 import org.springframework.security.web.authentication.rememberme.PersistentRememberMeToken
 import java.util.*
