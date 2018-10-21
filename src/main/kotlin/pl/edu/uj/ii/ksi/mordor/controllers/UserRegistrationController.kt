@@ -1,6 +1,7 @@
 package pl.edu.uj.ii.ksi.mordor.controllers
 
 import org.springframework.context.ApplicationEventPublisher
+import org.springframework.http.HttpStatus
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
@@ -39,28 +40,20 @@ class UserRegistrationController(private val userRepository: UserRepository,
     @GetMapping(value = ["/register/activate/"], params = ["token"])
     fun changePasswordWithToken(@RequestParam("token") tokenVal: String): ModelAndView {
         val token = emailVerificationTokenRepository.findByToken(tokenVal)
-        if (token == null) {
-            //TODO: gracefully handle this.
-            throw RuntimeException("Invalid token")
+        return when {
+            token == null || !token.isValid() -> ModelAndView("invalid_token", HttpStatus.UNAUTHORIZED)
+            else -> ModelAndView("registration/set_password", "token", tokenVal)
         }
-        if (!token.isValid()) {
-            throw RuntimeException("Token expired")
-        }
-        return ModelAndView("registration/set_password", "token", tokenVal)
     }
 
     @PostMapping("/register/activate/")
     fun changePasswordWithTokenPost(@ModelAttribute("token") tokenVal: String,
                                     @ModelAttribute("password") password: String): ModelAndView {
         val token = emailVerificationTokenRepository.findByToken(tokenVal)
-        if (token == null) {
-            //TODO: gracefully handle this.
-            throw RuntimeException("Invalid token")
-        }
+                ?: return ModelAndView("invalid_token", HttpStatus.UNAUTHORIZED)
         if (!token.isValid()) {
             emailVerificationTokenRepository.delete(token)
-            throw RuntimeException("Token expired")
-            //TODO: resend token if expired
+            ModelAndView("invalid_token", HttpStatus.UNAUTHORIZED)
         }
 
         val user = token.user!!
