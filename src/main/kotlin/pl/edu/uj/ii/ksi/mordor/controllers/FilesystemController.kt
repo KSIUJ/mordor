@@ -4,6 +4,8 @@ import org.apache.commons.io.IOUtils
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.servlet.ModelAndView
+import pl.edu.uj.ii.ksi.mordor.exceptions.BadRequestException
+import pl.edu.uj.ii.ksi.mordor.exceptions.NotFoundException
 import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryDirectory
 import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryEntity
 import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryFile
@@ -21,7 +23,7 @@ class FilesystemController(val repoService: RepositoryService) {
 
     @GetMapping("/file/**")
     fun fileIndex(request: HttpServletRequest): ModelAndView {
-        val entity = repoService.getEntity(request.servletPath) ?: throw java.lang.RuntimeException("not found")
+        val entity = repoService.getEntity(request.servletPath) ?: throw NotFoundException()
 
         if (entity is RepositoryDirectory) {
             if (!request.servletPath.endsWith("/"))
@@ -41,8 +43,8 @@ class FilesystemController(val repoService: RepositoryService) {
     @GetMapping("/download/**")
     fun download(request: HttpServletRequest, response: HttpServletResponse) {
         val entity = (repoService.getEntity(request.servletPath)
-                ?: throw java.lang.RuntimeException("not found")) as? RepositoryFile
-                ?: throw java.lang.RuntimeException("not a file")
+                ?: throw NotFoundException()) as? RepositoryFile
+                ?: throw BadRequestException("not a file")
 
         response.addHeader("X-Content-Type-Options", "nosniff")
         response.contentType = getMimeForPath(entity.relativePath)

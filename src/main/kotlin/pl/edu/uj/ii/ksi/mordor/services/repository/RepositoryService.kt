@@ -2,6 +2,7 @@ package pl.edu.uj.ii.ksi.mordor.services.repository
 
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
+import pl.edu.uj.ii.ksi.mordor.exceptions.BadRequestException
 import java.nio.file.Files
 import java.io.File
 import java.nio.file.Path
@@ -17,7 +18,7 @@ class RepositoryService(@Value("\${mordor.root_path}") private val rootPathStr: 
         for (i in 2..(parts.size - 1)) {
             val part = parts[i]
             when {
-                part == "." || part == ".." -> throw RuntimeException("invalid path")
+                part == "." || part == ".." -> throw BadRequestException("invalid path")
                 part != "" -> current = current.resolve(part)
             }
 
