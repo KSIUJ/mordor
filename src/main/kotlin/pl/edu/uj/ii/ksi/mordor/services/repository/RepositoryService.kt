@@ -1,5 +1,6 @@
 package pl.edu.uj.ii.ksi.mordor.services.repository
 
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import pl.edu.uj.ii.ksi.mordor.exceptions.BadRequestException
@@ -11,19 +12,15 @@ import java.nio.file.Paths
 @Service
 class RepositoryService(@Value("\${mordor.root_path}") private val rootPathStr: String) {
     private final val rootPath: Path = Paths.get(rootPathStr)
+    private final val logger = LoggerFactory.getLogger(RepositoryService::class.java)
 
     private fun getRequestedPath(path: String): Path {
-        val parts = path.split("/")
-        var current = rootPath
-        for (i in 2..(parts.size - 1)) {
-            val part = parts[i]
-            when {
-                part == "." || part == ".." -> throw BadRequestException("invalid path")
-                part != "" -> current = current.resolve(part)
-            }
-
+        val fullPath = rootPath.resolve(path).normalize().toAbsolutePath()
+        if (!fullPath.startsWith(rootPath)) {
+            logger.warn("Tried to access file outside of repository root: $path")
+            throw BadRequestException("invalid path")
         }
-        return current
+        return fullPath
     }
 
     private fun getRepositoryEntity(fullPath: Path): RepositoryEntity? {
@@ -55,7 +52,6 @@ class RepositoryService(@Value("\${mordor.root_path}") private val rootPathStr: 
 
     fun getEntity(entityPath: String): RepositoryEntity? {
         val path = getRequestedPath(entityPath)
-
         return getRepositoryEntity(path)
     }
 }
