@@ -23,7 +23,7 @@ class FilesystemController(val repoService: RepositoryService) {
 
     @GetMapping("/file/**")
     fun fileIndex(request: HttpServletRequest): ModelAndView {
-        val entity = repoService.getEntity(request.servletPath) ?: throw NotFoundException()
+        val entity = repoService.getEntity(request.servletPath.removePrefix("/file/")) ?: throw NotFoundException()
 
         if (entity is RepositoryDirectory) {
             if (!request.servletPath.endsWith("/")) {
@@ -31,11 +31,11 @@ class FilesystemController(val repoService: RepositoryService) {
             }
 
             val sortedChildren = entity.getChildren().sortedWith(compareBy({ it !is RepositoryDirectory }, { it.name }))
-                    .map { ch -> FileEntry(ch.relativePath, ch.name, getIconName(ch)) }
+                .map { ch -> FileEntry(ch.relativePath, ch.name, getIconName(ch)) }
 
             return ModelAndView("tree",
-                    mapOf("children" to sortedChildren,
-                            "path" to entity.relativePath))
+                mapOf("children" to sortedChildren,
+                    "path" to entity.relativePath))
         } else {
             return ModelAndView("redirect:/download/" + entity.relativePath)
         }
@@ -43,9 +43,9 @@ class FilesystemController(val repoService: RepositoryService) {
 
     @GetMapping("/download/**")
     fun download(request: HttpServletRequest, response: HttpServletResponse) {
-        val entity = (repoService.getEntity(request.servletPath)
-                ?: throw NotFoundException()) as? RepositoryFile
-                ?: throw BadRequestException("not a file")
+        val entity = (repoService.getEntity(request.servletPath.removePrefix("/download/"))
+            ?: throw NotFoundException()) as? RepositoryFile
+            ?: throw BadRequestException("not a file")
 
         response.addHeader("X-Content-Type-Options", "nosniff")
         response.contentType = getMimeForPath(entity.relativePath)
@@ -64,7 +64,7 @@ class FilesystemController(val repoService: RepositoryService) {
         }
 
         val exts = mapOf(
-                ".pdf" to "file-pdf"
+            ".pdf" to "file-pdf"
         )
 
         for ((ext, icon) in exts) {
@@ -80,10 +80,10 @@ class FilesystemController(val repoService: RepositoryService) {
     fun getMimeForPath(path: String): String {
         // careful about XSS!
         val exts = mapOf(
-                ".pdf" to "application/pdf",
-                ".png" to "image/png",
-                ".jpg" to "image/jpeg",
-                ".jpeg" to "image/jpeg"
+            ".pdf" to "application/pdf",
+            ".png" to "image/png",
+            ".jpg" to "image/jpeg",
+            ".jpeg" to "image/jpeg"
         )
 
         for ((ext, mime) in exts) {

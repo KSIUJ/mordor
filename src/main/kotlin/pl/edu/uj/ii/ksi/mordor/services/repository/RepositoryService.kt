@@ -15,7 +15,7 @@ class RepositoryService(@Value("\${mordor.root_path}") private val rootPathStr: 
     private fun getRequestedPath(path: String): Path {
         val parts = path.split("/")
         var current = rootPath
-        for (i in 2..(parts.size - 1)) {
+        for (i in 1..(parts.size - 1)) {
             val part = parts[i]
             when {
                 part == "." || part == ".." -> throw BadRequestException("invalid path")
@@ -32,7 +32,7 @@ class RepositoryService(@Value("\${mordor.root_path}") private val rootPathStr: 
             !file.exists() -> return null
             !file.canRead() -> return null
             file.isDirectory -> return object : RepositoryDirectory(file.name,
-                    rootPath.relativize(fullPath).toString()) {
+                rootPath.relativize(fullPath).toString()) {
                 override fun getChildren(): List<RepositoryEntity> {
                     val stream = Files.newDirectoryStream(fullPath)
                     val children = mutableListOf<RepositoryEntity>()
@@ -48,7 +48,7 @@ class RepositoryService(@Value("\${mordor.root_path}") private val rootPathStr: 
             }
             // TODO: add metadata.
             else -> return RepositoryFile(file.name, rootPath.relativize(fullPath).toString(), file,
-                    null, null, null, null, null)
+                null, null, null, null, null)
         }
     }
 
