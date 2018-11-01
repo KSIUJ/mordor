@@ -93,6 +93,5 @@ dependencies {
 detekt {
     toolVersion = "RC9.2"
     input = files("src/main/kotlin")
-    filters = ".*/resources/.*,.*/build/.*"
     config = files("detekt.yml")
 }
