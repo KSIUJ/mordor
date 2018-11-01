@@ -1,5 +1,8 @@
 package pl.edu.uj.ii.ksi.mordor.events
 
+import java.util.Calendar
+import java.util.Date
+import java.util.UUID
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.event.EventListener
@@ -9,14 +12,17 @@ import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Component
 import pl.edu.uj.ii.ksi.mordor.persistence.entities.EmailVerificationToken
 import pl.edu.uj.ii.ksi.mordor.persistence.repositories.EmailVerificationTokenRepository
-import java.util.*
 
 @Component
-class EmailVerificationProcessor(private val mailSender: JavaMailSender,
-                                 private val tokenRepository: EmailVerificationTokenRepository,
-                                 @Value("\${mordor.mail.from}") private val emailFrom: String,
-                                 @Value("\${mordor.site.address}") private val siteAddress: String) {
-    private val EXPIRATION_TIME_S = 60 * 60 * 24
+class EmailVerificationProcessor(
+    private val mailSender: JavaMailSender,
+    private val tokenRepository: EmailVerificationTokenRepository,
+    @Value("\${mordor.mail.from}") private val emailFrom: String,
+    @Value("\${mordor.site.address}") private val siteAddress: String
+) {
+    companion object {
+        private const val EXPIRATION_TIME_S = 60 * 60 * 24
+    }
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 

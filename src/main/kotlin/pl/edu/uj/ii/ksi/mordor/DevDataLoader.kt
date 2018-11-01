@@ -17,7 +17,6 @@ class DevDataLoader : ApplicationRunner {
 
     val log: Logger = LoggerFactory.getLogger(this.javaClass)
 
-
     override fun run(args: ApplicationArguments?) {
         if (userRepository.findByUserName("admin") == null) {
             log.warn("Creating admin user: admin:test")
@@ -25,5 +24,4 @@ class DevDataLoader : ApplicationRunner {
                     true, Role.ROLE_ADMIN))
         }
     }
-
 }

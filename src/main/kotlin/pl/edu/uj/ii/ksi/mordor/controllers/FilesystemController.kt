@@ -1,5 +1,7 @@
 package pl.edu.uj.ii.ksi.mordor.controllers
 
+import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.HttpServletResponse
 import org.apache.commons.io.IOUtils
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
@@ -10,15 +12,13 @@ import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryDirectory
 import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryEntity
 import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryFile
 import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryService
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
 
 @Controller
 class FilesystemController(val repoService: RepositoryService) {
     data class FileEntry(
-            val path: String,
-            val name: String,
-            val iconName: String
+        val path: String,
+        val name: String,
+        val iconName: String
     )
 
     @GetMapping("/file/**")
@@ -26,8 +26,9 @@ class FilesystemController(val repoService: RepositoryService) {
         val entity = repoService.getEntity(request.servletPath) ?: throw NotFoundException()
 
         if (entity is RepositoryDirectory) {
-            if (!request.servletPath.endsWith("/"))
+            if (!request.servletPath.endsWith("/")) {
                 return ModelAndView("redirect:" + request.servletPath + "/")
+            }
 
             val sortedChildren = entity.getChildren().sortedWith(compareBy({ it !is RepositoryDirectory }, { it.name }))
                     .map { ch -> FileEntry(ch.relativePath, ch.name, getIconName(ch)) }

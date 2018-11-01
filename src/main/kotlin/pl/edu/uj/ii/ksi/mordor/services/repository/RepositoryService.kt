@@ -1,12 +1,12 @@
 package pl.edu.uj.ii.ksi.mordor.services.repository
 
+import java.io.File
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.Paths
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import pl.edu.uj.ii.ksi.mordor.exceptions.BadRequestException
-import java.nio.file.Files
-import java.io.File
-import java.nio.file.Path
-import java.nio.file.Paths
 
 @Service
 class RepositoryService(@Value("\${mordor.root_path}") private val rootPathStr: String) {
@@ -21,7 +21,6 @@ class RepositoryService(@Value("\${mordor.root_path}") private val rootPathStr: 
                 part == "." || part == ".." -> throw BadRequestException("invalid path")
                 part != "" -> current = current.resolve(part)
             }
-
         }
         return current
     }
@@ -32,7 +31,8 @@ class RepositoryService(@Value("\${mordor.root_path}") private val rootPathStr: 
         when {
             !file.exists() -> return null
             !file.canRead() -> return null
-            file.isDirectory -> return object : RepositoryDirectory(file.name, rootPath.relativize(fullPath).toString()) {
+            file.isDirectory -> return object : RepositoryDirectory(file.name,
+                    rootPath.relativize(fullPath).toString()) {
                 override fun getChildren(): List<RepositoryEntity> {
                     val stream = Files.newDirectoryStream(fullPath)
                     val children = mutableListOf<RepositoryEntity>()
@@ -50,7 +50,6 @@ class RepositoryService(@Value("\${mordor.root_path}") private val rootPathStr: 
             else -> return RepositoryFile(file.name, rootPath.relativize(fullPath).toString(), file,
                     null, null, null, null, null)
         }
-
     }
 
     fun getEntity(entityPath: String): RepositoryEntity? {
