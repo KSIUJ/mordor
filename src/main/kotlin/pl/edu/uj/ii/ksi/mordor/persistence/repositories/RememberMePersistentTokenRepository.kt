@@ -1,15 +1,16 @@
 package pl.edu.uj.ii.ksi.mordor.persistence.repositories
 
+import java.util.Date
 import org.springframework.security.web.authentication.rememberme.PersistentRememberMeToken
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository
 import org.springframework.stereotype.Repository
 import pl.edu.uj.ii.ksi.mordor.persistence.entities.RememberMeToken
-import java.util.*
 
 @Repository
-class RememberMePersistentTokenRepository(val userRepository: UserRepository,
-                                          val rememberMeTokenRepository: RememberMeTokenRepository)
-    : PersistentTokenRepository {
+class RememberMePersistentTokenRepository(
+    val userRepository: UserRepository,
+    val rememberMeTokenRepository: RememberMeTokenRepository
+) : PersistentTokenRepository {
     override fun updateToken(series: String, tokenValue: String, lastUsed: Date) {
         val tokenOptional = rememberMeTokenRepository.findById(series)
         if (tokenOptional.isPresent) {

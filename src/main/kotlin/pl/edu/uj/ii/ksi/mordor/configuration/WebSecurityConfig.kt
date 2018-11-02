@@ -9,13 +9,13 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import pl.edu.uj.ii.ksi.mordor.persistence.repositories.RememberMePersistentTokenRepository
 import pl.edu.uj.ii.ksi.mordor.services.LocalUserService
 
-
 @Configuration
 @EnableWebSecurity
-class WebSecurityConfig(val tokenRepository: RememberMePersistentTokenRepository,
-                        val userService: LocalUserService,
-                        @Value("\${mordor.secret}") val secret: String)
-    : WebSecurityConfigurerAdapter() {
+class WebSecurityConfig(
+    val tokenRepository: RememberMePersistentTokenRepository,
+    val userService: LocalUserService,
+    @Value("\${mordor.secret}") val secret: String
+) : WebSecurityConfigurerAdapter() {
 
     override fun configure(http: HttpSecurity) {
         http.authorizeRequests().antMatchers("/", "/register/**").permitAll()

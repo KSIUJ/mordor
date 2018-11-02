@@ -1,16 +1,20 @@
 buildscript {
     ext {
-        kotlinVersion = '1.2.70'
-        springBootVersion = '2.0.5.RELEASE'
+        kotlinVersion = '1.3.0'
+        springBootVersion = '2.1.0.RELEASE'
     }
     repositories {
         mavenCentral()
+        maven {
+            url = uri("https://plugins.gradle.org/m2/")
+        }
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}")
         classpath("org.jetbrains.kotlin:kotlin-allopen:${kotlinVersion}")
         classpath("org.jetbrains.kotlin:kotlin-noarg:${kotlinVersion}")
+        classpath("gradle.plugin.io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.0.0.RC9.2")
     }
 }
 
@@ -20,10 +24,12 @@ apply plugin: "kotlin-jpa"
 apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
+apply plugin: 'io.gitlab.arturbosch.detekt'
 
 group = 'pl.edu.uj.ii.ksi'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = 1.8
+
 compileKotlin {
     kotlinOptions {
         freeCompilerArgs = ["-Xjsr305=strict"]
@@ -54,14 +60,12 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter-web')
     compile('org.springframework.boot:spring-boot-starter-thymeleaf')
     compile('nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:2.3.0')
-    compile('org.thymeleaf.extras:thymeleaf-extras-springsecurity4:3.0.2.RELEASE')
+    compile('org.thymeleaf.extras:thymeleaf-extras-springsecurity5:3.0.4.RELEASE')
     compile('com.fasterxml.jackson.module:jackson-module-kotlin')
 //    compile('org.springframework.session:spring-session-core')
     compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     compile("org.jetbrains.kotlin:kotlin-reflect")
-    compile("com.sun.xml.bind:jaxb-impl:2.3.0.1")
-    compile("com.sun.xml.bind:jaxb-core:2.3.0.1")
-    compile("javax.xml:jaxb-api:2.1")
+    compile("org.glassfish.jaxb:jaxb-runtime:2.3.1")
     compile("commons-io:commons-io:2.6")
 
     // Remove devtools for release
@@ -73,4 +77,13 @@ dependencies {
     testCompile('org.springframework.boot:spring-boot-starter-test')
     testCompile('org.springframework.security:spring-security-test')
     testCompile('com.nhaarman.mockitokotlin2:mockito-kotlin:2.0.0-RC1')
+
+    detekt("io.gitlab.arturbosch.detekt:detekt-formatting:1.0.0.RC9.2")
+}
+
+detekt {
+    toolVersion = "RC9.2"
+    input = files("src/main/kotlin")
+    filters = ""
+    config = files("detekt.yml")
 }

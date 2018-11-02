@@ -1,12 +1,11 @@
 package pl.edu.uj.ii.ksi.mordor.controllers
 
+import javax.servlet.http.HttpServletRequest
 import org.springframework.boot.autoconfigure.web.servlet.error.AbstractErrorController
 import org.springframework.boot.web.servlet.error.ErrorAttributes
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.servlet.ModelAndView
-import javax.servlet.http.HttpServletRequest
-
 
 @Controller
 class ErrorPageController(errorAttributes: ErrorAttributes) : AbstractErrorController(errorAttributes) {

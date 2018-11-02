@@ -11,15 +11,18 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.servlet.ModelAndView
 import pl.edu.uj.ii.ksi.mordor.events.OnEmailVerificationRequestedEvent
+import pl.edu.uj.ii.ksi.mordor.exceptions.BadRequestException
 import pl.edu.uj.ii.ksi.mordor.persistence.entities.Role
 import pl.edu.uj.ii.ksi.mordor.persistence.entities.User
 import pl.edu.uj.ii.ksi.mordor.persistence.repositories.EmailVerificationTokenRepository
 import pl.edu.uj.ii.ksi.mordor.persistence.repositories.UserRepository
 
 @Controller
-class UserRegistrationController(private val userRepository: UserRepository,
-                                 private val emailVerificationTokenRepository: EmailVerificationTokenRepository,
-                                 private val eventPublisher: ApplicationEventPublisher) {
+class UserRegistrationController(
+    private val userRepository: UserRepository,
+    private val emailVerificationTokenRepository: EmailVerificationTokenRepository,
+    private val eventPublisher: ApplicationEventPublisher
+) {
 
     @GetMapping("/register/")
     fun registerForm(model: Model): ModelAndView {
@@ -29,8 +32,8 @@ class UserRegistrationController(private val userRepository: UserRepository,
     @PostMapping("/register/")
     fun registerPost(@ModelAttribute user: User): String {
         if (userRepository.findByUserName(user.userName) != null) {
-            //TODO: gracefully handle this.
-            throw RuntimeException("Username already exists")
+            // TODO: gracefully handle this.
+            throw BadRequestException("Username already exists")
         }
         userRepository.save(user)
         eventPublisher.publishEvent(OnEmailVerificationRequestedEvent(user))
@@ -47,8 +50,10 @@ class UserRegistrationController(private val userRepository: UserRepository,
     }
 
     @PostMapping("/register/activate/")
-    fun changePasswordWithTokenPost(@ModelAttribute("token") tokenVal: String,
-                                    @ModelAttribute("password") password: String): ModelAndView {
+    fun changePasswordWithTokenPost(
+        @ModelAttribute("token") tokenVal: String,
+        @ModelAttribute("password") password: String
+    ): ModelAndView {
         val token = emailVerificationTokenRepository.findByToken(tokenVal)
                 ?: return ModelAndView("invalid_token", HttpStatus.UNAUTHORIZED)
         if (!token.isValid()) {
@@ -78,8 +83,8 @@ class UserRegistrationController(private val userRepository: UserRepository,
     fun requestPasswordResetPost(@ModelAttribute("email") email: String): String {
         val user = userRepository.findByEmail(email)
         if (user == null) {
-            //TODO: gracefully handle this.
-            throw RuntimeException("Unknown email address")
+            // TODO: gracefully handle this.
+            throw BadRequestException("Unknown email address")
         }
         eventPublisher.publishEvent(OnEmailVerificationRequestedEvent(user))
         return "registration/verify_email"
