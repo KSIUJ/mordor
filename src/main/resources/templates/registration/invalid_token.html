@@ -1,18 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layout}">
 <head>
     <meta charset="UTF-8">
     <title>Request new token</title>
 </head>
 <body>
-<h1>Invalid token</h1>
-<p>The verification token you provided is either expired or invalid. You can request a new one using this form:</p>
-<form th:action="@{/register/reset/}" method="post">
-    <div class="form-group">
-        <label for="email">Email address</label>
-        <input type="email" class="form-control" name="email" id="email"/>
-    </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
-</form>
+<div layout:fragment="content">
+    <h1>Invalid token</h1>
+    <p>The verification token you provided is either expired or invalid. You can request a new one using this form:</p>
+    <form th:action="@{/register/reset/}" method="post">
+        <div class="form-group">
+            <label for="email">Email address</label>
+            <input type="email" class="form-control" name="email" id="email"/>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
 </body>
 </html>
