@@ -6,6 +6,7 @@ import java.util.UUID
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.event.EventListener
+import org.springframework.mail.MailSendException
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.mail.javamail.MimeMessageHelper
 import org.springframework.scheduling.annotation.Async
@@ -42,9 +43,13 @@ class EmailVerificationProcessor(
         helper.setSubject("Verify your email")
         val confirmationUri = siteAddress + "/register/activate/?token=" + token.token
         val content = "Hello ${user.firstName} ${user.lastName}!<br>" +
-                "Please go to <a href=\"$confirmationUri\">$confirmationUri</a> to verify your email"
+            "Please go to <a href=\"$confirmationUri\">$confirmationUri</a> to verify your email"
         message.setContent(content, "text/html")
-        mailSender.send(message)
+        try {
+            mailSender.send(message)
+        } catch (ex: MailSendException) {
+            log.error("Unable to send verification email to " + user.email!!, ex)
+        }
     }
 
     private fun calculateExpiryDate(expiryTimeInSeconds: Int): Date {
