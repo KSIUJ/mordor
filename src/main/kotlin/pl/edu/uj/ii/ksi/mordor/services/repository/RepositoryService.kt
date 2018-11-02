@@ -14,10 +14,17 @@ class RepositoryService(@Value("\${mordor.root_path}") private val rootPathStr: 
     private final val rootPath: Path = Paths.get(rootPathStr)
     private final val logger = LoggerFactory.getLogger(RepositoryService::class.java)
 
-    private fun getRequestedPath(path: String): Path {
+    /**
+     * Resolves path to an absolute one beginning in the repository root
+     *
+     * @param path path to be resolved
+     * @return absolute path beginning in repository root
+     * @throws BadRequestException when path is reaching for a file outside of repository root
+     */
+    fun getAbsolutePath(path: String): Path {
         val fullPath = rootPath.resolve(path).normalize().toAbsolutePath()
         if (!fullPath.startsWith(rootPath)) {
-            logger.warn("Tried to access file outside of repository root: $path")
+            logger.debug("Tried to access file outside of repository root: $path")
             throw BadRequestException("invalid path")
         }
         return fullPath
@@ -51,7 +58,7 @@ class RepositoryService(@Value("\${mordor.root_path}") private val rootPathStr: 
     }
 
     fun getEntity(entityPath: String): RepositoryEntity? {
-        val path = getRequestedPath(entityPath)
+        val path = getAbsolutePath(entityPath)
         return getRepositoryEntity(path)
     }
 }
