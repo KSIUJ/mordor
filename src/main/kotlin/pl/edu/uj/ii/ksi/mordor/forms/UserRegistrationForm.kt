@@ -5,7 +5,6 @@ import javax.validation.constraints.NotBlank
 import javax.validation.constraints.Size
 
 data class UserRegistrationForm(
-    @get:NotBlank
     @get:Size(min = 3, max = 32)
     var userName: String = "",
 
