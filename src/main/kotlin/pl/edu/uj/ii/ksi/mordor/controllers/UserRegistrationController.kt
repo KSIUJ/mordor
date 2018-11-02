@@ -1,5 +1,6 @@
 package pl.edu.uj.ii.ksi.mordor.controllers
 
+import javax.validation.Valid
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.http.HttpStatus
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
@@ -19,7 +20,6 @@ import pl.edu.uj.ii.ksi.mordor.persistence.entities.Role
 import pl.edu.uj.ii.ksi.mordor.persistence.entities.User
 import pl.edu.uj.ii.ksi.mordor.persistence.repositories.EmailVerificationTokenRepository
 import pl.edu.uj.ii.ksi.mordor.persistence.repositories.UserRepository
-import javax.validation.Valid
 
 @Controller
 class UserRegistrationController(
