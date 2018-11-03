@@ -5,30 +5,24 @@
     <title>Mordor (homepage)</title>
 </head>
 <body>
-    <div layout:fragment="content">
-       <h1>tree <span th:text="${path}"></span></h1>
+<div layout:fragment="content">
+    <ol class="breadcrumb">
+        <li th:each="dir, itrStat : ${path}" th:class="${itrStat.last}? 'breadcrumb-item active' : 'breadcrumb-item'">
+            <a th:unless="${itrStat.last}" th:href="${dir.path}" th:text="${dir.name}">directory</a>
+            <span th:if="${itrStat.last}" th:text="${dir.name}">current directory</span>
+        </li>
+    </ol>
 
-       <div class=actions>
-         <a href=".." th:if="${path != ''}">
-           <i class="fas fa-level-up-alt"></i>
-           up
-         </a>
-       </div>
-
-       <div th:if="${children.empty}">
-         <div>There are no files here.</div>
-       </div>
-
-       <table class=fs-table>
-         <tr th:each="entry : ${children}" class=clickable-row>
-           <td class=icon>
-             <i th:attr="class='fas fa-' + ${entry.iconName}"></i>
-           </td>
-           <td>
-             <a th:attr="href='/file/'+${entry.path}" th:text="${entry.name}"></a>
-           </td>
-         </tr>
-       </ul>
+    <div th:if="${children.empty}">
+        <div>There are no files here.</div>
     </div>
+
+    <ul th:unless="${children.empty}" class="list-group list-group-flush">
+        <li th:each="entry : ${children}" class="list-group-item">
+            <i th:attr="class='mx-2 fas fa-lg fa-' + ${entry.iconName}"></i>
+            <a th:attr="href='/file/'+${entry.path}" th:text="${entry.name}"></a>
+        </li>
+    </ul>
+</div>
 </body>
 </html>
