@@ -21,6 +21,11 @@ class FilesystemController(val repoService: RepositoryService) {
         val iconName: String
     )
 
+    private data class RelativeDir(
+        val name: String,
+        var path: String
+    )
+
     @GetMapping("/file/**")
     fun fileIndex(request: HttpServletRequest): ModelAndView {
         val entity = repoService.getEntity(request.servletPath.removePrefix("/file/")) ?: throw NotFoundException()
@@ -30,12 +35,23 @@ class FilesystemController(val repoService: RepositoryService) {
                 return ModelAndView("redirect:" + request.servletPath + "/")
             }
 
-            val sortedChildren = entity.getChildren().sortedWith(compareBy({ it !is RepositoryDirectory }, { it.name }))
-                .map { ch -> FileEntry(ch.relativePath, ch.name, getIconName(ch)) }
+            val sortedChildren = entity.getChildren()
+                .sortedWith(compareBy({ it !is RepositoryDirectory }, { it.name }))
+                .map { entry ->
+                    FileEntry(entry.relativePath +
+                        if (entry is RepositoryDirectory) "/" else "", entry.name, getIconName(entry))
+                }
+
+            val pathBreadcrumb = mutableListOf(RelativeDir("Home", "/file/"))
+            var prev = "/file/"
+            entity.relativePath.split('/').forEach { dir ->
+                pathBreadcrumb.add(RelativeDir(dir, prev + dir))
+                prev = "$prev$dir/"
+            }
 
             return ModelAndView("tree",
                 mapOf("children" to sortedChildren,
-                    "path" to entity.relativePath))
+                    "path" to pathBreadcrumb))
         } else {
             return ModelAndView("redirect:/download/" + entity.relativePath)
         }
