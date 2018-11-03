@@ -11,8 +11,11 @@ import pl.edu.uj.ii.ksi.mordor.exceptions.BadRequestException
 
 @Service
 class RepositoryService(@Value("\${mordor.root_path}") private val rootPathStr: String) {
+    companion object {
+        private val logger = LoggerFactory.getLogger(RepositoryService::class.java)
+    }
+
     private final val rootPath: Path = Paths.get(rootPathStr)
-    private final val logger = LoggerFactory.getLogger(RepositoryService::class.java)
 
     /**
      * Resolves path to an absolute one beginning in the repository root

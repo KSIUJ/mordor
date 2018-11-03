@@ -1,14 +1,12 @@
 package pl.edu.uj.ii.ksi.mordor.services.repository
 
-import org.junit.Test
-
-import org.junit.Assert.*
-import pl.edu.uj.ii.ksi.mordor.exceptions.BadRequestException
-import java.nio.file.Path
 import java.nio.file.Paths
+import org.junit.Assert.*
+import org.junit.Test
+import pl.edu.uj.ii.ksi.mordor.exceptions.BadRequestException
 
 class RepositoryServiceTest {
-    val repositoryService = RepositoryService("/srv/mordor")
+    private val repositoryService = RepositoryService("/srv/mordor")
 
     @Test
     fun getAbsolutePath_correct() {
