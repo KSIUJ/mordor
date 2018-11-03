@@ -3,6 +3,7 @@ package pl.edu.uj.ii.ksi.mordor.events
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
+import javax.mail.internet.MimeMessage
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.mockito.ArgumentCaptor
@@ -12,24 +13,26 @@ import pl.edu.uj.ii.ksi.mordor.persistence.entities.EmailVerificationToken
 import pl.edu.uj.ii.ksi.mordor.persistence.entities.Role
 import pl.edu.uj.ii.ksi.mordor.persistence.entities.User
 import pl.edu.uj.ii.ksi.mordor.persistence.repositories.EmailVerificationTokenRepository
-import javax.mail.internet.MimeMessage
 
 class EmailVerificationProcessorTest {
+    companion object {
+        private const val emailFrom = "test@example.com"
+        private const val siteName = "https://mordor.example.com"
+    }
+
     private val mockMessage: MimeMessage = mock()
     private val mockSender: JavaMailSender = mock {
         on { createMimeMessage() } doReturn mockMessage
     }
     private val mockTokenRepository: EmailVerificationTokenRepository = mock()
-    private val emailFrom = "test@example.com"
-    private val siteName = "https://mordor.example.com"
 
     private val emailVerificationProcessor = EmailVerificationProcessor(mockSender, mockTokenRepository,
-            emailFrom, siteName)
+        emailFrom, siteName)
 
     @Test
     fun startEmailVerification() {
         val user = User(0, "jsmith", null, "jsmith@example.com", "John",
-                "Smith", false, Role.ROLE_NOBODY)
+            "Smith", false, Role.ROLE_NOBODY)
         val event = OnEmailVerificationRequestedEvent(user)
 
         emailVerificationProcessor.startEmailVerification(event)

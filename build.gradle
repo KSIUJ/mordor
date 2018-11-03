@@ -52,10 +52,10 @@ dependencies {
 //    compile('org.springframework.boot:spring-boot-starter-actuator')
     compile('org.springframework.boot:spring-boot-starter-cache')
     compile('org.springframework.boot:spring-boot-starter-data-jpa')
-//	compile('org.springframework.boot:spring-boot-starter-data-ldap')
 //	compile('org.springframework.boot:spring-boot-starter-data-solr')
     compile('org.springframework.boot:spring-boot-starter-mail')
     compile('org.springframework.boot:spring-boot-starter-security')
+    compile("org.springframework.security:spring-security-ldap")
     compile('org.springframework.boot:spring-boot-starter-validation')
     compile('org.springframework.boot:spring-boot-starter-web')
     compile('org.springframework.boot:spring-boot-starter-thymeleaf')
@@ -83,7 +83,7 @@ dependencies {
 
 detekt {
     toolVersion = "RC9.2"
-    input = files("src/main/kotlin")
+    input = files("src/main/kotlin", "src/test/kotlin")
     filters = ""
     config = files("detekt.yml")
 }
