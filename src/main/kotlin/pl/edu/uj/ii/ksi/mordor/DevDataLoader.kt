@@ -3,6 +3,7 @@ package pl.edu.uj.ii.ksi.mordor
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.ApplicationRunner
 import org.springframework.stereotype.Component
@@ -11,17 +12,23 @@ import pl.edu.uj.ii.ksi.mordor.persistence.entities.User
 import pl.edu.uj.ii.ksi.mordor.persistence.repositories.UserRepository
 
 @Component
-class DevDataLoader : ApplicationRunner {
+class DevDataLoader(
+    @Value("\${mordor.enable_dev_data_loader:false}") private val enabled: String
+) : ApplicationRunner {
     @Autowired
     lateinit var userRepository: UserRepository
 
     val log: Logger = LoggerFactory.getLogger(this.javaClass)
 
     override fun run(args: ApplicationArguments?) {
+        if (enabled != "true") {
+            return
+        }
+
         if (userRepository.findByUserName("admin") == null) {
             log.warn("Creating admin user: admin:test")
             userRepository.save(User(0, "admin", "{noop}test", "", "", "",
-                    true, Role.ROLE_ADMIN))
+                true, Role.ROLE_ADMIN))
         }
     }
 }
