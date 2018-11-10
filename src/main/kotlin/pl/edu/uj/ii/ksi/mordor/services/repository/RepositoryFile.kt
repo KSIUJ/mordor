@@ -65,4 +65,17 @@ class RepositoryFile(
             val mime = mimeType
             return if (safeMimetype.contains(mime)) mime else "application/octet-stream"
         }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is RepositoryFile) return false
+
+        if (relativePath != other.relativePath) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return relativePath.hashCode()
+    }
 }
