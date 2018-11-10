@@ -46,7 +46,7 @@ class RepositoryFile(
     val mimeType: String
         get() {
             return mime ?: try {
-                mime = (Files.probeContentType(file.toPath()) ?: "application/octet-stream")
+                mime = Files.probeContentType(file.toPath()) ?: "application/octet-stream"
                 mime!!
             } catch (ex: IOException) {
                 logger.error("Unable to get content type for $relativePath", ex)

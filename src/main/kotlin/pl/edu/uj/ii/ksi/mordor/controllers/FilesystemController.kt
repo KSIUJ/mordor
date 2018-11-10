@@ -60,9 +60,10 @@ class FilesystemController(
             return ModelAndView("tree", mapOf("children" to sortedChildren, "path" to createBreadcrumb(entity)))
         } else if (entity is RepositoryFile) {
             if (entity.mimeType.startsWith("text/") || entity.isCode) {
+                val text = FileUtils.readFileToString(entity.file, "utf-8")
                 // TODO: detect encoding
                 return ModelAndView("preview", mapOf(
-                    "text" to FileUtils.readFileToString(entity.file, "utf-8"),
+                    "text" to text,
                     "path" to createBreadcrumb(entity),
                     "download" to "/download/${entity.relativePath}"
                 ))
