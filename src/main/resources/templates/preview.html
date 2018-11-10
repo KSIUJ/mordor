@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en"
+      layout:decorate="~{layout}">
+<head>
+    <title>Mordor</title>
+    <link rel="stylesheet"
+          href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.13.1/build/styles/github.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.13.1/build/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+</head>
+<body>
+<div layout:fragment="content">
+    <ol class="breadcrumb">
+        <li th:each="dir, itrStat : ${path}" th:class="${itrStat.last}? 'breadcrumb-item active' : 'breadcrumb-item'">
+            <a th:unless="${itrStat.last}" th:href="${dir.path}" th:text="${dir.name}">directory</a>
+            <span th:if="${itrStat.last}" th:text="${dir.name}">current directory</span>
+        </li>
+    </ol>
+
+    <a href="#" th:href="@{${download}}" class="btn btn-secondary"><i class="fas fa-download"></i> Download</a>
+
+    <pre class="mt-2"><code th:text="${text}">
+        import test
+
+        print("This is a sample code 1234")
+    </code></pre>
+</div>
+</body>
+</html>

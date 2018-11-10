@@ -2,19 +2,24 @@ package pl.edu.uj.ii.ksi.mordor.controllers
 
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
+import org.apache.commons.io.FileUtils
 import org.apache.commons.io.IOUtils
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.servlet.ModelAndView
 import pl.edu.uj.ii.ksi.mordor.exceptions.BadRequestException
 import pl.edu.uj.ii.ksi.mordor.exceptions.NotFoundException
+import pl.edu.uj.ii.ksi.mordor.services.IconNameProvider
 import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryDirectory
 import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryEntity
 import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryFile
 import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryService
 
 @Controller
-class FilesystemController(val repoService: RepositoryService) {
+class FilesystemController(
+    private val repoService: RepositoryService,
+    private val iconNameProvider: IconNameProvider
+) {
     data class FileEntry(
         val path: String,
         val name: String,
@@ -25,6 +30,16 @@ class FilesystemController(val repoService: RepositoryService) {
         val name: String,
         var path: String
     )
+
+    private fun createBreadcrumb(entity: RepositoryEntity): List<RelativeDir> {
+        val pathBreadcrumb = mutableListOf(RelativeDir("Home", "/file/"))
+        var prev = "/file/"
+        entity.relativePath.split('/').forEach { dir ->
+            pathBreadcrumb.add(RelativeDir(dir, prev + dir))
+            prev = "$prev$dir/"
+        }
+        return pathBreadcrumb
+    }
 
     @GetMapping("/file/**")
     fun fileIndex(request: HttpServletRequest): ModelAndView {
@@ -39,22 +54,21 @@ class FilesystemController(val repoService: RepositoryService) {
                 .sortedWith(compareBy({ it !is RepositoryDirectory }, { it.name }))
                 .map { entry ->
                     FileEntry(entry.relativePath +
-                        if (entry is RepositoryDirectory) "/" else "", entry.name, getIconName(entry))
+                        if (entry is RepositoryDirectory) "/" else "", entry.name, iconNameProvider.getIconName(entry))
                 }
 
-            val pathBreadcrumb = mutableListOf(RelativeDir("Home", "/file/"))
-            var prev = "/file/"
-            entity.relativePath.split('/').forEach { dir ->
-                pathBreadcrumb.add(RelativeDir(dir, prev + dir))
-                prev = "$prev$dir/"
+            return ModelAndView("tree", mapOf("children" to sortedChildren, "path" to createBreadcrumb(entity)))
+        } else if (entity is RepositoryFile) {
+            if (entity.mimeType.startsWith("text/") || entity.isCode) {
+                // TODO: detect encoding
+                return ModelAndView("preview", mapOf(
+                    "text" to FileUtils.readFileToString(entity.file, "utf-8"),
+                    "path" to createBreadcrumb(entity),
+                    "download" to "/download/${entity.relativePath}"
+                ))
             }
-
-            return ModelAndView("tree",
-                mapOf("children" to sortedChildren,
-                    "path" to pathBreadcrumb))
-        } else {
-            return ModelAndView("redirect:/download/" + entity.relativePath)
         }
+        return ModelAndView("redirect:/download/${entity.relativePath}")
     }
 
     @GetMapping("/download/**")
@@ -64,50 +78,12 @@ class FilesystemController(val repoService: RepositoryService) {
             ?: throw BadRequestException("not a file")
 
         response.addHeader("X-Content-Type-Options", "nosniff")
-        response.contentType = getMimeForPath(entity.relativePath)
+        response.contentType = entity.browserSafeMimeType
 
-        val stream = entity.newInputStream()
+        val stream = entity.file.inputStream()
         stream.use {
             IOUtils.copy(stream, response.outputStream)
         }
         response.flushBuffer()
-    }
-
-    // TODO: move to a service
-    fun getIconName(entity: RepositoryEntity): String {
-        if (entity is RepositoryDirectory) {
-            return "folder"
-        }
-
-        val exts = mapOf(
-            ".pdf" to "file-pdf"
-        )
-
-        for ((ext, icon) in exts) {
-            if (entity.name.toLowerCase().endsWith(ext)) {
-                return icon
-            }
-        }
-
-        return "file"
-    }
-
-    // TODO: move to a service
-    fun getMimeForPath(path: String): String {
-        // careful about XSS!
-        val exts = mapOf(
-            ".pdf" to "application/pdf",
-            ".png" to "image/png",
-            ".jpg" to "image/jpeg",
-            ".jpeg" to "image/jpeg"
-        )
-
-        for ((ext, mime) in exts) {
-            if (path.toLowerCase().endsWith(ext)) {
-                return mime
-            }
-        }
-
-        return "application/octet-stream"
     }
 }
