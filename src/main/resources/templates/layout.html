@@ -14,34 +14,34 @@
 </head>
 <body>
 <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-    <a class="navbar-brand" href="#">MORDOR</a>
+    <a class="navbar-brand" href="/">MORDOR</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar"
             aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
 
     <div class="collapse navbar-collapse my-2 my-lg-0" id="navbar">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item active">
-                <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Upload file</a>
-            </li>
-        </ul>
+        <!--<ul class="navbar-nav mr-auto">-->
+            <!--<li class="nav-item active">-->
+                <!--<a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>-->
+            <!--</li>-->
+            <!--<li class="nav-item">-->
+                <!--<a class="nav-link" href="#">Upload file</a>-->
+            <!--</li>-->
+        <!--</ul>-->
 
 
         <ul class="navbar-nav ml-auto">
-            <li class="nav-item">
-                <form class="form-inline">
-                    <div class="input-group mr-sm-2">
-                        <input class="form-control" type="text" placeholder="Search" aria-label="Search">
-                        <div class="input-group-append">
-                            <button class="btn btn-secondary" type="submit"><i class="fas fa-search" ></i></button>
-                        </div>
-                    </div>
-                </form>
-            </li>
+            <!--<li class="nav-item">-->
+                <!--<form class="form-inline">-->
+                    <!--<div class="input-group mr-sm-2">-->
+                        <!--<input class="form-control" type="text" placeholder="Search" aria-label="Search">-->
+                        <!--<div class="input-group-append">-->
+                            <!--<button class="btn btn-secondary" type="submit"><i class="fas fa-search" ></i></button>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                <!--</form>-->
+            <!--</li>-->
             <li class="nav-item">
                 <a sec:authorize="!isAuthenticated()" href="/register/" class="btn btn-outline-light my-2 my-sm-0 mr-2"
                    role="button">Sign up</a>
