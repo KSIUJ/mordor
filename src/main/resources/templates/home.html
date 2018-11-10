@@ -5,9 +5,24 @@
     <title>Mordor</title>
 </head>
 <body>
-    <div layout:fragment="content">
-       <h1>Mordor.ksi</h1>
-
+<div layout:fragment="content">
+    <div class="text-center embed-responsive embed-responsive-16by9 mb-3">
+        <object data="/static/flag_of_mordor.svg" type="image/svg+xml">
+        </object>
     </div>
+
+    <h1 class="text-center" th:text="#{mordor.welcome_msg}">Mordor</h1>
+
+    <blockquote class="blockquote">
+        <p class="mb-0">...One does not simply walk into Mordor...</p>
+    </blockquote>
+
+    <p th:text="#{mordor.login_required}">Login required</p>
+
+    <div class="text-center">
+        <a href="/login/" class="btn btn-success" role="button">Login</a>
+    </div>
+
+</div>
 </body>
 </html>
