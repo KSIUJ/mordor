@@ -62,7 +62,7 @@ class FilesystemController(
             if (entity.mimeType.startsWith("text/") || entity.isCode) {
                 val text = FileUtils.readFileToString(entity.file, "utf-8")
                 // TODO: detect encoding
-                return ModelAndView("preview", mapOf(
+                return ModelAndView("preview_code", mapOf(
                     "text" to text,
                     "path" to createBreadcrumb(entity),
                     "download" to "/download/${entity.relativePath}"
