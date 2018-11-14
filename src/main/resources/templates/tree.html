@@ -19,7 +19,7 @@
 
     <ul th:unless="${children.empty}" class="list-group list-group-flush">
         <li th:each="entry : ${children}" class="list-group-item">
-            <i th:attr="class='mx-2 fas fa-lg fa-' + ${entry.iconName}"></i>
+            <i th:attr="class='mx-2 fas fa-lg ' + ${entry.iconName}"></i>
             <a th:attr="href='/file/'+${entry.path}" th:text="${entry.name}"></a>
         </li>
     </ul>
