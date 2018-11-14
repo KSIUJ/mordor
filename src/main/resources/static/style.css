@@ -12,14 +12,19 @@ td.hljs-ln-numbers {
     -ms-user-select: none;
     user-select: none;
 
-    text-align: center;
+    text-align: right;
     color: #ccc;
     border-right: 1px solid #CCC;
     vertical-align: top;
-    padding-right: 5px;
+    padding-right: 5px !important;
 }
 
 /* for block of code */
 td.hljs-ln-code {
     padding-left: 10px !important;
+}
+
+/* code view */
+code.hljs {
+    padding: 0 !important;
 }
