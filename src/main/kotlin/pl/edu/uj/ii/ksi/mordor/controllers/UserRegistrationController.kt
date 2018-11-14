@@ -27,11 +27,11 @@ class UserRegistrationController(
     private val userRepository: UserRepository,
     private val emailVerificationTokenRepository: EmailVerificationTokenRepository,
     private val eventPublisher: ApplicationEventPublisher,
-    @Value("\${mordor.allow_user_registration:true}") private val registrationEnabled: String
+    @Value("\${mordor.allow_user_registration:true}") private val registrationEnabled: Boolean
 ) {
     @GetMapping("/register/")
     fun registerForm(model: Model): ModelAndView {
-        return if (registrationEnabled.toLowerCase() == "true") {
+        return if (registrationEnabled) {
             ModelAndView("registration/create_account", "form", UserRegistrationForm())
         } else {
             ModelAndView("registration/registration_disabled")
@@ -43,7 +43,7 @@ class UserRegistrationController(
         @Valid @ModelAttribute("form") user: UserRegistrationForm,
         result: BindingResult
     ): String {
-        if (registrationEnabled.toLowerCase() != "true") {
+        if (!registrationEnabled) {
             return "registration/registration_disabled"
         }
 
