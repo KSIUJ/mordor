@@ -16,12 +16,13 @@ td.hljs-ln-numbers {
     color: #ccc;
     border-right: 1px solid #CCC;
     vertical-align: top;
-    padding-right: 5px !important;
+    padding-right: 0.2em !important;
+    padding-left: 0.2em !important;
 }
 
 /* for block of code */
 td.hljs-ln-code {
-    padding-left: 10px !important;
+    padding-left: 0.2em !important;
 }
 
 /* code view */
