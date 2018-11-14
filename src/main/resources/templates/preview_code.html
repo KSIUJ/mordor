@@ -6,7 +6,11 @@
     <link rel="stylesheet"
           href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.13.1/build/styles/github.min.css">
     <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.13.1/build/highlight.min.js"></script>
-    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="//cdn.jsdelivr.net/npm/highlightjs-line-numbers.js@2.5.0/dist/highlightjs-line-numbers.min.js"></script>
+    <script>
+        hljs.initHighlightingOnLoad();
+        hljs.initLineNumbersOnLoad();
+    </script>
 </head>
 <body>
 <div layout:fragment="content">
@@ -17,13 +21,17 @@
         </li>
     </ol>
 
-    <a href="#" th:href="@{${download}}" class="btn btn-secondary"><i class="fas fa-download"></i> Download</a>
 
-    <pre class="mt-2"><code th:text="${text}">
+    <div class="card mt-2">
+        <div class="card-header">
+            <a href="#" th:href="@{${download}}" class="btn btn-secondary"><i class="fas fa-download"></i> Download</a>
+        </div>
+        <pre class="card-body p-0 m-0"><code th:text="${text}">
         import test
 
         print("This is a sample code 1234")
-    </code></pre>
+        </code></pre>
+    </div>
 </div>
 </body>
 </html>
