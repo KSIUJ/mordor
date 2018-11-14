@@ -14,34 +14,34 @@
 </head>
 <body>
 <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-    <a class="navbar-brand" href="#">MORDOR</a>
+    <a class="navbar-brand" href="/">Mordor</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar"
             aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
 
     <div class="collapse navbar-collapse my-2 my-lg-0" id="navbar">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item active">
-                <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Upload file</a>
-            </li>
-        </ul>
+        <!--<ul class="navbar-nav mr-auto">-->
+        <!--<li class="nav-item active">-->
+        <!--<a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>-->
+        <!--</li>-->
+        <!--<li class="nav-item">-->
+        <!--<a class="nav-link" href="#">Upload file</a>-->
+        <!--</li>-->
+        <!--</ul>-->
 
 
         <ul class="navbar-nav ml-auto">
-            <li class="nav-item">
-                <form class="form-inline">
-                    <div class="input-group mr-sm-2">
-                        <input class="form-control" type="text" placeholder="Search" aria-label="Search">
-                        <div class="input-group-append">
-                            <button class="btn btn-secondary" type="submit"><i class="fas fa-search"></i></button>
-                        </div>
-                    </div>
-                </form>
-            </li>
+            <!--<li class="nav-item">-->
+            <!--<form class="form-inline">-->
+            <!--<div class="input-group mr-sm-2">-->
+            <!--<input class="form-control" type="text" placeholder="Search" aria-label="Search">-->
+            <!--<div class="input-group-append">-->
+            <!--<button class="btn btn-secondary" type="submit"><i class="fas fa-search"></i></button>-->
+            <!--</div>-->
+            <!--</div>-->
+            <!--</form>-->
+            <!--</li>-->
             <li class="nav-item">
                 <a sec:authorize="!isAuthenticated()" href="/register/" class="btn btn-outline-light my-2 my-sm-0 mr-2"
                    role="button">Sign up</a>
@@ -59,9 +59,17 @@
         </ul>
     </div>
 </nav>
-<div role="main" layout:fragment="content" id="content" class="container">
-    <!--CONTENT-->
+<div class="container">
+    <div role="main" layout:fragment="content" id="content">
+        <!--CONTENT-->
+    </div>
+
+    <footer class="footer border-top pt-3 mt-5 mb-3 text-center">
+        <a href="http://ksi.ii.uj.edu.pl" class="text-muted">Koło Studentów Informatyki UJ</a>
+    </footer>
 </div>
+
+
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
         integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
         crossorigin="anonymous"></script>

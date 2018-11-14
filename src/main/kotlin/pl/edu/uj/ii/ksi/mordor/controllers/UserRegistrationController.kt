@@ -1,6 +1,7 @@
 package pl.edu.uj.ii.ksi.mordor.controllers
 
 import javax.validation.Valid
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.http.HttpStatus
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
@@ -25,11 +26,16 @@ import pl.edu.uj.ii.ksi.mordor.persistence.repositories.UserRepository
 class UserRegistrationController(
     private val userRepository: UserRepository,
     private val emailVerificationTokenRepository: EmailVerificationTokenRepository,
-    private val eventPublisher: ApplicationEventPublisher
+    private val eventPublisher: ApplicationEventPublisher,
+    @Value("\${mordor.allow_user_registration:true}") private val registrationEnabled: Boolean
 ) {
     @GetMapping("/register/")
     fun registerForm(model: Model): ModelAndView {
-        return ModelAndView("registration/create_account", "form", UserRegistrationForm())
+        return if (registrationEnabled) {
+            ModelAndView("registration/create_account", "form", UserRegistrationForm())
+        } else {
+            ModelAndView("registration/registration_disabled")
+        }
     }
 
     @PostMapping("/register/")
@@ -37,6 +43,10 @@ class UserRegistrationController(
         @Valid @ModelAttribute("form") user: UserRegistrationForm,
         result: BindingResult
     ): String {
+        if (!registrationEnabled) {
+            return "registration/registration_disabled"
+        }
+
         if (!user.userName.isEmpty() && userRepository.findByUserName(user.userName) != null) {
             result.rejectValue("userName", "username.exists", "username unavailable")
         }
