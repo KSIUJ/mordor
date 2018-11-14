@@ -27,7 +27,7 @@ apply plugin: 'io.spring.dependency-management'
 apply plugin: 'io.gitlab.arturbosch.detekt'
 
 group = 'pl.edu.uj.ii.ksi'
-version = '0.0.1-SNAPSHOT'
+version = '0.0.1'
 sourceCompatibility = 1.8
 
 compileKotlin {
@@ -86,4 +86,8 @@ detekt {
     input = files("src/main/kotlin", "src/test/kotlin")
     filters = ""
     config = files("detekt.yml")
+}
+
+bootJar {
+    launchScript()
 }

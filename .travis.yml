@@ -1,11 +1,23 @@
+dist: xenial
 language: java
 jdk:
-  - openjdk10
+- openjdk10
 after_success:
-  - wget https://raw.githubusercontent.com/apardyl/travis-ci-discord-webhook/master/send.sh
-  - chmod +x send.sh
-  - ./send.sh success $WEBHOOK_URL
+- wget https://raw.githubusercontent.com/apardyl/travis-ci-discord-webhook/master/send.sh
+- chmod +x send.sh
+- "./send.sh success $WEBHOOK_URL"
 after_failure:
-  - wget https://raw.githubusercontent.com/apardyl/travis-ci-discord-webhook/master/send.sh
-  - chmod +x send.sh
-  - ./send.sh failure $WEBHOOK_URL
+- wget https://raw.githubusercontent.com/apardyl/travis-ci-discord-webhook/master/send.sh
+- chmod +x send.sh
+- "./send.sh failure $WEBHOOK_URL"
+deploy:
+  provider: releases
+  skip_cleanup: true
+  api_key:
+    secure: i9RQfaBBlgnJe1+Xsu5IvPxhPCIUimHXuiLUCz02ZSbb1VeOvnvL1vttMNC7SmgCFwb0UKBLdX9mQShy8FPftObG6s+Pyd4C9k+efDB+oVA89aAWvqDHNu8Tjf6aQS9smtQIGSJaz98ES5THH3XIALvmSoYEfccjmdRkBnCArlLVGHRQEHKNzVeTQFcwSxGX3L7Ofh71Fh1LLSnhBHizimT7zKIxX35HBHvcXXcT+bZnQBcMzVOXV2SRL61Dtc7DkckAsK4NtPdY7QwzWiObp0XKd2eIdzvduJHkFNYdwu0qLkmW8ZBWhenxgGfRXRXiyS9QO7iGuRKpuO8Vgh7w93wNvuLSGe/R1Wr78rnsNxcbndQGM2M6D0r9x4bVx8bHI2ULYnqlvgNfIVPy3hanR5vSm34X8l8iPosZx+/bseA26RqtXZfde8rTO2BD8Mj33ILKtXVQokFnTPsh+BJs1wqTg1oZ2a9j3gn6QzuLRDZcubS046jW69Fn61fZxYbL6q0lBwvxgucNC+aV6JFBTFBR691pJCcMMFxQ/mXf4FJp8sYIWB089OlOnEeO6B6U8i65Yfav9W4o6F++1BA2HEXiuiZ2k/J6ir6dqJD9DcyB3kdx2UVIQ2IA+ITpkG579krDGsShHYnGy7r9slE+N6fG1kwuWBc5dWad237Gc9w=
+  file_glob: true
+  file: build/libs/mordor*
+  on:
+    repo: KSIUJ/mordor
+    tags: true
+    branch: master
