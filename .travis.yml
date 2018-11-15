@@ -15,7 +15,9 @@ deploy:
   skip_cleanup: true
   api_key: "$GITHUB_TOKEN"
   file_glob: true
-  file: build/libs/mordor*
+  file:
+  - build/libs/mordor*
+  - src/main/resources/application.properties
   on:
     repo: KSIUJ/mordor
     tags: true

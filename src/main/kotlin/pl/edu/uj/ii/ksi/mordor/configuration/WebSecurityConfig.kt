@@ -18,7 +18,8 @@ class WebSecurityConfig(
     private val userService: LocalUserService,
     @Value("\${mordor.secret}") private val secret: String,
     @Value("\${mordor.ldap.url:}") private val ldapUrl: String,
-    @Value("\${mordor.ldap.userdn:}") private val userDnPatterns: String,
+    @Value("\${mordor.ldap.user.base:}") private val userBase: String,
+    @Value("\${mordor.ldap.user.filter:}") private val userFilter: String,
     private val ldapRolePopulator: LdapRolePopulator
 ) : WebSecurityConfigurerAdapter() {
 
@@ -40,7 +41,8 @@ class WebSecurityConfig(
 
         if (ldapUrl.isNotEmpty()) {
             auth.ldapAuthentication()
-                .userDnPatterns(userDnPatterns)
+                .userSearchBase(userBase)
+                .userSearchFilter(userFilter)
                 .contextSource().url(ldapUrl)
                 .and().ldapAuthoritiesPopulator(ldapRolePopulator)
         }
