@@ -27,7 +27,7 @@ apply plugin: 'io.spring.dependency-management'
 apply plugin: 'io.gitlab.arturbosch.detekt'
 
 group = 'pl.edu.uj.ii.ksi'
-version = '0.0.1'
+version = '0.0.3'
 sourceCompatibility = 1.8
 
 compileKotlin {

@@ -7,10 +7,12 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.builders.WebSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
-import org.springframework.security.core.userdetails.User
+import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.kerberos.authentication.KerberosAuthenticationProvider
 import org.springframework.security.kerberos.authentication.sun.SunJaasKerberosClient
-import pl.edu.uj.ii.ksi.mordor.persistence.entities.Role
+import org.springframework.security.ldap.DefaultSpringSecurityContextSource
+import org.springframework.security.ldap.search.FilterBasedLdapUserSearch
+import org.springframework.security.ldap.userdetails.LdapUserDetailsService
 import pl.edu.uj.ii.ksi.mordor.persistence.repositories.RememberMePersistentTokenRepository
 import pl.edu.uj.ii.ksi.mordor.services.LdapRolePopulator
 import pl.edu.uj.ii.ksi.mordor.services.LocalUserService
@@ -41,15 +43,21 @@ class WebSecurityConfig(
             .antMatchers("/static/**")
     }
 
+    fun ldapKerberosDetailsService(): UserDetailsService {
+        val ldapContextSource = DefaultSpringSecurityContextSource(ldapUrl)
+        ldapContextSource.afterPropertiesSet()
+        val userSearch = FilterBasedLdapUserSearch(userBase, userFilter, ldapContextSource)
+        val ldapUserService = LdapUserDetailsService(userSearch, ldapRolePopulator)
+        return UserDetailsService {
+            ldapUserService.loadUserByUsername(it.substringBefore('@'))
+        }
+    }
+
     fun kerberosAuthenticationProvider(): KerberosAuthenticationProvider {
         val provider = KerberosAuthenticationProvider()
         val client = SunJaasKerberosClient()
-        client.setDebug(true)
         provider.setKerberosClient(client)
-        provider.setUserDetailsService { username ->
-            // TODO: map ldap attributes
-            User(username, "KERBEROS", true, true, true, true, Role.ROLE_USER.permissions)
-        }
+        provider.setUserDetailsService(ldapKerberosDetailsService())
         return provider
     }
 
