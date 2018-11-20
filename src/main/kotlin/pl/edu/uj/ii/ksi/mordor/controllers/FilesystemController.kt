@@ -1,5 +1,6 @@
 package pl.edu.uj.ii.ksi.mordor.controllers
 
+import java.net.URI
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 import org.apache.commons.io.FileUtils
@@ -7,6 +8,7 @@ import org.apache.commons.io.IOUtils
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.servlet.ModelAndView
+import org.springframework.web.servlet.view.RedirectView
 import pl.edu.uj.ii.ksi.mordor.exceptions.BadRequestException
 import pl.edu.uj.ii.ksi.mordor.exceptions.NotFoundException
 import pl.edu.uj.ii.ksi.mordor.services.IconNameProvider
@@ -47,7 +49,8 @@ class FilesystemController(
 
         if (entity is RepositoryDirectory) {
             if (!request.servletPath.endsWith("/")) {
-                return ModelAndView("redirect:" + request.servletPath + "/")
+                val redirectUrl = URI(request.servletPath + "/").toASCIIString()
+                return ModelAndView(RedirectView(redirectUrl))
             }
 
             val sortedChildren = entity.getChildren()
@@ -69,7 +72,8 @@ class FilesystemController(
                 ))
             }
         }
-        return ModelAndView("redirect:/download/${entity.relativePath}")
+        val redirectUrl = URI("/download/${entity.relativePath}").toASCIIString()
+        return ModelAndView(RedirectView(redirectUrl))
     }
 
     @GetMapping("/download/**")
