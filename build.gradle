@@ -15,6 +15,7 @@ buildscript {
         classpath("org.jetbrains.kotlin:kotlin-allopen:${kotlinVersion}")
         classpath("org.jetbrains.kotlin:kotlin-noarg:${kotlinVersion}")
         classpath("gradle.plugin.io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.0.0.RC9.2")
+        classpath("gradle.plugin.com.palantir.gradle.gitversion:gradle-git-version:0.12.0-rc2")
     }
 }
 
@@ -25,9 +26,10 @@ apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'io.gitlab.arturbosch.detekt'
+apply plugin: "com.palantir.git-version"
 
 group = 'pl.edu.uj.ii.ksi'
-version = '0.0.5'
+version = gitVersion()
 sourceCompatibility = 1.8
 
 compileKotlin {
