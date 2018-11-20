@@ -26,13 +26,12 @@ class RememberMePersistentTokenRepository(
     }
 
     override fun removeUserTokens(username: String) {
-        rememberMeTokenRepository.findByUser_userName(username)
-                .forEach { token -> rememberMeTokenRepository.delete(token) }
+        rememberMeTokenRepository.findByUserName(username)
+            .forEach { token -> rememberMeTokenRepository.delete(token) }
     }
 
     override fun createNewToken(token: PersistentRememberMeToken) {
-        val user = userRepository.findByUserName(token.username)!!
-        val tokenEntity = RememberMeToken(token.series, token.tokenValue, token.date, user)
+        val tokenEntity = RememberMeToken(token.series, token.tokenValue, token.date, token.username)
         rememberMeTokenRepository.save(tokenEntity)
     }
 }

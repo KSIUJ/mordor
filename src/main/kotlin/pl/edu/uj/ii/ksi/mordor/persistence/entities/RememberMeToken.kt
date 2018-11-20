@@ -4,7 +4,6 @@ import java.util.Date
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.Id
-import javax.persistence.OneToOne
 import javax.persistence.Temporal
 import javax.persistence.TemporalType
 import org.springframework.security.web.authentication.rememberme.PersistentRememberMeToken
@@ -21,10 +20,9 @@ data class RememberMeToken(
     @Column(nullable = false)
     var date: Date?,
 
-    @OneToOne(optional = false)
-    var user: User?
+    var userName: String?
 ) {
     fun getToken(): PersistentRememberMeToken {
-        return PersistentRememberMeToken(user?.userName, series, value, date)
+        return PersistentRememberMeToken(userName, series, value, date)
     }
 }

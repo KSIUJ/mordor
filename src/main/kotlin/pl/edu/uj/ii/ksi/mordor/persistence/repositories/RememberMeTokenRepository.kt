@@ -4,5 +4,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 import pl.edu.uj.ii.ksi.mordor.persistence.entities.RememberMeToken
 
 interface RememberMeTokenRepository : JpaRepository<RememberMeToken, String> {
-    fun findByUser_userName(userName: String): List<RememberMeToken>
+    fun findByUserName(userName: String): List<RememberMeToken>
 }
