@@ -29,3 +29,14 @@ td.hljs-ln-code {
 code.hljs {
     padding: 0 !important;
 }
+
+.img-preview-wrapper {
+    background-color: #ddd;
+    padding: 2em;
+}
+
+.img-preview {
+    border: 1px solid #6a737d;
+    padding: 1px;
+    background-color: #fff;
+}

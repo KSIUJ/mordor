@@ -73,6 +73,11 @@ class FilesystemController(
                     "path" to createBreadcrumb(entity),
                     "download" to "/download/${entity.relativePath}"
                 ))
+            } else if (entity.isDisplayableImage) {
+                return ModelAndView("preview_image", mapOf(
+                    "path" to createBreadcrumb(entity),
+                    "download" to "/download/${entity.relativePath}"
+                ))
             }
         }
         return ModelAndView(RedirectView(urlEncodePath("/download/${entity.relativePath}")))

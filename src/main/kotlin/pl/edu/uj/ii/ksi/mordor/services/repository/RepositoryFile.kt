@@ -19,12 +19,16 @@ class RepositoryFile(
     companion object {
         private val logger = LoggerFactory.getLogger(RepositoryFile::class.java)
 
+        private val displayableImageTypes = setOf(
+                // Based on: https://en.wikipedia.org/wiki/Comparison_of_web_browsers#Image_format_support
+                "image/png", "image/jpeg", "image/gif", "image/svg+xml"
+        )
+
         private val safeMimetype = setOf(
             "application/pdf",
-            "image/png", "image/jpeg", "image/jpeg",
             "application/octet-stream"
             // TODO: expand
-        )
+        ) + displayableImageTypes
 
         private val codeFileExts = setOf(
             "sh", "bash", "bat", "conf", "config", "cfg", "coffee", "h", "hxx", "cpp", "c", "cxx", "cs", "css", "diff",
@@ -58,6 +62,11 @@ class RepositoryFile(
         get() {
             val name = name.toLowerCase()
             return codeFileNames.contains(name) || codeFileExts.contains(FilenameUtils.getExtension(name))
+        }
+
+    val isDisplayableImage: Boolean
+        get() {
+            return displayableImageTypes.contains(mimeType)
         }
 
     val browserSafeMimeType: String
