@@ -91,6 +91,7 @@ class FilesystemController(
 
         response.addHeader("X-Content-Type-Options", "nosniff")
         response.contentType = entity.browserSafeMimeType
+        response.setContentLengthLong(entity.file.length())
 
         val stream = entity.file.inputStream()
         stream.use {
