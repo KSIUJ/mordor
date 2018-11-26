@@ -1,5 +1,7 @@
 package pl.edu.uj.ii.ksi.mordor.controllers
 
+import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.HttpServletResponse
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.IOUtils
 import org.springframework.stereotype.Controller
@@ -14,8 +16,6 @@ import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryDirectory
 import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryEntity
 import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryFile
 import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryService
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
 
 @Controller
 class FilesystemController(
