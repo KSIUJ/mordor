@@ -73,6 +73,11 @@ class FilesystemController(
                     "path" to createBreadcrumb(entity),
                     "download" to "/download/${entity.relativePath}"
                 ))
+            } else if (entity.isDisplayableImage) {
+                return ModelAndView("preview_image", mapOf(
+                    "path" to createBreadcrumb(entity),
+                    "download" to "/download/${entity.relativePath}"
+                ))
             }
         }
         return ModelAndView(RedirectView(urlEncodePath("/download/${entity.relativePath}")))
@@ -86,6 +91,7 @@ class FilesystemController(
 
         response.addHeader("X-Content-Type-Options", "nosniff")
         response.contentType = entity.browserSafeMimeType
+        response.setContentLengthLong(entity.file.length())
 
         val stream = entity.file.inputStream()
         stream.use {
