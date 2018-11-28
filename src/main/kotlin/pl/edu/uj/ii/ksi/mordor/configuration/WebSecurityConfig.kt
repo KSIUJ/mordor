@@ -7,7 +7,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.builders.WebSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
+import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
+import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.kerberos.authentication.KerberosAuthenticationProvider
 import org.springframework.security.kerberos.authentication.sun.SunJaasKerberosClient
 import org.springframework.security.ldap.DefaultSpringSecurityContextSource
@@ -29,13 +31,27 @@ class WebSecurityConfig(
     @Value("\${mordor.ldap.use_krb_auth:false}") private val krbAuth: Boolean,
     private val ldapRolePopulator: LdapRolePopulator
 ) : WebSecurityConfigurerAdapter() {
+    private inner class DelegatingUserDetailService : UserDetailsService {
+        override fun loadUserByUsername(username: String): UserDetails {
+            return try {
+                userService.loadUserByUsername(username)
+            } catch (ex: UsernameNotFoundException) {
+                if (ldapUrl.isNotEmpty()) {
+                    ldapDetailsService().loadUserByUsername(username)
+                } else {
+                    throw ex
+                }
+            }
+        }
+    }
 
     override fun configure(http: HttpSecurity) {
         http.authorizeRequests().antMatchers("/", "/register/**").permitAll()
             .anyRequest().authenticated()
             .and().formLogin().loginPage("/login/").permitAll()
             .and().logout().logoutUrl("/logout/").permitAll()
-            .and().rememberMe().key(secret).tokenRepository(tokenRepository).userDetailsService(userService)
+            .and().rememberMe().key(secret).tokenRepository(tokenRepository)
+            .userDetailsService(DelegatingUserDetailService())
     }
 
     override fun configure(web: WebSecurity) {
@@ -43,7 +59,7 @@ class WebSecurityConfig(
             .antMatchers("/static/**")
     }
 
-    fun ldapKerberosDetailsService(): UserDetailsService {
+    fun ldapDetailsService(): UserDetailsService {
         val ldapContextSource = DefaultSpringSecurityContextSource(ldapUrl)
         ldapContextSource.afterPropertiesSet()
         val userSearch = FilterBasedLdapUserSearch(userBase, userFilter, ldapContextSource)
@@ -57,7 +73,7 @@ class WebSecurityConfig(
         val provider = KerberosAuthenticationProvider()
         val client = SunJaasKerberosClient()
         provider.setKerberosClient(client)
-        provider.setUserDetailsService(ldapKerberosDetailsService())
+        provider.setUserDetailsService(ldapDetailsService())
         return provider
     }
 
