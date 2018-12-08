@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletResponse
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.IOUtils
 import org.springframework.stereotype.Controller
+import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
@@ -49,7 +50,8 @@ class FilesystemController(
 
     @GetMapping("/file/**")
     fun fileIndex(request: HttpServletRequest): ModelAndView {
-        val entity = repoService.getEntity(request.servletPath.removePrefix("/file/")) ?: throw NotFoundException()
+        val path = request.servletPath.removePrefix("/file/")
+        val entity = repoService.getEntity(path) ?: throw NotFoundException(path)
 
         if (entity is RepositoryDirectory) {
             if (!request.servletPath.endsWith("/")) {
@@ -85,8 +87,9 @@ class FilesystemController(
 
     @GetMapping("/download/**")
     fun download(request: HttpServletRequest, response: HttpServletResponse) {
-        val entity = (repoService.getEntity(request.servletPath.removePrefix("/download/"))
-            ?: throw NotFoundException()) as? RepositoryFile
+        val path = request.servletPath.removePrefix("/download/")
+        val entity = (repoService.getEntity(path)
+            ?: throw NotFoundException(path)) as? RepositoryFile
             ?: throw BadRequestException("not a file")
 
         response.addHeader("X-Content-Type-Options", "nosniff")
@@ -98,5 +101,10 @@ class FilesystemController(
             IOUtils.copy(stream, response.outputStream)
         }
         response.flushBuffer()
+    }
+
+    @ExceptionHandler(value = [NotFoundException::class])
+    fun notFoundException(ex: NotFoundException): ModelAndView {
+        return ModelAndView("404", "path", ex.path)
     }
 }
