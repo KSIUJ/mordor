@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletResponse
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.IOUtils
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.GetMapping
@@ -13,6 +14,7 @@ import org.springframework.web.servlet.view.RedirectView
 import org.springframework.web.util.UriUtils
 import pl.edu.uj.ii.ksi.mordor.exceptions.BadRequestException
 import pl.edu.uj.ii.ksi.mordor.exceptions.NotFoundException
+import pl.edu.uj.ii.ksi.mordor.persistence.entities.Permission
 import pl.edu.uj.ii.ksi.mordor.services.IconNameProvider
 import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryDirectory
 import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryEntity
@@ -24,7 +26,8 @@ class FilesystemController(
     private val repoService: RepositoryService,
     private val iconNameProvider: IconNameProvider,
     @Value("\${mordor.preview.max_text_bytes:1048576}") private val maxTextBytes: Int,
-    @Value("\${mordor.preview.max_image_bytes:10485760}") private val maxImageBytes: Int
+    @Value("\${mordor.preview.max_image_bytes:10485760}") private val maxImageBytes: Int,
+    @Value("\${mordor.list_hidden_files:false}") private val listHiddenFiles: Boolean
 ) {
     data class FileEntry(
         val path: String,
@@ -89,8 +92,9 @@ class FilesystemController(
             if (!request.servletPath.endsWith("/")) {
                 return ModelAndView(RedirectView(urlEncodePath(request.servletPath + "/")))
             }
-
-            val sortedChildren = entity.getChildren()
+            val canListHidden = listHiddenFiles || SecurityContextHolder.getContext().authentication.authorities
+                .contains(Permission.LIST_HIDDENFILES)
+            val sortedChildren = entity.getChildren(canListHidden)
                 .sortedWith(compareBy({ it !is RepositoryDirectory }, { it.name }))
                 .map { entry ->
                     FileEntry(entry.relativePath +
