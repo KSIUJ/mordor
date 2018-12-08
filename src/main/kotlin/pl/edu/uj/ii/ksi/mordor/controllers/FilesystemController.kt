@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.IOUtils
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.GetMapping
@@ -21,7 +22,9 @@ import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryService
 @Controller
 class FilesystemController(
     private val repoService: RepositoryService,
-    private val iconNameProvider: IconNameProvider
+    private val iconNameProvider: IconNameProvider,
+    @Value("\${mordor.preview.max_text_bytes:1048576}") private val maxTextBytes: Int,
+    @Value("\${mordor.preview.max_image_bytes:10485760}") private val maxImageBytes: Int
 ) {
     data class FileEntry(
         val path: String,
@@ -48,6 +51,35 @@ class FilesystemController(
         return UriUtils.encodePath(path, "UTF-8")
     }
 
+    private fun previewText(entity: RepositoryFile): ModelAndView {
+        if (entity.file.length() > maxTextBytes) {
+            return ModelAndView("preview_too_large", mapOf(
+                "path" to createBreadcrumb(entity),
+                "download" to "/download/${entity.relativePath}"
+            ))
+        }
+        val text = FileUtils.readFileToString(entity.file, "utf-8")
+        // TODO: detect encoding
+        return ModelAndView("preview_code", mapOf(
+            "text" to text,
+            "path" to createBreadcrumb(entity),
+            "download" to "/download/${entity.relativePath}"
+        ))
+    }
+
+    private fun previewImage(entity: RepositoryFile): ModelAndView {
+        if (entity.file.length() > maxImageBytes) {
+            return ModelAndView("preview_too_large", mapOf(
+                "path" to createBreadcrumb(entity),
+                "download" to "/download/${entity.relativePath}"
+            ))
+        }
+        return ModelAndView("preview_image", mapOf(
+            "path" to createBreadcrumb(entity),
+            "download" to "/download/${entity.relativePath}"
+        ))
+    }
+
     @GetMapping("/file/**")
     fun fileIndex(request: HttpServletRequest): ModelAndView {
         val path = request.servletPath.removePrefix("/file/")
@@ -67,19 +99,9 @@ class FilesystemController(
 
             return ModelAndView("tree", mapOf("children" to sortedChildren, "path" to createBreadcrumb(entity)))
         } else if (entity is RepositoryFile) {
-            if (entity.mimeType.startsWith("text/") || entity.isCode) {
-                val text = FileUtils.readFileToString(entity.file, "utf-8")
-                // TODO: detect encoding
-                return ModelAndView("preview_code", mapOf(
-                    "text" to text,
-                    "path" to createBreadcrumb(entity),
-                    "download" to "/download/${entity.relativePath}"
-                ))
-            } else if (entity.isDisplayableImage) {
-                return ModelAndView("preview_image", mapOf(
-                    "path" to createBreadcrumb(entity),
-                    "download" to "/download/${entity.relativePath}"
-                ))
+            when {
+                entity.mimeType.startsWith("text/") || entity.isCode -> return previewText(entity)
+                entity.isDisplayableImage -> return previewImage(entity)
             }
         }
         return ModelAndView(RedirectView(urlEncodePath("/download/${entity.relativePath}")))
