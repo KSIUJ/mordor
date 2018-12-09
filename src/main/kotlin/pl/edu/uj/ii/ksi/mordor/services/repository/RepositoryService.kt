@@ -33,6 +33,21 @@ class RepositoryService(@Value("\${mordor.root_path}") private val rootPathStr: 
         return fullPath
     }
 
+    private fun getDirectoryChildren(fullPath: Path, includeHiddenFiles: Boolean): List<RepositoryEntity> {
+        val stream = Files.newDirectoryStream(fullPath)
+        val children = mutableListOf<RepositoryEntity>()
+
+        stream.use {
+            stream.forEach { f ->
+                if (!f.toFile().isHidden || includeHiddenFiles) {
+                    getRepositoryEntity(f)?.let { p -> children.add(p) }
+                }
+            }
+        }
+
+        return children
+    }
+
     private fun getRepositoryEntity(fullPath: Path): RepositoryEntity? {
         val file: File = fullPath.toFile()
 
@@ -41,17 +56,9 @@ class RepositoryService(@Value("\${mordor.root_path}") private val rootPathStr: 
             !file.canRead() -> return null
             file.isDirectory -> return object : RepositoryDirectory(file.name,
                 rootPath.relativize(fullPath).toString()) {
-                override fun getChildren(): List<RepositoryEntity> {
-                    val stream = Files.newDirectoryStream(fullPath)
-                    val children = mutableListOf<RepositoryEntity>()
 
-                    stream.use {
-                        stream.forEach { f ->
-                            getRepositoryEntity(f)?.let { p -> children.add(p) }
-                        }
-                    }
-
-                    return children
+                override fun getChildren(includeHiddenFiles: Boolean): List<RepositoryEntity> {
+                    return getDirectoryChildren(fullPath, includeHiddenFiles)
                 }
             }
             // TODO: add metadata.

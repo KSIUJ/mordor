@@ -3,6 +3,7 @@ package pl.edu.uj.ii.ksi.mordor.configuration
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.builders.WebSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
@@ -21,6 +22,7 @@ import pl.edu.uj.ii.ksi.mordor.services.LocalUserService
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(securedEnabled = true)
 class WebSecurityConfig(
     private val tokenRepository: RememberMePersistentTokenRepository,
     private val userService: LocalUserService,
@@ -52,6 +54,7 @@ class WebSecurityConfig(
             .and().logout().logoutUrl("/logout/").permitAll()
             .and().rememberMe().key(secret).tokenRepository(tokenRepository)
             .userDetailsService(DelegatingUserDetailService())
+            .and().exceptionHandling().accessDeniedPage("/403/")
     }
 
     override fun configure(web: WebSecurity) {

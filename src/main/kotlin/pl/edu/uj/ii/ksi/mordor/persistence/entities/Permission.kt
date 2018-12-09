@@ -6,6 +6,7 @@ enum class Permission : GrantedAuthority {
     READ,
     UPLOAD,
     WRITE,
+    LIST_HIDDENFILES,
     MANAGE_USERS;
 
     override fun getAuthority(): String {

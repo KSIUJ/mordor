@@ -4,13 +4,17 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.IOUtils
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Controller
+import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 import org.springframework.web.util.UriUtils
 import pl.edu.uj.ii.ksi.mordor.exceptions.BadRequestException
 import pl.edu.uj.ii.ksi.mordor.exceptions.NotFoundException
+import pl.edu.uj.ii.ksi.mordor.persistence.entities.Permission
 import pl.edu.uj.ii.ksi.mordor.services.IconNameProvider
 import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryDirectory
 import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryEntity
@@ -20,7 +24,10 @@ import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryService
 @Controller
 class FilesystemController(
     private val repoService: RepositoryService,
-    private val iconNameProvider: IconNameProvider
+    private val iconNameProvider: IconNameProvider,
+    @Value("\${mordor.preview.max_text_bytes:1048576}") private val maxTextBytes: Int,
+    @Value("\${mordor.preview.max_image_bytes:10485760}") private val maxImageBytes: Int,
+    @Value("\${mordor.list_hidden_files:false}") private val listHiddenFiles: Boolean
 ) {
     data class FileEntry(
         val path: String,
@@ -47,16 +54,47 @@ class FilesystemController(
         return UriUtils.encodePath(path, "UTF-8")
     }
 
+    private fun previewText(entity: RepositoryFile): ModelAndView {
+        if (entity.file.length() > maxTextBytes) {
+            return ModelAndView("preview_too_large", mapOf(
+                "path" to createBreadcrumb(entity),
+                "download" to "/download/${entity.relativePath}"
+            ))
+        }
+        val text = FileUtils.readFileToString(entity.file, "utf-8")
+        // TODO: detect encoding
+        return ModelAndView("preview_code", mapOf(
+            "text" to text,
+            "path" to createBreadcrumb(entity),
+            "download" to "/download/${entity.relativePath}"
+        ))
+    }
+
+    private fun previewImage(entity: RepositoryFile): ModelAndView {
+        if (entity.file.length() > maxImageBytes) {
+            return ModelAndView("preview_too_large", mapOf(
+                "path" to createBreadcrumb(entity),
+                "download" to "/download/${entity.relativePath}"
+            ))
+        }
+        return ModelAndView("preview_image", mapOf(
+            "path" to createBreadcrumb(entity),
+            "download" to "/download/${entity.relativePath}"
+        ))
+    }
+
     @GetMapping("/file/**")
     fun fileIndex(request: HttpServletRequest): ModelAndView {
-        val entity = repoService.getEntity(request.servletPath.removePrefix("/file/")) ?: throw NotFoundException()
+        val path = request.servletPath.removePrefix("/file/")
+        val entity = repoService.getEntity(path) ?: throw NotFoundException(path)
 
         if (entity is RepositoryDirectory) {
             if (!request.servletPath.endsWith("/")) {
                 return ModelAndView(RedirectView(urlEncodePath(request.servletPath + "/")))
             }
-
-            val sortedChildren = entity.getChildren()
+            val canListHidden = listHiddenFiles || SecurityContextHolder.getContext().authentication.authorities
+                .contains(Permission.LIST_HIDDENFILES)
+            val sortedChildren = entity.getChildren(canListHidden)
                 .sortedWith(compareBy({ it !is RepositoryDirectory }, { it.name }))
                 .map { entry ->
                     FileEntry(entry.relativePath +
@@ -65,19 +103,9 @@ class FilesystemController(
 
             return ModelAndView("tree", mapOf("children" to sortedChildren, "path" to createBreadcrumb(entity)))
         } else if (entity is RepositoryFile) {
-            if (entity.mimeType.startsWith("text/") || entity.isCode) {
-                val text = FileUtils.readFileToString(entity.file, "utf-8")
-                // TODO: detect encoding
-                return ModelAndView("preview_code", mapOf(
-                    "text" to text,
-                    "path" to createBreadcrumb(entity),
-                    "download" to "/download/${entity.relativePath}"
-                ))
-            } else if (entity.isDisplayableImage) {
-                return ModelAndView("preview_image", mapOf(
-                    "path" to createBreadcrumb(entity),
-                    "download" to "/download/${entity.relativePath}"
-                ))
+            when {
+                entity.mimeType.startsWith("text/") || entity.isCode -> return previewText(entity)
+                entity.isDisplayableImage -> return previewImage(entity)
             }
         }
         return ModelAndView(RedirectView(urlEncodePath("/download/${entity.relativePath}")))
@@ -85,8 +113,9 @@ class FilesystemController(
 
     @GetMapping("/download/**")
     fun download(request: HttpServletRequest, response: HttpServletResponse) {
-        val entity = (repoService.getEntity(request.servletPath.removePrefix("/download/"))
-            ?: throw NotFoundException()) as? RepositoryFile
+        val path = request.servletPath.removePrefix("/download/")
+        val entity = (repoService.getEntity(path)
+            ?: throw NotFoundException(path)) as? RepositoryFile
             ?: throw BadRequestException("not a file")
 
         response.addHeader("X-Content-Type-Options", "nosniff")
@@ -98,5 +127,10 @@ class FilesystemController(
             IOUtils.copy(stream, response.outputStream)
         }
         response.flushBuffer()
+    }
+
+    @ExceptionHandler(value = [NotFoundException::class])
+    fun notFoundException(ex: NotFoundException): ModelAndView {
+        return ModelAndView("404", "path", ex.path)
     }
 }
