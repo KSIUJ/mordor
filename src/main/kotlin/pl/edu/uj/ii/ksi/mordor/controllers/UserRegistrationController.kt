@@ -101,8 +101,8 @@ class UserRegistrationController(
         // TODO: move password logic to service
         user.password = "{bcrypt}" + BCryptPasswordEncoder().encode(form.password)
         user.enabled = true
-        if (user.role == Role.ROLE_NOBODY) {
-            user.role = Role.ROLE_USER
+        if (user.role == Role.NOBODY) {
+            user.role = Role.USER
         }
         userRepository.save(user)
         emailVerificationTokenRepository.delete(token)

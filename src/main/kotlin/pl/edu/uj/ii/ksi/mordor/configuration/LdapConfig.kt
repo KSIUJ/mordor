@@ -33,10 +33,10 @@ data class LdapConfig(
         LdapAuthoritiesPopulator { userData, _ ->
             val groups = userData.getStringAttributes("memberOf")?.toSet()
             when {
-                groups == null -> return@LdapAuthoritiesPopulator Role.ROLE_USER.permissions
-                ldapAdminRole.isNotEmpty() && groups.contains(ldapAdminRole) -> Role.ROLE_ADMIN.permissions
-                ldapModRole.isNotEmpty() && groups.contains(ldapModRole) -> Role.ROLE_MOD.permissions
-                else -> Role.ROLE_USER.permissions
+                groups == null -> return@LdapAuthoritiesPopulator Role.USER.permissions
+                ldapAdminRole.isNotEmpty() && groups.contains(ldapAdminRole) -> Role.ADMIN.permissions
+                ldapModRole.isNotEmpty() && groups.contains(ldapModRole) -> Role.MOD.permissions
+                else -> Role.USER.permissions
             }
         }
     }

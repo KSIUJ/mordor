@@ -30,7 +30,7 @@ data class User(
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    var role: Role = Role.ROLE_NOBODY
+    var role: Role = Role.NOBODY
 ) {
-    constructor() : this(null, "", "", null, null, null, false, Role.ROLE_NOBODY)
+    constructor() : this(null, "", "", null, null, null, false, Role.NOBODY)
 }
