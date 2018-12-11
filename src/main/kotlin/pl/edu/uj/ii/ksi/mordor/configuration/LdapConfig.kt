@@ -15,8 +15,8 @@ import org.springframework.security.ldap.authentication.LdapAuthenticationProvid
 import org.springframework.security.ldap.search.FilterBasedLdapUserSearch
 import org.springframework.security.ldap.userdetails.LdapAuthoritiesPopulator
 import org.springframework.security.ldap.userdetails.LdapUserDetailsService
+import pl.edu.uj.ii.ksi.mordor.services.ExternalUserService
 import pl.edu.uj.ii.ksi.mordor.services.LdapAttributesMapper
-import pl.edu.uj.ii.ksi.mordor.services.UserManagerService
 
 @Configuration
 data class LdapConfig(
@@ -28,13 +28,13 @@ data class LdapConfig(
     @Value("\${mordor.ldap.password:}") private val ldapPassword: String,
     @Value("\${mordor.ldap.krb_service.principal:}") private val krbAuthPrincipal: String,
     @Value("\${mordor.ldap.krb_service.keytab:}") private val krbAuthKeytab: String,
-    private val userManagerService: UserManagerService,
+    private val externalUserService: ExternalUserService,
     private val ldapAttributesMapper: LdapAttributesMapper
 ) {
     val ldapAuthoritiesPopulator by lazy {
         LdapAuthoritiesPopulator { userData: DirContextOperations, username: String ->
             val extUser = ldapAttributesMapper.getExternalUser(userData, username)
-            userManagerService.loginExternalAccount(extUser).permissions
+            externalUserService.loginExternalAccount(extUser).permissions
         }
     }
 

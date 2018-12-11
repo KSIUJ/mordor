@@ -12,7 +12,7 @@ import pl.edu.uj.ii.ksi.mordor.persistence.entities.Role
 import pl.edu.uj.ii.ksi.mordor.persistence.entities.User
 import pl.edu.uj.ii.ksi.mordor.persistence.repositories.UserRepository
 
-class UserManagerServiceTest {
+class ExternalUserServiceTest {
     companion object {
         private val externalUser = ExternalUser("test", "test@example.com", "Test", "User", Role.ADMIN)
         private val localUser = User(0, externalUser.userName, null, "test2@example.com",
@@ -24,8 +24,8 @@ class UserManagerServiceTest {
     @Test
     fun loginExternalAccount_new() {
         val userRepository: UserRepository = mock {}
-        val manager = UserManagerService(userRepository)
-        val role = manager.loginExternalAccount(externalUser)
+        val service = ExternalUserService(userRepository)
+        val role = service.loginExternalAccount(externalUser)
         assertThat(role, equalTo(Role.ADMIN))
         verify(userRepository).findByUserName(any())
         val captor = ArgumentCaptor.forClass(User::class.java)
@@ -42,8 +42,8 @@ class UserManagerServiceTest {
         val userRepository: UserRepository = mock {
             on { findByUserName(externalUser.userName) } doReturn localUser
         }
-        val manager = UserManagerService(userRepository)
-        val role = manager.loginExternalAccount(externalUser)
+        val service = ExternalUserService(userRepository)
+        val role = service.loginExternalAccount(externalUser)
         assertThat(role, equalTo(Role.ADMIN))
         verify(userRepository).findByUserName(any())
         val captor = ArgumentCaptor.forClass(User::class.java)
@@ -60,8 +60,8 @@ class UserManagerServiceTest {
         val userRepository: UserRepository = mock {
             on { findByUserName(externalUser.userName) } doReturn overrideUser
         }
-        val manager = UserManagerService(userRepository)
-        val role = manager.loginExternalAccount(externalUser)
+        val userService = ExternalUserService(userRepository)
+        val role = userService.loginExternalAccount(externalUser)
         assertThat(role, equalTo(Role.MOD))
         verify(userRepository).findByUserName(any())
         val captor = ArgumentCaptor.forClass(User::class.java)

@@ -1,32 +1,33 @@
 package pl.edu.uj.ii.ksi.mordor.services
 
-import org.slf4j.LoggerFactory
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
 import pl.edu.uj.ii.ksi.mordor.persistence.entities.Role
-import pl.edu.uj.ii.ksi.mordor.persistence.entities.User
+import pl.edu.uj.ii.ksi.mordor.persistence.repositories.EmailVerificationTokenRepository
 import pl.edu.uj.ii.ksi.mordor.persistence.repositories.UserRepository
 
 @Service
-class UserManagerService(private val userRepository: UserRepository) {
-    companion object {
-        private val logger = LoggerFactory.getLogger(LdapAttributesMapper::class.java)
-    }
+class UserManagerService(
+    private val userRepository: UserRepository,
+    private val tokenRepository: EmailVerificationTokenRepository
+) {
+    private fun hashPassword(password: String): String = "{bcrypt}" + BCryptPasswordEncoder().encode(password)
 
-    fun loginExternalAccount(externalUser: ExternalUser): Role {
-        var localUser = userRepository.findByUserName(externalUser.userName)
-        if (localUser == null) {
-            logger.info("Creating new external user ${externalUser.userName}")
-            localUser = User()
-            localUser.userName = externalUser.userName
-            localUser.role = Role.EXTERNAL
+    fun resetPassword(tokenId: String, password: String): Boolean {
+        val token = tokenRepository.findByToken(tokenId)
+
+        if (token == null || !token.isValid()) {
+            token?.let { tokenRepository.delete(it) }
+            return false
         }
-        externalUser.email?.let { localUser.email = it }
-        externalUser.firstName?.let { localUser.firstName = it }
-        externalUser.lastName?.let { localUser.lastName = it }
-        userRepository.save(localUser)
-        return when (localUser.role) {
-            Role.EXTERNAL -> externalUser.role
-            else -> localUser.role
+
+        val user = token.user!!
+        user.password = hashPassword(password)
+        if (user.role == Role.NOBODY) {
+            user.role = Role.USER
         }
+        userRepository.save(user)
+        tokenRepository.delete(token)
+        return true
     }
 }
