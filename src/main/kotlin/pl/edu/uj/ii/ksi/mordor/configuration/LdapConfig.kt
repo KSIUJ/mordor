@@ -3,6 +3,7 @@ package pl.edu.uj.ii.ksi.mordor.configuration
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.io.FileSystemResource
+import org.springframework.ldap.core.DirContextOperations
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.kerberos.authentication.KerberosAuthenticationProvider
 import org.springframework.security.kerberos.authentication.sun.SunJaasKerberosClient
@@ -14,7 +15,8 @@ import org.springframework.security.ldap.authentication.LdapAuthenticationProvid
 import org.springframework.security.ldap.search.FilterBasedLdapUserSearch
 import org.springframework.security.ldap.userdetails.LdapAuthoritiesPopulator
 import org.springframework.security.ldap.userdetails.LdapUserDetailsService
-import pl.edu.uj.ii.ksi.mordor.persistence.entities.Role
+import pl.edu.uj.ii.ksi.mordor.services.LdapAttributesMapper
+import pl.edu.uj.ii.ksi.mordor.services.UserManagerService
 
 @Configuration
 data class LdapConfig(
@@ -26,18 +28,13 @@ data class LdapConfig(
     @Value("\${mordor.ldap.password:}") private val ldapPassword: String,
     @Value("\${mordor.ldap.krb_service.principal:}") private val krbAuthPrincipal: String,
     @Value("\${mordor.ldap.krb_service.keytab:}") private val krbAuthKeytab: String,
-    @Value("\${mordor.ldap.role.admin:}") private val ldapAdminRole: String,
-    @Value("\${mordor.ldap.role.mod:}") private val ldapModRole: String
+    private val userManagerService: UserManagerService,
+    private val ldapAttributesMapper: LdapAttributesMapper
 ) {
     val ldapAuthoritiesPopulator by lazy {
-        LdapAuthoritiesPopulator { userData, _ ->
-            val groups = userData.getStringAttributes("memberOf")?.toSet()
-            when {
-                groups == null -> return@LdapAuthoritiesPopulator Role.USER.permissions
-                ldapAdminRole.isNotEmpty() && groups.contains(ldapAdminRole) -> Role.ADMIN.permissions
-                ldapModRole.isNotEmpty() && groups.contains(ldapModRole) -> Role.MOD.permissions
-                else -> Role.USER.permissions
-            }
+        LdapAuthoritiesPopulator { userData: DirContextOperations, username: String ->
+            val extUser = ldapAttributesMapper.getExternalUser(userData, username)
+            userManagerService.loginExternalAccount(extUser).permissions
         }
     }
 
