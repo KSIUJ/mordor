@@ -28,14 +28,15 @@
             <td th:text="${user.lastName}"></td>
             <td><i class="fas fa-check" th:if="${user.enabled}"></i></td>
             <td th:text="${user.role.name()}"></td>
-            <td><a class="btn btn-light" href="#" th:href="@{'/admin/user/' + ${user.id} + '/'}"><i
-                    class="fas fa-edit"></i></a></td>
+            <td><a class="btn btn-light" href="#" th:href="@{'/admin/user/' + ${user.id} + '/'}"
+                   sec:authorize="hasRole('ROLE_MANAGE_USERS')"><i class="fas fa-edit"></i></a></td>
         </tr>
         </tbody>
     </table>
     <div th:replace="fragments/pagination :: pagination(${users}, '/admin/users/')">
     </div>
-    <a class="btn btn-success" href="#" th:href="@{'/admin/user/create/'}">Add</a>
+    <a sec:authorize="hasRole('ROLE_MANAGE_USERS')" class="btn btn-success"
+       href="#" th:href="@{'/admin/user/create/'}">Add</a>
 </div>
 </body>
 </html>

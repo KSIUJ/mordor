@@ -27,13 +27,13 @@ class UsersController(private val userRepository: UserRepository, private val us
         private const val usersPerPage = 100
     }
 
-    @Secured(Permission.MANAGE_USERS_STR)
+    @Secured(Permission.ACCESS_ADMIN_PANEL_STR)
     @GetMapping("/admin/users/")
     fun userList(): View {
         return RedirectView("/admin/users/0/")
     }
 
-    @Secured(Permission.MANAGE_USERS_STR)
+    @Secured(Permission.ACCESS_ADMIN_PANEL_STR)
     @GetMapping("/admin/users/{num}/")
     fun userList(@PathVariable("num") pageNumber: Int): ModelAndView {
         val users = userRepository.findAll(PageRequest.of(pageNumber, usersPerPage))
