@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Pagination</title>
 </head>
 <body>
 <nav aria-label="page-menu" th:fragment="pagination(page, baseurl)">
-    <ul class="pagination">
+    <ul class="pagination" th:if="${page.getTotalPages() > 1}">
         <li class="page-item" th:classappend="${page.hasPrevious() ? '':'disabled'}">
             <a th:if="${page.hasPrevious()}" th:href="@{${baseurl} + ${page.getNumber() - 1} + '/'}"
                class="page-link" href="#">Previous</a>
