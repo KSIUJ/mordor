@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Mordor - Admin</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <ul class="nav nav-tabs mb-1">
+        <li class="nav-item">
+            <a class="nav-link"
+               th:classappend="${#httpServletRequest.getRequestURI().startsWith('/admin/users/') ? 'active':''}"
+               href="/admin/users/">Users</a>
+        </li>
+    </ul>
+    <div layout:fragment="content-admin">
+        <!--CONTENT-->
+    </div>
+</div>
+</body>
+</html>
