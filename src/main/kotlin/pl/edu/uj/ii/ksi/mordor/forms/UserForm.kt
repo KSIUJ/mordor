@@ -3,7 +3,7 @@ package pl.edu.uj.ii.ksi.mordor.forms
 import pl.edu.uj.ii.ksi.mordor.persistence.entities.Role
 
 data class UserForm(
-    val id: Long,
+    val id: Long?,
 
     val userName: String,
 

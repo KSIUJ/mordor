@@ -34,8 +34,8 @@
         </tbody>
     </table>
     <div th:replace="fragments/pagination :: pagination(${users}, '/admin/users/')">
-
     </div>
+    <a class="btn btn-success" href="#" th:href="@{'/admin/user/create/'}">Add</a>
 </div>
 </body>
 </html>

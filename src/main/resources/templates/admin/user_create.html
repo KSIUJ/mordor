@@ -2,15 +2,15 @@
 <html lang="en" layout:decorate="~{admin/layout_admin}" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>User profile</title>
+    <title>Create user</title>
 </head>
 <body>
 <div layout:fragment="content-admin">
-    <form th:action="@{'/admin/user/'+ ${user.id} + '/'}" th:object="${user}" method="post" style="display: inline">
-        <input type="hidden" th:field="*{id}">
-        <input type="hidden" th:field="*{userName}">
+    <form th:action="@{/admin/user/create/}" th:object="${user}" method="post" style="display: inline">
         <div class="form-group">
-            <h2 th:text="*{userName}">username</h2>
+            <label for="username">Username:</label>
+            <input type="text" class="form-control" th:field="*{userName}" id="username"/>
+            <div class="alert alert-danger" th:if="${#fields.hasErrors('userName')}" th:errors="*{email}">error</div>
         </div>
         <div class="form-group">
             <label for="email">Email:</label>
@@ -53,9 +53,6 @@
             </select>
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
-    <form th:action="@{'/admin/user/'+ ${user.id} + '/delete/'}" method="post" style="display: inline">
-        <button type="submit" class="btn btn-danger">Delete</button>
     </form>
 </div>
 </body>

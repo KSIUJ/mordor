@@ -16,6 +16,8 @@ import org.springframework.web.servlet.view.RedirectView
 import pl.edu.uj.ii.ksi.mordor.exceptions.BadRequestException
 import pl.edu.uj.ii.ksi.mordor.forms.UserForm
 import pl.edu.uj.ii.ksi.mordor.persistence.entities.Permission
+import pl.edu.uj.ii.ksi.mordor.persistence.entities.Role
+import pl.edu.uj.ii.ksi.mordor.persistence.entities.User
 import pl.edu.uj.ii.ksi.mordor.persistence.repositories.UserRepository
 import pl.edu.uj.ii.ksi.mordor.services.UserManagerService
 
@@ -76,6 +78,44 @@ class UsersController(private val userRepository: UserRepository, private val us
         if (!form.password.isNullOrBlank()) {
             user.password = userManagerService.hashPassword(form.password)
         }
+        userRepository.save(user)
+        return ModelAndView(RedirectView("/admin/users/"))
+    }
+
+    @Secured(Permission.MANAGE_USERS_STR)
+    @PostMapping("/admin/user/{id}/delete/")
+    fun userProfileDelete(
+        @PathVariable("id") userId: Long
+    ): ModelAndView {
+        val user = userRepository.findById(userId).orElseThrow { BadRequestException("unknown user") }
+        userRepository.delete(user)
+        return ModelAndView(RedirectView("/admin/users/"))
+    }
+
+    @Secured(Permission.MANAGE_USERS_STR)
+    @GetMapping("/admin/user/create/")
+    fun userProfileCreate(): ModelAndView {
+        return ModelAndView("admin/user_create", "user", UserForm(null, "", "", "", "", "", "", true, Role.USER))
+    }
+
+    @Secured(Permission.MANAGE_USERS_STR)
+    @PostMapping("/admin/user/create/")
+    fun userProfileCreatePost(@Valid @ModelAttribute("user") form: UserForm, result: BindingResult): ModelAndView {
+        if (!form.userName.isBlank() && userRepository.findByUserName(form.userName) != null) {
+            result.rejectValue("userName", "username.exists", "username unavailable")
+        }
+
+        if (form.email != null && !form.email.isBlank() && userRepository.findByEmail(form.email) != null) {
+            result.rejectValue("email", "email.exists", "email already in use")
+        }
+        if (form.password != form.password2) {
+            result.rejectValue("password2", "password2.notMatch", "passwords do not match")
+        }
+        if (result.hasErrors()) {
+            return ModelAndView("admin/user_create", HttpStatus.BAD_REQUEST)
+        }
+        val user = User(null, form.userName, form.password, form.email,
+            form.firstName, form.lastName, form.enabled, form.role)
         userRepository.save(user)
         return ModelAndView(RedirectView("/admin/users/"))
     }
