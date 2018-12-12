@@ -9,7 +9,7 @@
     <ul class="nav nav-tabs mb-1">
         <li class="nav-item">
             <a class="nav-link"
-               th:classappend="${#httpServletRequest.getRequestURI().startsWith('/admin/users/') ? 'active':''}"
+               th:classappend="${#httpServletRequest.getRequestURI().startsWith('/admin/user') ? 'active':''}"
                href="/admin/users/">Users</a>
         </li>
     </ul>

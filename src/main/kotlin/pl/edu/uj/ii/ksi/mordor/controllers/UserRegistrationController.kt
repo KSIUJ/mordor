@@ -42,9 +42,9 @@ class UserRegistrationController(
     fun registerPost(
         @Valid @ModelAttribute("form") user: UserRegistrationForm,
         result: BindingResult
-    ): String {
+    ): ModelAndView {
         if (!registrationEnabled) {
-            return "registration/registration_disabled"
+            return ModelAndView("registration/registration_disabled", HttpStatus.FORBIDDEN)
         }
 
         if (!user.userName.isBlank() && userRepository.findByUserName(user.userName) != null) {
@@ -56,13 +56,13 @@ class UserRegistrationController(
         }
 
         if (result.hasErrors()) {
-            return "registration/create_account"
+            return ModelAndView("registration/create_account", HttpStatus.BAD_REQUEST)
         }
 
         val newUser = User(null, user.userName, null, user.email, user.firstName, user.lastName, true)
         userRepository.save(newUser)
         eventPublisher.publishEvent(OnEmailVerificationRequestedEvent(newUser))
-        return "registration/verify_email"
+        return ModelAndView("registration/verify_email")
     }
 
     @GetMapping(value = ["/register/activate/"], params = ["token"])

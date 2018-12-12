@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" layout:decorate="~{admin/layout_admin}" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>User profile</title>
+</head>
+<body>
+<div layout:fragment="content-admin">
+    <form th:action="@{'/admin/user/'+ ${user.id} + '/'}" th:object="${user}" method="post">
+        <input type="hidden" th:field="*{id}">
+        <input type="hidden" th:field="*{userName}">
+        <div class="form-group">
+            <h2 th:text="*{userName}">username</h2>
+        </div>
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="text" class="form-control" th:field="*{email}" id="email"/>
+            <div class="alert alert-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">error</div>
+        </div>
+        <div class="form-group">
+            <label for="firstName">First Name:</label>
+            <input type="text" class="form-control" th:field="*{firstName}" id="firstName"/>
+            <div class="alert alert-danger" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}">error
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="lastName">Last Name:</label>
+            <input type="text" class="form-control" th:field="*{lastName}" id="lastName"/>
+            <div class="alert alert-danger" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}">error</div>
+        </div>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" class="form-control" th:field="*{password}" id="password"/>
+            <div class="alert alert-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">error</div>
+        </div>
+        <div class="form-group">
+            <label for="password2">Repeat password:</label>
+            <input type="password" class="form-control" th:field="*{password2}" id="password2"/>
+            <div class="alert alert-danger" th:if="${#fields.hasErrors('password2')}" th:errors="*{password2}">error
+            </div>
+        </div>
+        <div class="form-group">
+            <input type="checkbox" class="form-check-input" th:field="*{enabled}" id="enabled">
+            <label for="enabled" class="form-check-label">Local login enabled</label>
+        </div>
+        <div class="form-group">
+            <label for="role">Role:</label>
+            <select class="form-control" th:field="*{role}" id="role">
+                <option th:each="r : ${T(pl.edu.uj.ii.ksi.mordor.persistence.entities.Role).values()}"
+                        th:value="${r}" th:text="${r.name()}">
+
+                </option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+</body>
+</html>
+
