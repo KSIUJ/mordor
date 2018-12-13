@@ -11,7 +11,7 @@ class UserManagerService(
     private val userRepository: UserRepository,
     private val tokenRepository: EmailVerificationTokenRepository
 ) {
-    private fun hashPassword(password: String): String = "{bcrypt}" + BCryptPasswordEncoder().encode(password)
+    fun hashPassword(password: String): String = "{bcrypt}" + BCryptPasswordEncoder().encode(password)
 
     fun resetPassword(tokenId: String, password: String): Boolean {
         val token = tokenRepository.findByToken(tokenId)

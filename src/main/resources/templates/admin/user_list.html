@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" layout:decorate="~{admin/layout_admin}" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Users</title>
+</head>
+<body>
+<div layout:fragment="content-admin">
+    <table class="table">
+        <thead>
+        <tr class="table-active">
+            <td scope="col">Id</td>
+            <td scope="col">Username</td>
+            <td scope="col">Email</td>
+            <td scope="col">First name</td>
+            <td scope="col">Last name</td>
+            <td scope="col">Local login</td>
+            <td scope="col">Role</td>
+            <td scope="col"></td>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="user : ${users}">
+            <td scope="row" th:text="${user.id}"></td>
+            <td th:text="${user.userName}"></td>
+            <td th:text="${user.email}"></td>
+            <td th:text="${user.firstName}"></td>
+            <td th:text="${user.lastName}"></td>
+            <td><i class="fas fa-check" th:if="${user.enabled}"></i></td>
+            <td th:text="${user.role.name()}"></td>
+            <td><a class="btn btn-light" href="#" th:href="@{'/admin/user/' + ${user.id} + '/'}"
+                   sec:authorize="hasRole('ROLE_MANAGE_USERS')"><i class="fas fa-edit"></i></a></td>
+        </tr>
+        </tbody>
+    </table>
+    <div th:replace="fragments/pagination :: pagination(${users}, '/admin/users/')">
+    </div>
+    <a sec:authorize="hasRole('ROLE_MANAGE_USERS')" class="btn btn-success"
+       href="#" th:href="@{'/admin/user/create/'}">Add</a>
+</div>
+</body>
+</html>
+

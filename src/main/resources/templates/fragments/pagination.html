@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Pagination</title>
+</head>
+<body>
+<nav aria-label="page-menu" th:fragment="pagination(page, baseurl)">
+    <ul class="pagination" th:if="${page.getTotalPages() > 1}">
+        <li class="page-item" th:classappend="${page.hasPrevious() ? '':'disabled'}">
+            <a th:if="${page.hasPrevious()}" th:href="@{${baseurl} + ${page.getNumber() - 1} + '/'}"
+               class="page-link" href="#">Previous</a>
+            <a th:unless="${page.hasPrevious()}" class="page-link" href="#">Previous</a>
+        </li>
+        <li th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}" class="page-item"
+            th:classappend="${page.getNumber() == i ? 'active':''}">
+            <a class="page-link" href="#" th:href="@{${baseurl} + ${i} + '/'}" th:text="${i}">2</a>
+        </li>
+        <li class="page-item" th:classappend="${page.hasNext() ? '':'disabled'}">
+            <a th:if="${page.hasNext()}" th:href="@{${baseurl} + ${page.getNumber() + 1} + '/'}"
+               class="page-link" href="#">Next</a>
+            <a th:unless="${page.hasNext()}" class="page-link" href="#">Next</a>
+        </li>
+    </ul>
+</nav>
+</body>
+</html>

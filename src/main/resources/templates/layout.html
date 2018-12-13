@@ -52,16 +52,20 @@
             <!--</div>-->
             <!--</form>-->
             <!--</li>-->
-            <li class="nav-item">
-                <a sec:authorize="!isAuthenticated()" href="/register/" class="btn btn-outline-light my-2 my-sm-0 mr-2"
+            <li class="nav-item" sec:authorize="!isAuthenticated()">
+                <a href="/register/" class="btn btn-outline-light my-2 my-sm-0 mr-2"
                    role="button">Sign up</a>
             </li>
-            <li class="nav-item">
-                <a sec:authorize="!isAuthenticated()" href="/login/" class="btn btn-outline-success my-2 my-sm-0"
+            <li class="nav-item" sec:authorize="!isAuthenticated()">
+                <a href="/login/" class="btn btn-outline-success my-2 my-sm-0"
                    role="button">Login</a>
             </li>
-            <li class="nav-item">
-                <form class="form-inline" sec:authorize="isAuthenticated()" name="logoutForm" th:action="@{/logout/}"
+            <li class="nav-item" sec:authorize="hasRole('ROLE_ACCESS_ADMIN_PANEL')">
+                <a href="/admin/" class="btn btn-outline-primary my-2 my-sm-0 mr-2"
+                   role="button">Admin</a>
+            </li>
+            <li class="nav-item" sec:authorize="isAuthenticated()">
+                <form class="form-inline" name="logoutForm" th:action="@{/logout/}"
                       method="post">
                     <button class="btn btn-outline-light my-2 my-sm-0" type="submit">Logout</button>
                 </form>
