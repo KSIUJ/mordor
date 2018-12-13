@@ -9,7 +9,7 @@ import pl.edu.uj.ii.ksi.mordor.persistence.repositories.UserRepository
 @Service
 class ExternalUserService(private val userRepository: UserRepository) {
     companion object {
-        private val logger = LoggerFactory.getLogger(LdapAttributesMapper::class.java)
+        private val logger = LoggerFactory.getLogger(ExternalUserService::class.java)
     }
 
     fun loginExternalAccount(externalUser: ExternalUser): Role {
