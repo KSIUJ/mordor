@@ -59,7 +59,8 @@ class UserRegistrationController(
             return "registration/create_account"
         }
 
-        val newUser = User(null, user.userName, null, user.email, user.firstName, user.lastName, true)
+        val newUser = User(userName = user.userName, email = user.email, firstName = user.firstName,
+            lastName = user.lastName, enabled = true)
         userRepository.save(newUser)
         eventPublisher.publishEvent(OnEmailVerificationRequestedEvent(newUser))
         return "registration/verify_email"
