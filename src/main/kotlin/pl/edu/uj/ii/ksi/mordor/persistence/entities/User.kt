@@ -15,22 +15,20 @@ data class User(
     var id: Long? = null,
 
     @Column(nullable = false, unique = true)
-    var userName: String,
+    var userName: String = "",
 
-    var password: String?,
+    var password: String? = null,
 
     @Column(unique = true)
-    var email: String?,
+    var email: String? = null,
 
-    var firstName: String?,
+    var firstName: String? = null,
 
-    var lastName: String?,
+    var lastName: String? = null,
 
     var enabled: Boolean = false,
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     var role: Role = Role.NOBODY
-) {
-    constructor() : this(null, "", "", null, null, null, false, Role.NOBODY)
-}
+)

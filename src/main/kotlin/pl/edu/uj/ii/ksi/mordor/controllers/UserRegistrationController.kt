@@ -4,7 +4,6 @@ import javax.validation.Valid
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.http.HttpStatus
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.validation.BindingResult
@@ -17,17 +16,18 @@ import pl.edu.uj.ii.ksi.mordor.events.OnEmailVerificationRequestedEvent
 import pl.edu.uj.ii.ksi.mordor.exceptions.BadRequestException
 import pl.edu.uj.ii.ksi.mordor.forms.ResetPasswordForm
 import pl.edu.uj.ii.ksi.mordor.forms.UserRegistrationForm
-import pl.edu.uj.ii.ksi.mordor.persistence.entities.Role
 import pl.edu.uj.ii.ksi.mordor.persistence.entities.User
 import pl.edu.uj.ii.ksi.mordor.persistence.repositories.EmailVerificationTokenRepository
 import pl.edu.uj.ii.ksi.mordor.persistence.repositories.UserRepository
+import pl.edu.uj.ii.ksi.mordor.services.UserManagerService
 
 @Controller
 class UserRegistrationController(
     private val userRepository: UserRepository,
     private val emailVerificationTokenRepository: EmailVerificationTokenRepository,
     private val eventPublisher: ApplicationEventPublisher,
-    @Value("\${mordor.allow_user_registration:true}") private val registrationEnabled: Boolean
+    @Value("\${mordor.allow_user_registration:true}") private val registrationEnabled: Boolean,
+    private val userManagerService: UserManagerService
 ) {
     @GetMapping("/register/")
     fun registerForm(model: Model): ModelAndView {
@@ -47,11 +47,11 @@ class UserRegistrationController(
             return "registration/registration_disabled"
         }
 
-        if (!user.userName.isEmpty() && userRepository.findByUserName(user.userName) != null) {
+        if (!user.userName.isBlank() && userRepository.findByUserName(user.userName) != null) {
             result.rejectValue("userName", "username.exists", "username unavailable")
         }
 
-        if (!user.email.isEmpty() && userRepository.findByEmail(user.email) != null) {
+        if (!user.email.isBlank() && userRepository.findByEmail(user.email) != null) {
             result.rejectValue("email", "email.exists", "email already in use")
         }
 
@@ -59,7 +59,8 @@ class UserRegistrationController(
             return "registration/create_account"
         }
 
-        val newUser = User(null, user.userName, null, user.email, user.firstName, user.lastName, false)
+        val newUser = User(userName = user.userName, email = user.email, firstName = user.firstName,
+            lastName = user.lastName, enabled = true)
         userRepository.save(newUser)
         eventPublisher.publishEvent(OnEmailVerificationRequestedEvent(newUser))
         return "registration/verify_email"
@@ -90,24 +91,11 @@ class UserRegistrationController(
             return ModelAndView("registration/set_password", HttpStatus.BAD_REQUEST)
         }
 
-        val token = emailVerificationTokenRepository.findByToken(form.token)
-
-        if (token == null || !token.isValid()) {
-            token?.let { emailVerificationTokenRepository.delete(it) }
-            return ModelAndView("registration/invalid_token", HttpStatus.UNAUTHORIZED)
+        return if (userManagerService.resetPassword(form.token, form.password)) {
+            ModelAndView("registration/account_activated")
+        } else {
+            ModelAndView("registration/invalid_token", HttpStatus.UNAUTHORIZED)
         }
-
-        val user = token.user!!
-        // TODO: move password logic to service
-        user.password = "{bcrypt}" + BCryptPasswordEncoder().encode(form.password)
-        user.enabled = true
-        if (user.role == Role.NOBODY) {
-            user.role = Role.USER
-        }
-        userRepository.save(user)
-        emailVerificationTokenRepository.delete(token)
-
-        return ModelAndView("registration/account_activated")
     }
 
     @GetMapping("/register/reset/")
