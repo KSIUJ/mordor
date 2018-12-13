@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletResponse
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.IOUtils
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.security.access.annotation.Secured
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -83,6 +84,7 @@ class FilesystemController(
         ))
     }
 
+    @Secured(Permission.READ_STR)
     @GetMapping("/file/**")
     fun fileIndex(request: HttpServletRequest): ModelAndView {
         val path = request.servletPath.removePrefix("/file/")
@@ -93,7 +95,7 @@ class FilesystemController(
                 return ModelAndView(RedirectView(urlEncodePath(request.servletPath + "/")))
             }
             val canListHidden = listHiddenFiles || SecurityContextHolder.getContext().authentication.authorities
-                .contains(Permission.LIST_HIDDENFILES)
+                .contains(Permission.ROLE_LIST_HIDDEN_FILES)
             val sortedChildren = entity.getChildren(canListHidden)
                 .sortedWith(compareBy({ it !is RepositoryDirectory }, { it.name }))
                 .map { entry ->
@@ -111,6 +113,7 @@ class FilesystemController(
         return ModelAndView(RedirectView(urlEncodePath("/download/${entity.relativePath}")))
     }
 
+    @Secured(Permission.READ_STR)
     @GetMapping("/download/**")
     fun download(request: HttpServletRequest, response: HttpServletResponse) {
         val path = request.servletPath.removePrefix("/download/")

@@ -12,7 +12,7 @@ import pl.edu.uj.ii.ksi.mordor.persistence.repositories.UserRepository
 class LocalUserServiceTest {
     companion object {
         private val USER1 = User(0, "jsmith", "passwd", "jsmith@example.com", "John",
-            "Smith", true, Role.ROLE_USER)
+            "Smith", true, Role.USER)
     }
 
     private val mockUserRepository: UserRepository = mock {

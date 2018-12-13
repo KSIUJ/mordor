@@ -1,9 +1,10 @@
 package pl.edu.uj.ii.ksi.mordor.persistence.entities
 
 enum class Role(val permissions: List<Permission>) {
-    ROLE_NOBODY(listOf()),
-    ROLE_USER(listOf(Permission.READ, Permission.UPLOAD)),
-    ROLE_MOD(listOf(Permission.READ, Permission.UPLOAD, Permission.WRITE, Permission.LIST_HIDDENFILES)),
-    ROLE_ADMIN(listOf(Permission.READ, Permission.UPLOAD, Permission.WRITE, Permission.LIST_HIDDENFILES,
-        Permission.MANAGE_USERS));
+    NOBODY(listOf()),
+    USER(listOf(Permission.ROLE_READ, Permission.ROLE_UPLOAD)),
+    MOD(listOf(Permission.ROLE_READ, Permission.ROLE_UPLOAD, Permission.ROLE_WRITE, Permission.ROLE_LIST_HIDDEN_FILES)),
+    ADMIN(listOf(Permission.ROLE_READ, Permission.ROLE_UPLOAD, Permission.ROLE_WRITE, Permission.ROLE_LIST_HIDDEN_FILES,
+        Permission.ROLE_MANAGE_USERS)),
+    EXTERNAL(listOf())
 }
