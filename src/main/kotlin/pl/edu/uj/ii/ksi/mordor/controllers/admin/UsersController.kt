@@ -1,12 +1,15 @@
 package pl.edu.uj.ii.ksi.mordor.controllers.admin
 
 import javax.validation.Valid
+import org.springframework.beans.propertyeditors.StringTrimmerEditor
 import org.springframework.data.domain.PageRequest
 import org.springframework.http.HttpStatus
 import org.springframework.security.access.annotation.Secured
 import org.springframework.stereotype.Controller
 import org.springframework.validation.BindingResult
+import org.springframework.web.bind.WebDataBinder
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.InitBinder
 import org.springframework.web.bind.annotation.ModelAttribute
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -25,6 +28,11 @@ import pl.edu.uj.ii.ksi.mordor.services.UserManagerService
 class UsersController(private val userRepository: UserRepository, private val userManagerService: UserManagerService) {
     companion object {
         private const val usersPerPage = 100
+    }
+
+    @InitBinder
+    fun initBinder(binder: WebDataBinder) {
+        binder.registerCustomEditor(String::class.java, StringTrimmerEditor(true))
     }
 
     @Secured(Permission.ACCESS_ADMIN_PANEL_STR)
