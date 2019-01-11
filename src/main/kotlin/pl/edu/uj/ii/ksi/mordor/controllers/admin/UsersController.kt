@@ -62,9 +62,9 @@ class UsersController(private val userRepository: UserRepository, private val us
     }
 
     @Secured(Permission.MANAGE_USERS_STR)
-    @PostMapping("/admin/user/{id}/")
+    @PostMapping("/admin/user/{userId}/")
     fun userProfileEdit(
-        @PathVariable("id") userId: Long,
+        @PathVariable("userId") userId: Long,
         @Valid @ModelAttribute("user") form: UserForm,
         result: BindingResult
     ): ModelAndView {
