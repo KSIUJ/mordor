@@ -74,7 +74,7 @@ class CasConfig(
             var role = Role.USER
 
             if (casRoleAttribute.isNotBlank() && attrs.containsKey(casRoleAttribute)) {
-                val groups = attrs[casRoleAttribute] as List<*>
+                val groups = attrs[casRoleAttribute] as? List<*> ?: listOf(attrs[casRoleAttribute] as? String)
                 when {
                     groups.contains(casAdmin) -> role = Role.ADMIN
                     groups.contains(casMod) -> role = Role.MOD
