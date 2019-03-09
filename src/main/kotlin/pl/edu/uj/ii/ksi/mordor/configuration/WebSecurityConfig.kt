@@ -50,6 +50,7 @@ class WebSecurityConfig(
         if (casConfig.casEnabled()) {
             http.httpBasic().authenticationEntryPoint(casConfig.casAuthenticationEntryPoint())
                 .and().logout().logoutUrl("/logout/").logoutSuccessUrl("/logout/cas").permitAll()
+                .and().csrf().ignoringAntMatchers("/cas**")
                 .and().addFilterBefore(casConfig.singleSignOutFilter(), CasAuthenticationFilter::class.java)
                 .addFilterBefore(casConfig.logoutFilter(), LogoutFilter::class.java)
             allowUrls.add("/cas**")
