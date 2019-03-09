@@ -59,6 +59,7 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter-security')
     compile("org.springframework.security:spring-security-ldap")
     compile('org.springframework.security.kerberos:spring-security-kerberos-client:1.0.1.RELEASE')
+    compile('org.springframework.security:spring-security-cas')
     compile('org.springframework.boot:spring-boot-starter-validation')
     compile('org.springframework.boot:spring-boot-starter-web')
     compile('org.springframework.boot:spring-boot-starter-thymeleaf')
