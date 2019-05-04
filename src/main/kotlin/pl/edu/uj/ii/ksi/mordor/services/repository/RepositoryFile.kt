@@ -37,7 +37,7 @@ class RepositoryFile(
             "lhs", "fs", "erl", "hrl", "ex", "clj", "hy", "lisp", "lsp", "scm", "asciidoc", "adoc", "asc", "tex",
             "proto", "protobuf", "f", "f90", "nb", "mat", "r", "as", "fla", "dart", "gml", "hsp", "ls", "lua", "moon",
             "qml", "ts", "vbs", "go", "rs", "swift", "ada", "pde", "awk", "b", "bas", "d", "gradle", "groovy", "julia",
-            "kt", "nim"
+            "kt", "nim", "in", "out"
             // TODO: expand
         )
 
