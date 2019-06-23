@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en"
-      layout:decorate="~{layout}">
+      layout:decorate="~{layout}" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <title>Mordor</title>
 </head>
@@ -14,26 +14,41 @@
     </ol>
 
     <script>
-        function setIframeHeight(iframe) {
-            if (iframe) {
-                var iframeWin = iframe.contentWindow || iframe.contentDocument.parentWindow;
-                if (iframeWin.document.body) {
-                    iframe.height = iframeWin.document.documentElement.scrollHeight || iframeWin.document.body.scrollHeight;
-                }
+        window.onload = function () {
+            let iframe = document.getElementById('page-frame');
+            document.getElementById('spinner').style.display = 'none';
+            iframe.classList.remove('d-none');
+            let iframeWin = iframe.contentWindow || iframe.contentDocument.parentWindow;
+            if (iframeWin.document.body) {
+                iframe.height = iframeWin.document.documentElement.scrollHeight || iframeWin.document.body.scrollHeight;
             }
         };
-        window.onload = function () {
-            setIframeHeight(document.getElementById('page-frame'));
-        };
     </script>
+    <noscript>
+        <style>
+            #spinner {
+                display: none !important;
+            }
+
+            #page-frame {
+                display: block !important;
+            }
+        </style>
+    </noscript>
 
     <div class="card mt-2">
         <div class="card-header">
             <a href="#" th:href="@{${download}}" class="btn btn-secondary"><i class="fas fa-download"></i> Download</a>
         </div>
-        <pre class="card-body p-0 m-0">
-            <iframe id="page-frame" class="page-frame" th:src="@{${raw}}" height="200" sandbox="allow-same-origin"></iframe>
-        </pre>
+        <div class="card-body p-0 m-0">
+            <div class="text-center m-5" id="spinner">
+                <div class="spinner-border" style="width: 3rem; height: 3rem;" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+            <iframe id="page-frame" class="page-frame d-none" th:src="@{${raw}}" height="1000em"
+                    sandbox="allow-same-origin"></iframe>
+        </div>
     </div>
 </div>
 </body>
