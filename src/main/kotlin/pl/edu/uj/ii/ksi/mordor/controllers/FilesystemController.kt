@@ -51,13 +51,18 @@ class FilesystemController(
         return pathBreadcrumb
     }
 
+    private fun createTitle(path: String): String {
+        return path.trim('/').replace("/", " / ") + (if (path.isNotEmpty()) " - " else "") + "Mordor"
+    }
+
     private fun urlEncodePath(path: String): String {
         return UriUtils.encodePath(path, "UTF-8")
     }
 
-    private fun previewText(entity: RepositoryFile): ModelAndView {
+    private fun previewText(entity: RepositoryFile, path: String): ModelAndView {
         if (entity.file.length() > maxTextBytes) {
             return ModelAndView("preview_too_large", mapOf(
+                "title" to createTitle(path),
                 "path" to createBreadcrumb(entity),
                 "download" to "/download/${entity.relativePath}"
             ))
@@ -65,20 +70,23 @@ class FilesystemController(
         val text = FileUtils.readFileToString(entity.file, "utf-8")
         // TODO: detect encoding
         return ModelAndView("preview_code", mapOf(
+            "title" to createTitle(path),
             "text" to text,
             "path" to createBreadcrumb(entity),
             "download" to "/download/${entity.relativePath}"
         ))
     }
 
-    private fun previewImage(entity: RepositoryFile): ModelAndView {
+    private fun previewImage(entity: RepositoryFile, path: String): ModelAndView {
         if (entity.file.length() > maxImageBytes) {
             return ModelAndView("preview_too_large", mapOf(
+                "title" to createTitle(path),
                 "path" to createBreadcrumb(entity),
                 "download" to "/download/${entity.relativePath}"
             ))
         }
         return ModelAndView("preview_image", mapOf(
+            "title" to createTitle(path),
             "path" to createBreadcrumb(entity),
             "download" to "/download/${entity.relativePath}"
         ))
@@ -86,6 +94,7 @@ class FilesystemController(
 
     private fun previewPage(entity: RepositoryFile, path: String): ModelAndView {
         return ModelAndView("preview_page", mapOf(
+            "title" to createTitle(path),
             "raw" to "/raw/$path",
             "path" to createBreadcrumb(entity),
             "download" to "/download/${entity.relativePath}"
@@ -111,12 +120,15 @@ class FilesystemController(
                         if (entry is RepositoryDirectory) "/" else "", entry.name, iconNameProvider.getIconName(entry))
                 }
 
-            return ModelAndView("tree", mapOf("children" to sortedChildren, "path" to createBreadcrumb(entity)))
+            return ModelAndView("tree", mapOf(
+                "title" to createTitle(path),
+                "children" to sortedChildren,
+                "path" to createBreadcrumb(entity)))
         } else if (entity is RepositoryFile) {
             when {
                 entity.isPage -> return previewPage(entity, path)
-                entity.mimeType.startsWith("text/") || entity.isCode -> return previewText(entity)
-                entity.isDisplayableImage -> return previewImage(entity)
+                entity.mimeType.startsWith("text/") || entity.isCode -> return previewText(entity, path)
+                entity.isDisplayableImage -> return previewImage(entity, path)
             }
         }
         return ModelAndView(RedirectView(urlEncodePath("/download/${entity.relativePath}")))
