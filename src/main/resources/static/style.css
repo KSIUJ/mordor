@@ -40,3 +40,10 @@ code.hljs {
     padding: 1px;
     background-color: #fff;
 }
+
+.page-frame {
+    display: block;
+    width: 100%;
+    border: none;
+    outline: none;
+}

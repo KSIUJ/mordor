@@ -64,6 +64,7 @@ class WebSecurityConfig(
         }
         http.authorizeRequests().antMatchers(*allowUrls.toTypedArray()).permitAll()
             .anyRequest().authenticated()
+            .and().headers().frameOptions().sameOrigin()
     }
 
     override fun configure(web: WebSecurity) {

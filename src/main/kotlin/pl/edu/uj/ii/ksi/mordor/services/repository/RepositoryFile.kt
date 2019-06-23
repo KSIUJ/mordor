@@ -20,8 +20,8 @@ class RepositoryFile(
         private val logger = LoggerFactory.getLogger(RepositoryFile::class.java)
 
         private val displayableImageTypes = setOf(
-                // Based on: https://en.wikipedia.org/wiki/Comparison_of_web_browsers#Image_format_support
-                "image/png", "image/jpeg", "image/gif", "image/svg+xml"
+            // Based on: https://en.wikipedia.org/wiki/Comparison_of_web_browsers#Image_format_support
+            "image/png", "image/jpeg", "image/gif", "image/svg+xml"
         )
 
         private val safeMimetype = setOf(
@@ -45,6 +45,10 @@ class RepositoryFile(
             "Makefile", "Dockerfile", "CMakeLists.txt"
             // TODO: expand
         )
+
+        private val pageFileNames = setOf(
+            "html", "htm"
+        )
     }
 
     val mimeType: String
@@ -62,6 +66,11 @@ class RepositoryFile(
         get() {
             val name = name.toLowerCase()
             return codeFileNames.contains(name) || codeFileExts.contains(FilenameUtils.getExtension(name))
+        }
+
+    val isPage: Boolean
+        get() {
+            return pageFileNames.contains(FilenameUtils.getExtension(name.toLowerCase()))
         }
 
     val isDisplayableImage: Boolean

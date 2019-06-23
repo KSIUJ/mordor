@@ -454,7 +454,7 @@ style:
     active: true
   ReturnCount:
     active: true
-    max: 5
+    max: 10
     excludedFunctions: "equals"
   SafeCast:
     active: true

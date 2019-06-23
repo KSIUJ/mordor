@@ -84,6 +84,14 @@ class FilesystemController(
         ))
     }
 
+    private fun previewPage(entity: RepositoryFile, path: String): ModelAndView {
+        return ModelAndView("preview_page", mapOf(
+            "raw" to "/raw/$path",
+            "path" to createBreadcrumb(entity),
+            "download" to "/download/${entity.relativePath}"
+        ))
+    }
+
     @Secured(Permission.READ_STR)
     @GetMapping("/file/**")
     fun fileIndex(request: HttpServletRequest): ModelAndView {
@@ -106,6 +114,7 @@ class FilesystemController(
             return ModelAndView("tree", mapOf("children" to sortedChildren, "path" to createBreadcrumb(entity)))
         } else if (entity is RepositoryFile) {
             when {
+                entity.isPage -> return previewPage(entity, path)
                 entity.mimeType.startsWith("text/") || entity.isCode -> return previewText(entity)
                 entity.isDisplayableImage -> return previewImage(entity)
             }
@@ -123,6 +132,24 @@ class FilesystemController(
 
         response.addHeader("X-Content-Type-Options", "nosniff")
         response.contentType = entity.browserSafeMimeType
+        response.setContentLengthLong(entity.file.length())
+
+        val stream = entity.file.inputStream()
+        stream.use {
+            IOUtils.copy(stream, response.outputStream)
+        }
+        response.flushBuffer()
+    }
+
+    @Secured(Permission.READ_STR)
+    @GetMapping("/raw/**")
+    fun raw(request: HttpServletRequest, response: HttpServletResponse) {
+        val path = request.servletPath.removePrefix("/raw/")
+        val entity = (repoService.getEntity(path)
+            ?: throw NotFoundException(path)) as? RepositoryFile
+            ?: throw BadRequestException("not a file")
+
+        response.contentType = entity.mimeType
         response.setContentLengthLong(entity.file.length())
 
         val stream = entity.file.inputStream()

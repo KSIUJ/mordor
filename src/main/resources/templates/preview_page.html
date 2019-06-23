@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en"
+      layout:decorate="~{layout}">
+<head>
+    <title>Mordor</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <ol class="breadcrumb">
+        <li th:each="dir, itrStat : ${path}" th:class="${itrStat.last}? 'breadcrumb-item active' : 'breadcrumb-item'">
+            <a th:unless="${itrStat.last}" th:href="${dir.path}" th:text="${dir.name}">directory</a>
+            <span th:if="${itrStat.last}" th:text="${dir.name}">current directory</span>
+        </li>
+    </ol>
+
+    <script>
+        function setIframeHeight(iframe) {
+            if (iframe) {
+                var iframeWin = iframe.contentWindow || iframe.contentDocument.parentWindow;
+                if (iframeWin.document.body) {
+                    iframe.height = iframeWin.document.documentElement.scrollHeight || iframeWin.document.body.scrollHeight;
+                }
+            }
+        };
+        window.onload = function () {
+            setIframeHeight(document.getElementById('page-frame'));
+        };
+    </script>
+
+    <div class="card mt-2">
+        <div class="card-header">
+            <a href="#" th:href="@{${download}}" class="btn btn-secondary"><i class="fas fa-download"></i> Download</a>
+        </div>
+        <pre class="card-body p-0 m-0">
+            <iframe id="page-frame" class="page-frame" th:src="@{${raw}}" height="200" sandbox="allow-same-origin"></iframe>
+        </pre>
+    </div>
+</div>
+</body>
+</html>
