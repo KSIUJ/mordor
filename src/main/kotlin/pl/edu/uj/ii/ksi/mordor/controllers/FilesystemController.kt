@@ -21,6 +21,8 @@ import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryDirectory
 import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryEntity
 import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryFile
 import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryService
+import java.io.File
+import kotlin.math.abs
 
 @Controller
 class FilesystemController(
@@ -64,7 +66,8 @@ class FilesystemController(
             return ModelAndView("preview_too_large", mapOf(
                 "title" to createTitle(path),
                 "path" to createBreadcrumb(entity),
-                "download" to "/download/${entity.relativePath}"
+                "download" to "/download/${entity.relativePath}",
+                "delete" to "/delete/${entity.relativePath}"
             ))
         }
         val text = FileUtils.readFileToString(entity.file, "utf-8")
@@ -73,7 +76,8 @@ class FilesystemController(
             "title" to createTitle(path),
             "text" to text,
             "path" to createBreadcrumb(entity),
-            "download" to "/download/${entity.relativePath}"
+            "download" to "/download/${entity.relativePath}",
+            "delete" to "/delete/${entity.relativePath}"
         ))
     }
 
@@ -82,13 +86,15 @@ class FilesystemController(
             return ModelAndView("preview_too_large", mapOf(
                 "title" to createTitle(path),
                 "path" to createBreadcrumb(entity),
-                "download" to "/download/${entity.relativePath}"
+                "download" to "/download/${entity.relativePath}",
+                "delete" to "/delete/${entity.relativePath}"
             ))
         }
         return ModelAndView("preview_image", mapOf(
             "title" to createTitle(path),
             "path" to createBreadcrumb(entity),
-            "download" to "/download/${entity.relativePath}"
+            "download" to "/download/${entity.relativePath}",
+             "delete" to "/delete/${entity.relativePath}"
         ))
     }
 
@@ -97,7 +103,8 @@ class FilesystemController(
             "title" to createTitle(path),
             "raw" to "/raw/$path",
             "path" to createBreadcrumb(entity),
-            "download" to "/download/${entity.relativePath}"
+            "download" to "/download/${entity.relativePath}",
+            "delete" to "/delete/${entity.relativePath}"
         ))
     }
 
@@ -165,6 +172,36 @@ class FilesystemController(
         response.setContentLengthLong(entity.file.length())
 
         val stream = entity.file.inputStream()
+        stream.use {
+            IOUtils.copy(stream, response.outputStream)
+        }
+        response.flushBuffer()
+    }
+
+    @Secured(Permission.ACCESS_ADMIN_PANEL_STR) //TODO!!
+    @GetMapping("/delete/**")
+    fun delete(request: HttpServletRequest, response: HttpServletResponse) {
+        val path = request.servletPath.removePrefix("/delete/")
+        val entity = (repoService.getEntity(path)
+                ?: throw NotFoundException(path)) as? RepositoryFile
+
+        val absolutePath = repoService.getAbsolutePath(path).toString()
+        val file = File(absolutePath)
+
+
+//        val tree = file.walk()
+//        var counter = 0
+//        tree.forEach {s -> counter++}
+//        print(counter)
+//        response.contentType = entity!!.mimeType
+//        response.setContentLengthLong(entity!!.file.length())
+        if (file.list() == null) {
+            file.deleteRecursively()
+        }
+//        fileIndex(request);
+
+
+        val stream = entity!!.file.inputStream()
         stream.use {
             IOUtils.copy(stream, response.outputStream)
         }

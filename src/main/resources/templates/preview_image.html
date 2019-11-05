@@ -17,6 +17,7 @@
     <div class="card mt-2">
         <div class="card-header">
             <a href="#" th:href="@{${download}}" class="btn btn-secondary"><i class="fas fa-download"></i> Download</a>
+            <a href="#" th:href="@{${delete}}" class="btn btn-secondary" sec:authorize="hasRole('ROLE_ACCESS_ADMIN_PANEL')"><i class="fas fa-delete"></i> Delete</a>
         </div>
         <div class="card-body m-0 img-preview-wrapper">
             <img th:src="@{${download}}" alt="" class="img-fluid mx-auto d-block img-preview">
