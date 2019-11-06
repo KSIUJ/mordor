@@ -22,7 +22,6 @@ import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryEntity
 import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryFile
 import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryService
 import java.io.File
-import kotlin.math.abs
 
 @Controller
 class FilesystemController(
@@ -126,11 +125,11 @@ class FilesystemController(
                     FileEntry(entry.relativePath +
                         if (entry is RepositoryDirectory) "/" else "", entry.name, iconNameProvider.getIconName(entry))
                 }
-
             return ModelAndView("tree", mapOf(
                 "title" to createTitle(path),
                 "children" to sortedChildren,
-                "path" to createBreadcrumb(entity)))
+                "path" to createBreadcrumb(entity),
+                "delete" to "/delete/${entity.relativePath}"))
         } else if (entity is RepositoryFile) {
             when {
                 entity.isPage -> return previewPage(entity, path)
@@ -178,34 +177,22 @@ class FilesystemController(
         response.flushBuffer()
     }
 
-    @Secured(Permission.ACCESS_ADMIN_PANEL_STR) //TODO!!
+    @Secured(Permission.ACCESS_ADMIN_PANEL_STR)
     @GetMapping("/delete/**")
-    fun delete(request: HttpServletRequest, response: HttpServletResponse) {
+    fun delete(request: HttpServletRequest, response: HttpServletResponse): ModelAndView {
         val path = request.servletPath.removePrefix("/delete/")
-        val entity = (repoService.getEntity(path)
-                ?: throw NotFoundException(path)) as? RepositoryFile
+        val entity = repoService.getEntity(path) ?: throw NotFoundException(path)
 
         val absolutePath = repoService.getAbsolutePath(path).toString()
         val file = File(absolutePath)
 
-
-//        val tree = file.walk()
-//        var counter = 0
-//        tree.forEach {s -> counter++}
-//        print(counter)
-//        response.contentType = entity!!.mimeType
-//        response.setContentLengthLong(entity!!.file.length())
-        if (file.list() == null) {
-            file.deleteRecursively()
+        return if (file.walk().count() == 1) {
+            file.delete()
+            ModelAndView(RedirectView(urlEncodePath("/file/${entity.relativePath
+                    .substring(0, entity.relativePath.lastIndexOf("/") + 1)}")))
+        } else {
+            ModelAndView(RedirectView(urlEncodePath("/file/${entity.relativePath}")))
         }
-//        fileIndex(request);
-
-
-        val stream = entity!!.file.inputStream()
-        stream.use {
-            IOUtils.copy(stream, response.outputStream)
-        }
-        response.flushBuffer()
     }
 
     @ExceptionHandler(value = [NotFoundException::class])

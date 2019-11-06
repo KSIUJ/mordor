@@ -17,7 +17,30 @@
     <div class="card mt-2">
         <div class="card-header">
             <a href="#" th:href="@{${download}}" class="btn btn-secondary"><i class="fas fa-download"></i> Download</a>
-            <a href="#" th:href="@{${delete}}" class="btn btn-secondary" sec:authorize="hasRole('ROLE_ACCESS_ADMIN_PANEL')"><i class="fas fa-delete"></i> Delete</a>
+            <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#exampleModal"
+                    sec:authorize="hasRole('ROLE_ACCESS_ADMIN_PANEL')">
+                <i class="fas fa-trash"></i>
+                Delete
+            </button>
+            <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true"
+                    sec:authorize="hasRole('ROLE_ACCESS_ADMIN_PANEL')">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Confirmation</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">Are you sure you want to proceed?</div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">No, close this window</button>
+                            <a href="#" th:href="@{${delete}}" class="btn btn-secondary">
+                                <i class="fas fa-trash"></i>    Yes, <strong>delete     </strong></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="card-body m-0 img-preview-wrapper">
             <img th:src="@{${download}}" alt="" class="img-fluid mx-auto d-block img-preview">
