@@ -1,5 +1,6 @@
 package pl.edu.uj.ii.ksi.mordor.controllers
 
+import java.io.File
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 import org.apache.commons.io.FileUtils
@@ -21,7 +22,6 @@ import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryDirectory
 import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryEntity
 import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryFile
 import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryService
-import java.io.File
 
 @Controller
 class FilesystemController(
@@ -93,7 +93,7 @@ class FilesystemController(
             "title" to createTitle(path),
             "path" to createBreadcrumb(entity),
             "download" to "/download/${entity.relativePath}",
-             "delete" to "/delete/${entity.relativePath}"
+            "delete" to "/delete/${entity.relativePath}"
         ))
     }
 
