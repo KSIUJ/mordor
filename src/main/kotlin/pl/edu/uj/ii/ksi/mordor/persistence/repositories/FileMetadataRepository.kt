@@ -5,4 +5,5 @@ import pl.edu.uj.ii.ksi.mordor.persistence.entities.FileMetadata
 
 interface FileMetadataRepository : JpaRepository<FileMetadata, Long> {
     fun findByFileHash(fileHash: String): FileMetadata?
+    fun existsByFileHash(fileHash: String): Boolean?
 }
