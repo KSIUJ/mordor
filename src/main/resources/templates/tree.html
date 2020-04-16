@@ -48,14 +48,16 @@
             </div>
         </div>
     </div>
+
+    <div layout:fragmet="delete-modal"></div>
 </div>
 
 <th:block layout:fragment="script">
     <script>
         $(document).ready(function(){
             $('#confirm-delete').on('show.bs.modal', function (event) {
-                let button = $(event.relatedTarget);
-                let path = button.data('path');
+                let performer = $(event.relatedTarget);
+                let path = performer.data('path');
                 $('#confirm-delete-button').attr("href", path);
             })
         })
