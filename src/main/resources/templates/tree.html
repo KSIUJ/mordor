@@ -21,6 +21,31 @@
         <li th:each="entry : ${children}" class="list-group-item">
             <i th:attr="class='mx-2 fas fa-lg ' + ${entry.iconName}"></i>
             <a th:attr="href='/file/'+${entry.path}" th:text="${entry.name}"></a>
+
+            <a class="btn btn-danger float-right"
+               href="#"
+               th:href="@{'/file' + ${entry.path} + '/'}"
+               data-toggle="modal" data-target="#confirm-delete" sec:authorize="hasRole('ROLE_MANAGE_FILES')"><i class="fas fa-trash"></i></a>
+
+            <div class="modal fade" id="confirm-delete" role="dialog" tabindex="-1" aria-labelledby="confirm-delete-label" aria-hidden="true"
+                 sec:authorize="hasRole('ROLE_MANAGE_FILES')">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="confirm-delete-label">Confirmation</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">Do you want to remove file permanently?</div>
+                        <div class="modal-footer">
+                            <a class="btn btn-secondary" data-dismiss="modal" type="button">No</a>
+                            <a href="#" class="btn btn-danger">Yes</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </li>
     </ul>
 </div>
