@@ -1,25 +1,21 @@
 package pl.edu.uj.ii.ksi.mordor.persistence.managers
 
-import pl.edu.uj.ii.ksi.mordor.persistence.entities.FileContent
-import pl.edu.uj.ii.ksi.mordor.persistence.entities.FileThumbnail
+import pl.edu.uj.ii.ksi.mordor.persistence.entities.FileEntry
 import java.io.File
 
 interface FileManager {
-    fun addFile(file: File,
-                path: String,
-                metadata: Metadata? = null,
-                content: FileContent? = null,
-                thumbnail: FileThumbnail? = null)
+    fun addFile(file: File, path: String)
+
+    fun createDirectory(path: String)
 
     fun getFile(path: String) : File
     fun getFile(metadata: Metadata) : File
 
-    fun doesFileExists(path: String) : Boolean
+    fun getFileEntry(path: String) : FileEntry?
+
+    fun approveFile(path: String)
+
+    fun rejectFile(path: String)
 
     fun removeFile(path: String)
-    fun removeAllFilesLike(file: File)
-    fun removeAllFilesLike(path: String)
-
-    fun getFileContent(path: String) : FileContent
-    fun getFileThumbnail(path: String) : FileThumbnail
 }
