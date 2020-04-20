@@ -19,7 +19,6 @@ class MetadataCrawler(@Value("\${mordor.root_path}") private val root: String, @
 
     @Scheduled(fixedDelay = 5 * 1000)
     fun crawl() {
-        System.out.println("gathering")
         val path = root + pattern
         gather(path.substring(0,path.length - 2))
     }

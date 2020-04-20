@@ -15,8 +15,6 @@ import java.nio.file.Path
 class MetadataGarbageCollector(private val entryRepository: FileEntryRepository, private val metadataRepository: FileMetadataRepository, private val fileContentRepository: FileContentRepository, private val thumbnailRepository: FileThumbnailRepository) {
     @Scheduled(fixedDelay = 5 * 1000)
     fun collect() {
-        System.out.println("removing")
-
         metadataRepository.findAll().forEach{metadata -> collectMetadata(metadata)}
     }
 
