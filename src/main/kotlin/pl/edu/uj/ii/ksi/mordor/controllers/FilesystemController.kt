@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.access.annotation.Secured
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Controller
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.servlet.ModelAndView
@@ -174,5 +175,25 @@ class FilesystemController(
     @ExceptionHandler(value = [NotFoundException::class])
     fun notFoundException(ex: NotFoundException): ModelAndView {
         return ModelAndView("404", "path", ex.path)
+    }
+
+    @Secured(Permission.MANAGE_FILES_STR)
+    @DeleteMapping("/delete/**")
+    fun deleteResource(request: HttpServletRequest): ModelAndView {
+        val path = request.servletPath.removePrefix("/delete/")
+        val entity = repoService.getEntity(path) ?: throw NotFoundException(path)
+        val mountPathElements = if (path.endsWith("/")) path.dropLast(1).split("/") else path.split("/")
+        val mountPath = mountPathElements.joinToString("/")
+        if (entity is RepositoryDirectory) {
+            // TODO: - Remove directory from DB
+            return when (mountPathElements.size) {
+                1 -> ModelAndView(RedirectView("/file/"))
+                else -> ModelAndView(RedirectView("/file/$mountPath/"))
+            }
+        } else if (entity is RepositoryFile) {
+            // TODO: - Remove directory from DB
+            return ModelAndView(RedirectView("/file/$mountPath/"))
+        }
+        return ModelAndView("/file/")
     }
 }

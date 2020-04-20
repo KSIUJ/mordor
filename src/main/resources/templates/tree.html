@@ -18,50 +18,20 @@
     </div>
 
     <ul th:unless="${children.empty}" class="list-group list-group-flush">
-        <li th:each="entry : ${children}" class="list-group-item">
-            <i th:attr="class='mx-2 fas fa-lg ' + ${entry.iconName}"></i>
-            <a th:attr="href='/file/'+${entry.path}" th:text="${entry.name}"></a>
+        <th:block th:each="entry : ${children}">
+            <li class="list-group-item">
+                <i th:attr="class='mx-2 fas fa-lg ' + ${entry.iconName}"></i>
+                <a th:attr="href='/file/'+${entry.path}" th:text="${entry.name}"></a>
 
-            <a class="btn btn-danger float-right"
-               href="#"
-               data-toggle="modal" data-target="#confirm-delete"
-               th:attr="data-path='/delete/'+${entry.path}"
-               sec:authorize="hasRole('ROLE_MANAGE_FILES')"><i class="fas fa-trash"></i></a>
-        </li>
+                <a class="btn btn-danger float-right"
+                   href="#"
+                   data-toggle="modal" data-target="#confirm-delete"
+                   sec:authorize="hasRole('ROLE_MANAGE_FILES')"><i class="fas fa-trash"></i></a>
+            </li>
+            <div th:replace="components/delete_modal :: delete-modal (path=${entry.path})"></div>
+        </th:block>
     </ul>
 
-    <div class="modal fade" id="confirm-delete" role="dialog" tabindex="-1" aria-labelledby="confirm-delete-label" aria-hidden="true"
-         sec:authorize="hasRole('ROLE_MANAGE_FILES')">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="confirm-delete-label">Confirmation</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">Do you want to remove file permanently?</div>
-                <div class="modal-footer">
-                    <a class="btn btn-light" data-dismiss="modal" type="button">No</a>
-                    <a class="btn btn-danger" id="confirm-delete-button">Yes</a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div layout:fragmet="delete-modal"></div>
 </div>
-
-<th:block layout:fragment="script">
-    <script>
-        $(document).ready(function(){
-            $('#confirm-delete').on('show.bs.modal', function (event) {
-                let performer = $(event.relatedTarget);
-                let path = performer.data('path');
-                $('#confirm-delete-button').attr("href", path);
-            })
-        })
-    </script>
-</th:block>
 </body>
 </html>
