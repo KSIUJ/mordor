@@ -1,12 +1,12 @@
 package pl.edu.uj.ii.ksi.mordor.persistence.entities
 
-import javax.persistence.CascadeType
 import javax.persistence.Column
 import javax.persistence.Entity
+import javax.persistence.FetchType
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
-import javax.persistence.OneToOne
+import javax.persistence.OneToMany
 
 @Entity
 data class FileThumbnail(
@@ -14,10 +14,9 @@ data class FileThumbnail(
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     var id: Long? = null,
 
-    @OneToOne(optional = false, cascade = [CascadeType.DETACH])
-    var file: FileMetadata?,
+    @Column(unique = true)
+    var path: String,
 
-    @Suppress("ArrayInDataClass")
-    @Column(length = 200 * 1024)
-    var thumbnail: ByteArray?
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "thumbnail")
+    var metadata: Set<FileMetadata>
 )

@@ -1,10 +1,12 @@
 package pl.edu.uj.ii.ksi.mordor.persistence.entities
 
+import javax.persistence.CascadeType
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
+import javax.persistence.ManyToOne
 
 @Entity
 data class FileMetadata(
@@ -22,5 +24,8 @@ data class FileMetadata(
 
     var description: String?,
 
-    var mimeType: String?
+    var mimeType: String?,
+
+    @ManyToOne(optional = false, cascade = [CascadeType.DETACH])
+    var thumbnail: FileThumbnail?
 )
