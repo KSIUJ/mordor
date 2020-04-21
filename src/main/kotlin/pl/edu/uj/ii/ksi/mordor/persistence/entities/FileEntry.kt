@@ -1,7 +1,7 @@
 package pl.edu.uj.ii.ksi.mordor.persistence.entities
 
-import javax.persistence.CascadeType
 import javax.persistence.Entity
+import javax.persistence.FetchType
 import javax.persistence.Id
 import javax.persistence.ManyToOne
 
@@ -10,6 +10,6 @@ data class FileEntry(
     @Id
     var path: String,
 
-    @ManyToOne(optional = false, cascade = [CascadeType.DETACH])
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     var metadata: FileMetadata
 )
