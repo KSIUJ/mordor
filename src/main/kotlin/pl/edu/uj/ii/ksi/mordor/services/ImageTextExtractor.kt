@@ -16,7 +16,7 @@ class ImageTextExtractor(private val tesseract: Tesseract) : FileTextExtractor {
         return extractTextFromBufferedImage(ImageIO.read(file))
     }
 
-    fun correctTwisted(image: BufferedImage?): BufferedImage? {
+    private fun correctTwisted(image: BufferedImage?): BufferedImage? {
         val imageSkewAngle = ImageDeskew(image).skewAngle
         if (imageSkewAngle < -0.05 || imageSkewAngle > 0.05) {
             return ImageHelper.rotateImage(ImageHelper.convertImageToGrayscale(image), -imageSkewAngle)

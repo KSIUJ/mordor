@@ -13,10 +13,6 @@ import java.util.*
 class PDFTextExtractor(private val tesseract: Tesseract) : FileTextExtractor {
 
     override fun extract(file: File): String? {
-        return extractScannedPDF(file)
-    }
-
-    fun extractScannedPDF(file: File): String? {
         val extracted = StringBuilder()
         val bufferedImages = formatPDF(file)
 
