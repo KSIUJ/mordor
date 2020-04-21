@@ -10,11 +10,10 @@ import java.io.File
 import javax.imageio.ImageIO
 
 @Service
-class ImageTextExtractor : FileTextExtractor {
+class ImageTextExtractor(private val tesseract: Tesseract) : FileTextExtractor {
 
     override fun extract(file: File): String? {
         return extractTextFromBufferedImage(ImageIO.read(file))
-
     }
 
     fun correctTwisted(image: BufferedImage?): BufferedImage? {
@@ -27,8 +26,6 @@ class ImageTextExtractor : FileTextExtractor {
 
     fun extractTextFromBufferedImage(image: BufferedImage?): String? {
         try {
-            val tesseract = Tesseract()
-            tesseract.setLanguage("pol+eng")
             return tesseract.doOCR(correctTwisted(image))
                     .replace("\\n{2,}", "\n")
                     .trim { c -> c <= ' ' }

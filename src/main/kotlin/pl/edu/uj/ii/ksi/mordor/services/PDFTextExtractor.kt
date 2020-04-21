@@ -1,5 +1,6 @@
 package pl.edu.uj.ii.ksi.mordor.services
 
+import net.sourceforge.tess4j.Tesseract
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject
 import org.springframework.stereotype.Service
@@ -9,7 +10,7 @@ import java.util.*
 
 
 @Service
-class PDFTextExtractor : FileTextExtractor {
+class PDFTextExtractor(private val tesseract: Tesseract) : FileTextExtractor {
 
     override fun extract(file: File): String? {
         return extractScannedPDF(file)
@@ -21,7 +22,7 @@ class PDFTextExtractor : FileTextExtractor {
 
         if (!bufferedImages.isEmpty()) {
             for (image in bufferedImages) {
-                val text: String? = ImageTextExtractor().extractTextFromBufferedImage(image)
+                val text: String? = ImageTextExtractor(tesseract).extractTextFromBufferedImage(image)
                 if (text != null) {
                     extracted.append(text)
                 }
