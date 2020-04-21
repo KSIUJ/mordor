@@ -1,20 +1,21 @@
 package pl.edu.uj.ii.ksi.mordor.persistence.managers
 
+import java.io.File
 import pl.edu.uj.ii.ksi.mordor.persistence.entities.FileContent
 import pl.edu.uj.ii.ksi.mordor.persistence.entities.FileEntry
+import pl.edu.uj.ii.ksi.mordor.persistence.entities.FileMetadata
 import pl.edu.uj.ii.ksi.mordor.persistence.entities.FileThumbnail
-import java.io.File
 
 interface MetadataManager {
-    fun extractAndSaveMetadata(file: File) : Metadata
+    fun extractAndSaveMetadata(file: File): FileMetadata
 
-    fun getAllEntries(metadata: Metadata) : Set<FileEntry>
+    fun getAllEntries(metadata: FileMetadata): Set<FileEntry>
     // TODO: QUERIES
-    fun anyEntries(metadata: Metadata) : Boolean
+    fun anyEntries(metadata: FileMetadata): Boolean
 
-    fun removeMetadata(metadata: Metadata)
+    fun removeMetadata(metadata: FileMetadata)
 
-    fun getFileContent(metadata: Metadata) : FileContent
+    fun getFileContent(metadata: FileMetadata): FileContent
 
-    fun getFileThumbnail(metadata: Metadata) : FileThumbnail
+    fun getFileThumbnail(metadata: FileMetadata): FileThumbnail
 }

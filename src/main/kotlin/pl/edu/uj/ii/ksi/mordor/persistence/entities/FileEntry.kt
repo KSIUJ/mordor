@@ -1,6 +1,9 @@
 package pl.edu.uj.ii.ksi.mordor.persistence.entities
 
-import javax.persistence.*
+import javax.persistence.CascadeType
+import javax.persistence.Entity
+import javax.persistence.Id
+import javax.persistence.ManyToOne
 
 @Entity
 data class FileEntry(
