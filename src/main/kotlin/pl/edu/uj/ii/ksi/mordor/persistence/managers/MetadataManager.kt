@@ -9,7 +9,7 @@ import pl.edu.uj.ii.ksi.mordor.persistence.entities.FileThumbnail
 interface MetadataManager {
     fun extractAndSaveMetadata(file: File): FileMetadata
 
-    fun getAllEntries(metadata: FileMetadata): Set<FileEntry>
+    fun getAllEntries(metadata: FileMetadata): Array<FileEntry>
     // TODO: QUERIES
     fun anyEntries(metadata: FileMetadata): Boolean
 

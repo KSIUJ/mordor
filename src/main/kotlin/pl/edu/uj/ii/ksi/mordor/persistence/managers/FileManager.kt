@@ -14,5 +14,5 @@ interface FileManager {
 
     fun rejectFile(path: String)
 
-    fun removeFile(path: String)
+    fun removeEntry(path: String)
 }

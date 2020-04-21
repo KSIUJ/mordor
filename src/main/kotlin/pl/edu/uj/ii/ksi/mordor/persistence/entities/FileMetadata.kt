@@ -11,7 +11,6 @@ import javax.persistence.ManyToOne
 @Entity
 data class FileMetadata(
     @Id
-    @Column(name = "metadata_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null,
 
