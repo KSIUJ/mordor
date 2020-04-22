@@ -4,7 +4,7 @@ import java.io.File
 import pl.edu.uj.ii.ksi.mordor.persistence.entities.FileEntry
 
 interface FileManager {
-    fun addFile(file: File, path: String)
+    fun addFile(file: File)
 
     fun createDirectory(path: String)
 
