@@ -2,21 +2,26 @@
 <html lang="en"
       layout:decorate="~{layout}">
 <head>
-    <title>Upload Review - Mordor</title>
+    <title>Upload Session Review - Mordor</title>
 </head>
 <body>
 <div layout:fragment="content">
-    <h1 th:text="'Review of session ' + ${session.id}"/>
+    <div class="container-fluid">
+        <h1 th:text="'Review of session #' + ${sessionId}"></h1>
+        <div>
+            <a th:href="'/review/approve/' + ${userId} + '/' + ${sessionId} + '/'" class="btn btn-danger">Reject</a>
+            <a th:href="'/review/reject/' + ${userId} + '/' + ${sessionId} + '/'" class="btn btn-success">Approve</a>
+        </div>
+    </div>
 
-    <ul th:unless="${files.empty}" class="list-group list-group-flush">
-        <th:block th:each="entry : ${files}">
-            <li class="list-group-item">
-                <i th:attr="class='mx-2 fas fa-lg ' + ${entry.iconName}"></i>
-                <a th:text="${entry.name}"></a>
-            </li>
-            <div th:replace="components/delete_modal :: delete-modal (path=${entry.path})"></div>
-        </th:block>
-    </ul>
+<!--    <ul th:unless="${files.empty}" class="list-group list-group-flush">-->
+<!--    <th:block th:each="entry : ${files}">-->
+<!--        <li class="list-group-item">-->
+<!--            <i th:attr="class='mx-2 fas fa-lg ' + ${entry.iconName}"></i>-->
+<!--            <a th:text="${entry.name}"></a>-->
+<!--        </li>-->
+<!--    </th:block>-->
+<!--    </ul>-->
 
 </div>
 </body>

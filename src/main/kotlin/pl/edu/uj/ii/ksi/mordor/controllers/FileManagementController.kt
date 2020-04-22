@@ -34,10 +34,11 @@ class FileManagementController(
         @Valid @ModelAttribute("form") model: FileUploadForm,
         result: BindingResult
     ): ModelAndView {
+        // TODO: - Add file to repo when merged with ms-1
         if (result.hasErrors()) {
             return ModelAndView("management/upload", HttpStatus.BAD_REQUEST)
         }
-        return ModelAndView("home")
+        return ModelAndView("/file/")
     }
 
     @GetMapping("/review/")
@@ -51,18 +52,24 @@ class FileManagementController(
         ))
     }
 
-//    @GetMapping("/review/{userId}/{sessionId}/")
-//    fun sessionReviewPage(
-//            @PathVariable("userId") userId: Long,
-//            @PathVariable("sessionId") sessionId: String
-//    ): ModelAndView {
+    @GetMapping("/review/{userId}/{sessionId}/")
+    fun sessionReviewPage(
+        @PathVariable("userId") userId: Long,
+        @PathVariable("sessionId") sessionId: String
+    ): ModelAndView {
+        // TODO: - fetch list of item when merged with ms-1
+        return ModelAndView("review/session_review", mapOf(
+                "sessionId" to sessionId,
+                "userId" to userId,
+                "files" to arrayOf<FilesystemController.FileEntry>()
+        ))
 //        val user = userRepository.findById(userId)
 //        if (user.isPresent) {
 //            // TODO: - Create session entry
 //        } else {
 //            throw BadRequestException("No user for id: $userId")
 //        }
-//    }
+    }
 
     @PostMapping("/review/approve/{userId}/{sessionId}/")
     fun approveSession(
@@ -71,7 +78,7 @@ class FileManagementController(
     ): ModelAndView {
         val user = userRepository.findById(userId)
         if (user.isPresent) {
-            // TODO: - Create session entry
+            // TODO: - Create session entry when merged with ms-1
             return ModelAndView(RedirectView("/review/"))
         } else {
             throw BadRequestException("No user for id: $userId")
@@ -85,7 +92,7 @@ class FileManagementController(
     ): ModelAndView {
         val user = userRepository.findById(userId)
         if (user.isPresent) {
-            // TODO: - Create session entry
+            // TODO: - Create session entry when merged with ms-1
             return ModelAndView(RedirectView("/review/"))
         } else {
             throw BadRequestException("No user for id: $userId")

@@ -197,13 +197,13 @@ class FilesystemController(
         val mountPathElements = if (path.endsWith("/")) path.dropLast(1).split("/") else path.split("/")
         val mountPath = mountPathElements.joinToString("/")
         if (entity is RepositoryDirectory) {
-            // TODO: - Remove directory from DB
+            // TODO: - Remove directory from DB when merged with ms-1
             return when (mountPathElements.size) {
                 1 -> ModelAndView(RedirectView("/file/"))
                 else -> ModelAndView(RedirectView("/file/$mountPath/"))
             }
         } else if (entity is RepositoryFile) {
-            // TODO: - Remove directory from DB
+            // TODO: - Remove directory from DB when merged with ms-1
             return ModelAndView(RedirectView("/file/$mountPath/"))
         }
         return ModelAndView("/file/")
