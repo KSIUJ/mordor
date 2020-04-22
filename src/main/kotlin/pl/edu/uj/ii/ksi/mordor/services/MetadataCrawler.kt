@@ -29,6 +29,6 @@ class MetadataCrawler(
     }
 
     private fun needMetadata(file: File): Boolean {
-        return repositoryService.fileExists(file.path) && repositoryService.getEntity(file.path)?.needsMetadata()!!
+        return repositoryService.getEntity(file.path)?.needsMetadata() ?: false
     }
 }

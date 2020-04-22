@@ -5,5 +5,4 @@ import pl.edu.uj.ii.ksi.mordor.persistence.entities.FileMetadata
 
 interface MetadataExtractor {
     fun extract(file: File): FileMetadata
-    fun calculateHash(file: File): String
 }

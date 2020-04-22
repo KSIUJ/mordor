@@ -8,6 +8,7 @@ import pl.edu.uj.ii.ksi.mordor.persistence.entities.FileMetadata
 import pl.edu.uj.ii.ksi.mordor.persistence.repositories.FileContentRepository
 import pl.edu.uj.ii.ksi.mordor.persistence.repositories.FileEntryRepository
 import pl.edu.uj.ii.ksi.mordor.persistence.repositories.FileMetadataRepository
+import pl.edu.uj.ii.ksi.mordor.services.hash.FileHashProvider
 
 @Service
 class FileEntryCreator(
@@ -15,7 +16,8 @@ class FileEntryCreator(
     private val entryRepository: FileEntryRepository,
     private val metadataRepository: FileMetadataRepository,
     private val contentRepository: FileContentRepository,
-    private val fileTextExtractor: FileTextExtractor
+    private val fileTextExtractor: FileTextExtractor,
+    private val hashProvider: FileHashProvider
 ) {
 
     fun create(file: File): FileEntry {
@@ -32,7 +34,7 @@ class FileEntryCreator(
     }
 
     private fun createContent(file: File, metadata: FileMetadata) {
-        val text = fileTextExtractor.extract(file)!!
+        val text = fileTextExtractor.extract(file)
         val content = FileContent(text = text, file = metadata)
         contentRepository.save(content)
     }
@@ -44,7 +46,7 @@ class FileEntryCreator(
 
     private fun findOrCreateMetadata(file: File): FileMetadata {
         // TODO: hash is calculated twice
-        val hash = metadataExtractor.calculateHash(file)
+        val hash = hashProvider.calculate(file)
         val sameHashMetadata = metadataRepository.findByFileHash(hash)
         return checkTheSameHashMetadata(sameHashMetadata, file)
     }
