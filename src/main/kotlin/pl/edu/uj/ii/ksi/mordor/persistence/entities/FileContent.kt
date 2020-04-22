@@ -13,7 +13,7 @@ data class FileContent(
     var id: Long? = null,
 
     @MapsId
-    @OneToOne(optional = false, cascade = [CascadeType.ALL], orphanRemoval = true)
+    @OneToOne(optional = false, cascade = [CascadeType.ALL])
     var file: FileMetadata?,
 
     @Column(length = 200 * 1024)
