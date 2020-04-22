@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en"
+      layout:decorate="~{layout}">
+<head>
+    <title>Upload Review - Mordor</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <h1 th:text="'Review of session ' + ${session.id}"/>
+
+    <ul th:unless="${files.empty}" class="list-group list-group-flush">
+        <th:block th:each="entry : ${files}">
+            <li class="list-group-item">
+                <i th:attr="class='mx-2 fas fa-lg ' + ${entry.iconName}"></i>
+                <a th:text="${entry.name}"></a>
+            </li>
+            <div th:replace="components/delete_modal :: delete-modal (path=${entry.path})"></div>
+        </th:block>
+    </ul>
+
+</div>
+</body>
+</html>

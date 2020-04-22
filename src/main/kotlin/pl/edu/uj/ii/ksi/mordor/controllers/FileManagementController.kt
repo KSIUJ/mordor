@@ -6,12 +6,18 @@ import org.springframework.stereotype.Controller
 import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.ModelAttribute
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.servlet.ModelAndView
+import org.springframework.web.servlet.view.RedirectView
+import pl.edu.uj.ii.ksi.mordor.exceptions.BadRequestException
 import pl.edu.uj.ii.ksi.mordor.forms.FileUploadForm
+import pl.edu.uj.ii.ksi.mordor.persistence.repositories.UserRepository
 
 @Controller
-class FileManagementController {
+class FileManagementController(
+        private val userRepository: UserRepository
+) {
     data class SessionEntry(
         val userId: Long,
         val userName: String,
@@ -44,4 +50,42 @@ class FileManagementController {
                 "sessions" to sortedSessions
         ))
     }
+
+    @GetMapping("/review/{userId}/{sessionId}/")
+    fun sessionReviewPage(
+            @PathVariable("userId") userId: Long,
+            @PathVariable("sessionId") sessionId: String
+    ): ModelAndView {
+        val user = userRepository.findById(userId)
+        if (user.isPresent) {
+            // TODO: - Create session entry
+        } else {
+            throw BadRequestException("No user for id: $userId")
+        }
+    }
+
+    @PostMapping("/review/approve/{userId}/{sessionId}/")
+    fun approveSession(@PathVariable("userId") userId: Long,
+                       @PathVariable("sessionId") sessionId: String): ModelAndView {
+        val user = userRepository.findById(userId)
+        if (user.isPresent) {
+            // TODO: - Create session entry
+            return ModelAndView(RedirectView("/review/"))
+        } else {
+            throw BadRequestException("No user for id: $userId")
+        }
+    }
+
+    @PostMapping("/review/reject/{userId}/{sessionId}/")
+    fun rejectSession(@PathVariable("userId") userId: Long,
+                       @PathVariable("sessionId") sessionId: String): ModelAndView {
+        val user = userRepository.findById(userId)
+        if (user.isPresent) {
+            // TODO: - Create session entry
+            return ModelAndView(RedirectView("/review/"))
+        } else {
+            throw BadRequestException("No user for id: $userId")
+        }
+    }
+
 }

@@ -14,23 +14,23 @@
 
     <table th:if="${!sessions.empty}" class="table">
         <thead>
-            <tr>
-                <th scope="col">Identifier</th>
-                <th scope="col">Author</th>
-                <th scope="col">Upload time</th>
-            </tr>
+        <tr>
+            <th scope="col">Identyfikator</th>
+            <th scope="col">Author</th>
+            <th scope="col">Upload time</th>
+        </tr>
         </thead>
         <tbody>
-            <th:block th:each="entry : ${sessions}">
-                <tr>
-                    <th scope="row">
-                        <a th:attr="href='/review/' + ${entry.userId} + '/' + ${entry.sessionId} + '/'"
-                        th:text="${entry.sessionId}"/>
-                    </th>
-                    <td th:text="${entry.userName}"/>
-                    <td>Timestamp placeholder</td>
-                </tr>
-            </th:block>
+        <th:block th:each="entry : ${sessions}">
+            <tr>
+                <td scope="row">
+                    <a th:attr="href='/review/' + ${entry.userId} + '/' + ${entry.sessionId} + '/'"
+                       th:text="${entry.sessionId}"/>
+                </td>
+                <td th:text="${entry.userName}"/>
+                <td>Timestamp placeholder</td>
+            </tr>
+        </th:block>
         </tbody>
     </table>
 </div>
