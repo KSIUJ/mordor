@@ -42,6 +42,13 @@ class FilesystemController(
         var path: String
     )
 
+    private enum class FileType(val previewType: String) {
+        IMAGE("IMAGE"),
+        PAGE("PAGE"),
+        TOO_LARGE("TOO_LARGE"),
+        CODE("CODE")
+    }
+
     private fun createBreadcrumb(entity: RepositoryEntity): List<RelativeDir> {
         val pathBreadcrumb = mutableListOf(RelativeDir("Home", "/file/"))
         var prev = "/file/"
@@ -62,43 +69,48 @@ class FilesystemController(
 
     private fun previewText(entity: RepositoryFile, path: String): ModelAndView {
         if (entity.file.length() > maxTextBytes) {
-            return ModelAndView("preview_too_large", mapOf(
+            return ModelAndView("preview/preview", mapOf(
                 "title" to createTitle(path),
                 "path" to createBreadcrumb(entity),
-                "download" to "/download/${entity.relativePath}"
+                "download" to "/download/${entity.relativePath}",
+                "type" to FileType.TOO_LARGE.previewType
             ))
         }
         val text = FileUtils.readFileToString(entity.file, "utf-8")
         // TODO: detect encoding
-        return ModelAndView("preview_code", mapOf(
+        return ModelAndView("preview/preview", mapOf(
             "title" to createTitle(path),
             "text" to text,
             "path" to createBreadcrumb(entity),
-            "download" to "/download/${entity.relativePath}"
+            "download" to "/download/${entity.relativePath}",
+            "type" to FileType.CODE.previewType
         ))
     }
 
     private fun previewImage(entity: RepositoryFile, path: String): ModelAndView {
         if (entity.file.length() > maxImageBytes) {
-            return ModelAndView("preview_too_large", mapOf(
+            return ModelAndView("preview/preview", mapOf(
                 "title" to createTitle(path),
                 "path" to createBreadcrumb(entity),
-                "download" to "/download/${entity.relativePath}"
+                "download" to "/download/${entity.relativePath}",
+                "type" to FileType.TOO_LARGE.previewType
             ))
         }
-        return ModelAndView("preview_image", mapOf(
+        return ModelAndView("preview/preview", mapOf(
             "title" to createTitle(path),
             "path" to createBreadcrumb(entity),
-            "download" to "/download/${entity.relativePath}"
+            "download" to "/download/${entity.relativePath}",
+            "type" to FileType.IMAGE.previewType
         ))
     }
 
     private fun previewPage(entity: RepositoryFile, path: String): ModelAndView {
-        return ModelAndView("preview_page", mapOf(
+        return ModelAndView("preview/preview", mapOf(
             "title" to createTitle(path),
             "raw" to "/raw/$path",
             "path" to createBreadcrumb(entity),
-            "download" to "/download/${entity.relativePath}"
+            "download" to "/download/${entity.relativePath}",
+            "type" to FileType.PAGE.previewType
         ))
     }
 

@@ -16,7 +16,7 @@ import pl.edu.uj.ii.ksi.mordor.persistence.repositories.UserRepository
 
 @Controller
 class FileManagementController(
-        private val userRepository: UserRepository
+    private val userRepository: UserRepository
 ) {
     data class SessionEntry(
         val userId: Long,
@@ -65,8 +65,10 @@ class FileManagementController(
 //    }
 
     @PostMapping("/review/approve/{userId}/{sessionId}/")
-    fun approveSession(@PathVariable("userId") userId: Long,
-                       @PathVariable("sessionId") sessionId: String): ModelAndView {
+    fun approveSession(
+        @PathVariable("userId") userId: Long,
+        @PathVariable("sessionId") sessionId: String
+    ): ModelAndView {
         val user = userRepository.findById(userId)
         if (user.isPresent) {
             // TODO: - Create session entry
@@ -77,8 +79,10 @@ class FileManagementController(
     }
 
     @PostMapping("/review/reject/{userId}/{sessionId}/")
-    fun rejectSession(@PathVariable("userId") userId: Long,
-                       @PathVariable("sessionId") sessionId: String): ModelAndView {
+    fun rejectSession(
+        @PathVariable("userId") userId: Long,
+        @PathVariable("sessionId") sessionId: String
+    ): ModelAndView {
         val user = userRepository.findById(userId)
         if (user.isPresent) {
             // TODO: - Create session entry
@@ -87,5 +91,4 @@ class FileManagementController(
             throw BadRequestException("No user for id: $userId")
         }
     }
-
 }

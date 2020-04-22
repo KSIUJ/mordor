@@ -28,7 +28,7 @@
                    data-toggle="modal" data-target="#confirm"
                    sec:authorize="hasRole('ROLE_MANAGE_FILES')"><i class="fas fa-trash"></i></a>
             </li>
-            <div th:replace="components/confirmation_modal :: confirmation-modal (message='Do you really want to remove this file?', action='/delete/' + ${entry.path}, method='delete')"></div>
+            <div th:replace="components/confirmation_modal :: confirmation-modal (message='Do you really want to remove this file?', action='/delete/' + ${entry.path}, method='delete')"/>
         </th:block>
     </ul>
 
