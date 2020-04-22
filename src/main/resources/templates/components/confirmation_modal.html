@@ -1,25 +1,19 @@
-<!DOCTYPE html>
-<html lang="en"
-      layout:decorate="~{layout}">
-<head>
-    <title th:text="${title}">Mordor</title>
-</head>
-<body>
-<div th:fragment="delete-modal (path)" th:assert="${!#strings.isEmpty(path)}">
-    <div class="modal fade" id="confirm-delete" role="dialog" tabindex="-1" aria-labelledby="confirm-delete-label" aria-hidden="true"
+<div th:fragment="confirmation-modal (message, action, method)"
+     th:assert="${!#strings.isEmpty(message) and !#strings.isEmpty(action) and !#strings.isEmpty(method)}">
+    <div class="modal fade" id="confirm" role="dialog" tabindex="-1" aria-labelledby="confirm-label" aria-hidden="true"
          sec:authorize="hasRole('ROLE_MANAGE_FILES')">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="confirm-delete-label">Confirmation</h5>
+                    <h5 class="modal-title" id="confirm-label">Confirmation</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">Do you want to remove file permanently?</div>
+                <div class="modal-body" th:text="${message}"/>
                 <div class="modal-footer">
                     <a class="btn btn-light" data-dismiss="modal" type="button">No</a>
-                    <form th:action="@{'/delete/' + ${path}}" th:method="delete">
+                    <form th:action="@{${action}}" th:method="${method}">
                         <button type="submit" class="btn btn-danger">Yes</button>
                     </form>
                 </div>
@@ -27,5 +21,3 @@
         </div>
     </div>
 </div>
-</body>
-</html>

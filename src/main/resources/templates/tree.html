@@ -25,10 +25,10 @@
 
                 <a class="btn btn-danger float-right"
                    href="#"
-                   data-toggle="modal" data-target="#confirm-delete"
+                   data-toggle="modal" data-target="#confirm"
                    sec:authorize="hasRole('ROLE_MANAGE_FILES')"><i class="fas fa-trash"></i></a>
             </li>
-            <div th:replace="components/delete_modal :: delete-modal (path=${entry.path})"></div>
+            <div th:replace="components/confirmation_modal :: confirmation-modal (message='Do you really want to remove this file?', action='/delete/' + ${entry.path}, method='delete')"></div>
         </th:block>
     </ul>
 
