@@ -5,5 +5,5 @@ interface RepositoryEntity {
 
     val relativePath: String
 
-    fun needsMetadata() : Boolean { return false }
+    fun needsMetadata(): Boolean { return false }
 }

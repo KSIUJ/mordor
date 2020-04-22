@@ -98,5 +98,5 @@ class RepositoryFile(
     }
 
     override fun needsMetadata(): Boolean { return true }
-    //TODO: check for hidden files
+    // TODO: check for hidden files
 }

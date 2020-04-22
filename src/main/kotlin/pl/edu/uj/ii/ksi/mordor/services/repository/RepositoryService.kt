@@ -41,7 +41,7 @@ class RepositoryService(@Value("\${mordor.root_path}") private val rootPathStr: 
     fun fileExists(path: String): Boolean {
         return getAbsolutePath(path).toFile().exists()
     }
-    
+
     private fun getDirectoryChildren(fullPath: Path, includeHiddenFiles: Boolean): List<RepositoryEntity> {
         val stream = Files.newDirectoryStream(fullPath)
         val children = mutableListOf<RepositoryEntity>()
