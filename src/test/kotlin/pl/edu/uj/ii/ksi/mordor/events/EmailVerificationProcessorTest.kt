@@ -32,7 +32,7 @@ class EmailVerificationProcessorTest {
     @Test
     fun startEmailVerification() {
         val user = User(0, "jsmith", null, "jsmith@example.com", "John",
-            "Smith", false, Role.NOBODY)
+            "Smith", false, Role.NOBODY, ArrayList())
         val event = OnEmailVerificationRequestedEvent(user)
 
         emailVerificationProcessor.startEmailVerification(event)

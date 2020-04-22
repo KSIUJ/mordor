@@ -123,7 +123,7 @@ class UsersController(private val userRepository: UserRepository, private val us
             return ModelAndView("admin/user_create", HttpStatus.BAD_REQUEST)
         }
         val user = User(null, form.userName, form.password, form.email,
-            form.firstName, form.lastName, form.enabled, form.role)
+            form.firstName, form.lastName, form.enabled, form.role, ArrayList())
         userRepository.save(user)
         return ModelAndView(RedirectView("/admin/users/"))
     }

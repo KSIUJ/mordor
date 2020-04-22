@@ -1,12 +1,19 @@
 package pl.edu.uj.ii.ksi.mordor.persistence.entities
 
-import javax.persistence.*
+import javax.persistence.CascadeType
+import javax.persistence.Column
+import javax.persistence.Entity
+import javax.persistence.FetchType
+import javax.persistence.GeneratedValue
+import javax.persistence.GenerationType
+import javax.persistence.Id
+import javax.persistence.OneToMany
+import javax.persistence.OneToOne
 
 @Entity
 data class FileMetadata(
     @Id
-    @Column(name = "metadata_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     var id: Long? = null,
 
     @Column(unique = true, nullable = false)
@@ -18,5 +25,14 @@ data class FileMetadata(
 
     var description: String?,
 
-    var mimeType: String?
+    var mimeType: String?,
+
+    @OneToOne(mappedBy = "file", orphanRemoval = true, cascade = [CascadeType.REMOVE], fetch = FetchType.LAZY)
+    var thumbnail: FileThumbnail?,
+
+    @OneToOne(mappedBy = "file", orphanRemoval = true, cascade = [CascadeType.REMOVE], fetch = FetchType.LAZY)
+    var crawledContent: FileContent?,
+
+    @OneToMany(mappedBy = "metadata", orphanRemoval = true)
+    var files: List<FileEntry>?
 )
