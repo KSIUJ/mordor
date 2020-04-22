@@ -3,6 +3,7 @@ package pl.edu.uj.ii.ksi.mordor.services
 import net.sourceforge.tess4j.Tesseract
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject
+import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import java.awt.image.BufferedImage
 import java.io.File
@@ -41,6 +42,14 @@ class PDFTextExtractor(private val tesseract: Tesseract) : FileTextExtractor {
         }
         doc.close()
         return bufferedImages
+    }
+
+    @Scheduled(fixedDelay = 90 * 1000)
+    fun usunmnie() {
+        print("AAAAAAAA")
+
+        val f = File("eng_scanned.pdf")
+        print(extract(f))
     }
 
 }

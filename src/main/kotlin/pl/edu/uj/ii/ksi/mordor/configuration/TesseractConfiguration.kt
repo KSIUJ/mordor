@@ -9,6 +9,7 @@ class TesseractConfiguration {
     @Bean
     fun tesseract(): Tesseract {
         val tesseract = Tesseract()
+        tesseract.setDatapath("./src/main/resources/")
         tesseract.setLanguage("pol+eng")
         return tesseract
     }
