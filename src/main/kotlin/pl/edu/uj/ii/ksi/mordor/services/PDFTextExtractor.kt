@@ -43,15 +43,6 @@ class PDFTextExtractor(private val tesseract: Tesseract) : FileTextExtractor {
         doc.close()
         return bufferedImages
     }
-
-    @Scheduled(fixedDelay = 90 * 1000)
-    fun usunmnie() {
-        print("AAAAAAAA")
-
-        val f = File("eng_scanned.pdf")
-        print(extract(f))
-    }
-
 }
 
 
