@@ -1,5 +1,6 @@
 package pl.edu.uj.ii.ksi.mordor.services
 
+import java.io.File
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import pl.edu.uj.ii.ksi.mordor.persistence.entities.FileEntry
@@ -32,5 +33,9 @@ class FileEntryService(
     private fun getPrefix(entry: FileEntry): String {
         // TODO
         return ""
+    }
+
+    fun isFileValidEntryCandidate(file: File): Boolean {
+        return file.exists() && !file.isDirectory && !file.isHidden
     }
 }
