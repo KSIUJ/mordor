@@ -11,5 +11,8 @@ data class FileEntry(
     var path: String,
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    var metadata: FileMetadata
+    var metadata: FileMetadata,
+
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    var session: FileUploadSession
 )
