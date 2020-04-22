@@ -60,7 +60,7 @@ class UserRegistrationController(
         }
 
         val newUser = User(userName = user.userName, email = user.email, firstName = user.firstName,
-            lastName = user.lastName, enabled = true)
+            lastName = user.lastName, enabled = true, uploadSessions = ArrayList())
         userRepository.save(newUser)
         eventPublisher.publishEvent(OnEmailVerificationRequestedEvent(newUser))
         return ModelAndView("registration/verify_email")
