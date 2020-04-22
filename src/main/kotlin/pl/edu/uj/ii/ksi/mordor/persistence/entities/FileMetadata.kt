@@ -34,5 +34,5 @@ data class FileMetadata(
     var crawledContent: FileContent?,
 
     @OneToMany(mappedBy = "metadata", orphanRemoval = true)
-    var files: List<FileEntry>?
+    var files: List<FileEntry>? = mutableListOf()
 )
