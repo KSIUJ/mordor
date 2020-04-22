@@ -9,7 +9,6 @@ import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryService
 
 @Service
 class MetadataCrawler(
-    @Value("\${spring.mvc.static-path-pattern}") private val pattern: String,
     @Value("\${mordor.root_path}") private val rootPathStr: String,
     val repositoryService: RepositoryService,
     val fileEntryCreator: FileEntryCreator
