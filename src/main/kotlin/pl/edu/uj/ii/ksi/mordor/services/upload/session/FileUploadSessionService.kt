@@ -1,6 +1,8 @@
 package pl.edu.uj.ii.ksi.mordor.services.upload.session
 
+import java.awt.print.Pageable
 import org.apache.commons.io.monitor.FileEntry
+import org.springframework.data.domain.Page
 import org.springframework.stereotype.Service
 
 @Service
@@ -13,7 +15,7 @@ class FileUploadSessionService {
         return ArrayList()
     }
 
-    fun getAllSessions(): List<FileUploadSession> {
-        return ArrayList()
+    fun getAllSessions(pageable: Pageable): Page<FileUploadSession> {
+        return Page.empty()
     }
 }

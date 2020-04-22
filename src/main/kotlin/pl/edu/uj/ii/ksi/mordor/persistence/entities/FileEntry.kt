@@ -12,5 +12,4 @@ data class FileEntry(
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     var metadata: FileMetadata
-
 )

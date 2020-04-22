@@ -31,5 +31,4 @@ data class User(
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     var role: Role = Role.NOBODY
-
 )

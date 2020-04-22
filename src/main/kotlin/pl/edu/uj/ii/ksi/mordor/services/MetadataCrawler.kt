@@ -6,13 +6,13 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import pl.edu.uj.ii.ksi.mordor.persistence.repositories.FileEntryRepository
+import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryService
 
 @Service
 class MetadataCrawler(
     @Value("\${spring.mvc.static-path-pattern}") private val pattern: String,
     @Value("\${mordor.root_path}") private val rootPathStr: String,
-    val fileEntryService: FileEntryService,
-    val fileEntryRepository: FileEntryRepository,
+    val repositoryService: RepositoryService,
     val fileEntryCreator: FileEntryCreator
 ) {
 
@@ -30,6 +30,6 @@ class MetadataCrawler(
     }
 
     private fun needMetadata(file: File): Boolean {
-        return fileEntryService.isFileValidEntryCandidate(file) && !fileEntryRepository.existsById(file.path)
+        return repositoryService.fileExists(file.path) && repositoryService.getEntity(file.path)?.needsMetadata()!!
     }
 }
