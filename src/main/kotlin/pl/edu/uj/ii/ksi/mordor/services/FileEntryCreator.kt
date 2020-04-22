@@ -19,9 +19,16 @@ class FileEntryCreator(
 ) {
 
     fun create(file: File): FileEntry {
-        val metadata = getMetadata(file)
-        createContent(file, metadata)
+        val metadata = findOrCreateMetadata(file)
+        checkOrCreateContent(file, metadata)
         return createEntry(file, metadata)
+    }
+
+    private fun checkOrCreateContent(file: File, metadata: FileMetadata) {
+        val id = metadata.crawledContent?.id
+        if (id ?.let { contentRepository.existsById(it) } == true) {
+            createContent(file, metadata)
+        }
     }
 
     private fun createContent(file: File, metadata: FileMetadata) {
@@ -35,20 +42,22 @@ class FileEntryCreator(
         return entryRepository.save(entry)
     }
 
-    private fun getMetadata(file: File): FileMetadata {
-        val metadata = metadataExtractor.extract(file)
-        return checkIfFileHashIsUnique(metadata)
+    private fun findOrCreateMetadata(file: File): FileMetadata {
+        // TODO: hash is calculated twice
+        val hash = metadataExtractor.calculateHash(file)
+        val sameHashMetadata = metadataRepository.findByFileHash(hash)
+        return checkTheSameHashMetadata(sameHashMetadata, file)
     }
 
-    private fun checkIfFileHashIsUnique(metadata: FileMetadata): FileMetadata {
-        val sameHashMetadata = metadata.fileHash?.let { metadataRepository.findByFileHash(it) }
+    private fun checkTheSameHashMetadata(sameHashMetadata: FileMetadata?, file: File): FileMetadata {
         if (sameHashMetadata != null) {
             return sameHashMetadata
         }
-        return saveMetadata(metadata)
+        return saveMetadata(file)
     }
 
-    private fun saveMetadata(metadata: FileMetadata): FileMetadata {
+    private fun saveMetadata(file: File): FileMetadata {
+        val metadata = metadataExtractor.extract(file = file)
         return metadataRepository.save(metadata)
     }
 }
