@@ -10,5 +10,8 @@ interface ThumbnailExtractor {
     val height: Int
         get() = 200
 
+    val transparent: Int
+        get() = 0x00FFFFFF
+
     fun extract(file: File): ByteArray?
 }

@@ -27,7 +27,7 @@ class ThumbnailExtractorFromImage : ThumbnailExtractor {
         return bos.toByteArray()
     }
 
-    private fun getTransparentScaledImage(image: BufferedImage, finalWidth: Int, finalHeight: Int): BufferedImage{
+    private fun getTransparentScaledImage(image: BufferedImage, finalWidth: Int, finalHeight: Int): BufferedImage {
         val scaledWidth = computeScaledWidth(image, finalWidth, finalHeight)
         val scaledHeight = computeScaledHeight(image, finalWidth, finalHeight)
 
@@ -70,7 +70,6 @@ class ThumbnailExtractorFromImage : ThumbnailExtractor {
 
     private fun makeColorTransparent(image: BufferedImage, color: Color): Image {
         val markerRGB = color.rgb or -0x1000000
-        val transparent = 0x00FFFFFF
 
         val filter: ImageFilter = object : RGBImageFilter() {
             override fun filterRGB(x: Int, y: Int, rgb: Int): Int {
