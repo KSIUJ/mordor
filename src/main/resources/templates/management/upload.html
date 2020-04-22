@@ -9,12 +9,16 @@
     <h1>Upload new file</h1>
     <form th:action="@{'/management/upload/'}" th:object="${form}" method="post" enctype="multipart/form-data">
         <div class="form-group">
-            <label for="file">File:</label>
+            <label for="file">File</label>
             <div class="custom-file">
                 <input type="file" class="custom-file-input " th:field="*{file}" id="file">
                 <label class="custom-file-label" for="file">Choose file</label>
             </div>
             <div class="alert alert-danger" th:if="${#fields.hasErrors('file')}" th:errors="*{file}">error</div>
+        </div>
+        <div class="form-group">
+            <label th:for="mount-path">File Destination</label>
+            <input type="text" class="form-control" th:name="mount-path"/>
         </div>
         <button type="submit" class="btn btn-primary">Upload</button>
     </form>
