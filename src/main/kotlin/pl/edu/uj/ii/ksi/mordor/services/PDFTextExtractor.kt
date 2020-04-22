@@ -1,13 +1,12 @@
 package pl.edu.uj.ii.ksi.mordor.services
 
+import java.awt.image.BufferedImage
+import java.io.File
+import java.util.LinkedList
 import net.sourceforge.tess4j.Tesseract
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject
 import org.springframework.stereotype.Service
-import java.awt.image.BufferedImage
-import java.io.File
-import java.util.*
-
 
 @Service
 class PDFTextExtractor(private val tesseract: Tesseract) : FileTextExtractor {
@@ -43,5 +42,3 @@ class PDFTextExtractor(private val tesseract: Tesseract) : FileTextExtractor {
         return bufferedImages
     }
 }
-
-
