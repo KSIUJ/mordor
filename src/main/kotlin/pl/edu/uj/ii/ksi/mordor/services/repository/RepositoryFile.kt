@@ -96,4 +96,7 @@ class RepositoryFile(
     override fun hashCode(): Int {
         return relativePath.hashCode()
     }
+
+    override fun needsMetadata(): Boolean { return true }
+    //TODO: check for hidden files
 }
