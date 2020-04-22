@@ -3,7 +3,6 @@ package pl.edu.uj.ii.ksi.mordor.services
 import net.sourceforge.tess4j.Tesseract
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject
-import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import java.awt.image.BufferedImage
 import java.io.File
