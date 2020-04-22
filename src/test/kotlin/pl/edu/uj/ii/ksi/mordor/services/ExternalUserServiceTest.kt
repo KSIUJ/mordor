@@ -16,9 +16,9 @@ class ExternalUserServiceTest {
     companion object {
         private val externalUser = ExternalUser("test", "test@example.com", "Test", "User", Role.ADMIN)
         private val localUser = User(0, externalUser.userName, null, "test2@example.com",
-            "Test2", "User2", false, Role.EXTERNAL, ArrayList())
+            "Test2", "User2", false, Role.EXTERNAL)
         private val overrideUser = User(0, externalUser.userName, null, "test2@example.com",
-            "Test2", "User2", false, Role.MOD, ArrayList())
+            "Test2", "User2", false, Role.MOD)
     }
 
     @Test

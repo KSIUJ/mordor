@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service
 import pl.edu.uj.ii.ksi.mordor.persistence.entities.FileEntry
 import pl.edu.uj.ii.ksi.mordor.persistence.repositories.FileEntryRepository
 import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryService
+import pl.edu.uj.ii.ksi.mordor.services.upload.session.FileUploadSessionService
 
 @Service
 class FileEntryService(
@@ -29,9 +30,7 @@ class FileEntryService(
     }
 
     private fun getPrefix(entry: FileEntry): String {
-        if (!fileUploadSessionService.isAccepted(entry.session)) {
-            return pendingSessionPath + "/" + entry.session.id
-        }
+        // TODO
         return ""
     }
 }

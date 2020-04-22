@@ -23,7 +23,7 @@ class DevDataLoader(
         if (enabled && userRepository.findByUserName("admin") == null) {
             log.warn("Creating admin user: admin:test")
             userRepository.save(User(0, "admin", "{noop}test", "", "", "",
-                true, Role.ADMIN, ArrayList()))
+                true, Role.ADMIN))
         }
     }
 }

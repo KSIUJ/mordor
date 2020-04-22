@@ -7,7 +7,6 @@ import javax.persistence.Enumerated
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
-import javax.persistence.OneToMany
 
 @Entity
 data class User(
@@ -31,8 +30,6 @@ data class User(
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    var role: Role = Role.NOBODY,
+    var role: Role = Role.NOBODY
 
-    @OneToMany(mappedBy = "user", orphanRemoval = true)
-    var uploadSessions: List<FileUploadSession>?
 )

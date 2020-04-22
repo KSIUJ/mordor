@@ -16,7 +16,7 @@ class ExternalUserService(private val userRepository: UserRepository) {
         var localUser = userRepository.findByUserName(externalUser.userName)
         if (localUser == null) {
             logger.info("Creating new external user ${externalUser.userName}")
-            localUser = User(uploadSessions = ArrayList())
+            localUser = User()
             localUser.userName = externalUser.userName
             localUser.role = Role.EXTERNAL
         }

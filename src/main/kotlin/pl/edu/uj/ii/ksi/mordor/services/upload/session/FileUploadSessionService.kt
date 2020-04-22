@@ -1,16 +1,15 @@
-package pl.edu.uj.ii.ksi.mordor.services
+package pl.edu.uj.ii.ksi.mordor.services.upload.session
 
 import org.springframework.stereotype.Service
-import pl.edu.uj.ii.ksi.mordor.persistence.entities.FileUploadSession
 
 @Service
 class FileUploadSessionService {
     // TODO: Implementation
-    fun isAccepted(uploadSession: FileUploadSession): Boolean {
-        return true
-    }
-
     fun accept(uploadSession: FileUploadSession) {}
 
     fun reject(uploadSession: FileUploadSession) {}
+
+    fun getAllSessions(): List<FileUploadSession> {
+        return ArrayList()
+    }
 }
