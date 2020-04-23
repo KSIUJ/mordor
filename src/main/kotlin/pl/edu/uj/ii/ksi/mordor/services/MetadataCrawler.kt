@@ -28,6 +28,7 @@ class MetadataCrawler(
     }
 
     private fun needMetadata(file: File): Boolean {
+        // TODO check if fileHash is the same
         return repositoryService.getEntity(file.path)?.needsMetadata() ?: false
     }
 }
