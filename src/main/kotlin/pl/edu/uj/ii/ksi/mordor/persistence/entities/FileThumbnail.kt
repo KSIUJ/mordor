@@ -18,4 +18,8 @@ data class FileThumbnail(
     @Suppress("ArrayInDataClass")
     @Column(length = 200 * 1024)
     var thumbnail: ByteArray?
-)
+) {
+    override fun toString(): String {
+        return "${this.javaClass.simpleName}-$id"
+    }
+}

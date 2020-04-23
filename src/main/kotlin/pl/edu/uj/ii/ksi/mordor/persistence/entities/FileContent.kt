@@ -18,4 +18,6 @@ data class FileContent(
 
     @Column(length = 200 * 1024)
     var text: String?
-)
+) {
+    override fun toString(): String { return "${this.javaClass.simpleName}-$id" }
+}

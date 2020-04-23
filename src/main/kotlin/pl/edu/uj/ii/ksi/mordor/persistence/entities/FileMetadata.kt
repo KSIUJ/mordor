@@ -35,4 +35,6 @@ data class FileMetadata(
 
     @OneToMany(mappedBy = "metadata", orphanRemoval = true)
     var files: List<FileEntry>? = mutableListOf()
-)
+) {
+    override fun toString(): String { return "${this.javaClass.simpleName}-$id" }
+}
