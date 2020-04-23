@@ -20,46 +20,59 @@ class FileEntryCreator(
     private val hashProvider: FileHashProvider
 ) {
 
-    fun create(file: File): FileEntry {
-        val metadata = findOrCreateMetadata(file)
-        checkOrCreateContent(file, metadata)
-        return createEntry(file, metadata)
+    companion object {
+        // TODO: move to config
+        private const val contentMaxLength: Int = 24 * 1024
     }
 
-    private fun checkOrCreateContent(file: File, metadata: FileMetadata) {
-        val id = metadata.crawledContent?.id
-        if (id ?.let { contentRepository.existsById(it) } == true) {
-            createContent(file, metadata)
-        }
+    fun create(file: File) {
+        val metadata = findMetadataWithSameHash(file)
+        if (metadata == null) {
+            createAllMetadata(file)
+        } else createThenSaveEntry(metadata, file)
     }
 
-    private fun createContent(file: File, metadata: FileMetadata) {
-        val text = fileTextExtractor.extract(file)
-        val content = FileContent(text = text, file = metadata)
+    private fun createAllMetadata(file: File) {
+        val extracted = extractThenSaveMetadata(file)
+        addThenSaveForeignKeys(extracted, file)
+    }
+
+    private fun extractThenSaveMetadata(file: File): FileMetadata {
+        val extracted = metadataExtractor.extract(file)
+        return metadataRepository.save(extracted)
+    }
+
+    private fun addThenSaveForeignKeys(metadata: FileMetadata, file: File) {
+        val content = createContent(file = file, metadata = metadata)
+        metadata.crawledContent = content
+        // TODO: val thumbnail = createThumbnail(file, metadata)
+        createThenSaveEntry(metadata, file)
+        saveContentAndThumbnail(content)
+    }
+
+    private fun saveContentAndThumbnail(content: FileContent) {
         contentRepository.save(content)
+        // TODO: thumbnailRepository.save(thumbnail)
     }
 
-    private fun createEntry(file: File, metadata: FileMetadata): FileEntry {
+    private fun createContent(file: File, metadata: FileMetadata): FileContent {
+        val extractor = fileTextExtractor.maxLength(contentMaxLength)
+        return FileContent(id = metadata.id, text = extractor.extract(file), file = metadata)
+    }
+
+    private fun createThenSaveEntry(metadata: FileMetadata, file: File) {
         val entry = FileEntry(path = file.path, metadata = metadata)
-        return entryRepository.save(entry)
+        addAndSaveEntryToMetadata(metadata, entry)
+        entryRepository.save(entry)
     }
 
-    private fun findOrCreateMetadata(file: File): FileMetadata {
-        // TODO: hash is calculated twice
+    private fun addAndSaveEntryToMetadata(metadata: FileMetadata, entry: FileEntry) {
+        metadata.files?.plus(entry)
+        metadataRepository.save(metadata)
+    }
+
+    private fun findMetadataWithSameHash(file: File): FileMetadata? {
         val hash = hashProvider.calculate(file)
-        val sameHashMetadata = metadataRepository.findByFileHash(hash)
-        return checkTheSameHashMetadata(sameHashMetadata, file)
-    }
-
-    private fun checkTheSameHashMetadata(sameHashMetadata: FileMetadata?, file: File): FileMetadata {
-        if (sameHashMetadata != null) {
-            return sameHashMetadata
-        }
-        return saveMetadata(file)
-    }
-
-    private fun saveMetadata(file: File): FileMetadata {
-        val metadata = metadataExtractor.extract(file = file)
-        return metadataRepository.save(metadata)
+        return metadataRepository.findByFileHash(hash)
     }
 }
