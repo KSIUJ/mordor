@@ -6,8 +6,13 @@ import java.security.MessageDigest
 import org.springframework.stereotype.Service
 
 @Service
-class Sha256FileHashProvider(private val messageDigest: MessageDigest) : FileHashProvider {
+class Sha256FileHashProvider : FileHashProvider {
+    companion object {
+        const val algorithm = "SHA3-256"
+    }
+
     override fun calculate(file: File): String {
+        val messageDigest = MessageDigest.getInstance(algorithm)
         val bytes = Files.readAllBytes(file.toPath())
         return messageDigest.digest(bytes).toString()
     }
