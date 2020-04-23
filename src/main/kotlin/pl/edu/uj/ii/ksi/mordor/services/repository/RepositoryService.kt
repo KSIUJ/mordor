@@ -4,13 +4,19 @@ import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.util.Optional
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import pl.edu.uj.ii.ksi.mordor.exceptions.BadRequestException
+import pl.edu.uj.ii.ksi.mordor.persistence.entities.FileEntry
+import pl.edu.uj.ii.ksi.mordor.persistence.repositories.FileEntryRepository
 
 @Service
-class RepositoryService(@Value("\${mordor.root_path}") private val rootPathStr: String) {
+class RepositoryService(
+    @Value("\${mordor.root_path}") private val rootPathStr: String,
+    private val entryRepository: FileEntryRepository
+) {
     companion object {
         private val logger = LoggerFactory.getLogger(RepositoryService::class.java)
     }
@@ -59,20 +65,33 @@ class RepositoryService(@Value("\${mordor.root_path}") private val rootPathStr: 
 
     private fun getRepositoryEntity(fullPath: Path): RepositoryEntity? {
         val file: File = fullPath.toFile()
-
         when {
             !file.exists() -> return null
             !file.canRead() -> return null
             file.isDirectory -> return object : RepositoryDirectory(file.name,
                 rootPath.relativize(fullPath).toString()) {
-
                 override fun getChildren(includeHiddenFiles: Boolean): List<RepositoryEntity> {
                     return getDirectoryChildren(fullPath, includeHiddenFiles)
                 }
             }
-            // TODO: add metadata.
-            else -> return RepositoryFile(file.name, rootPath.relativize(fullPath).toString(), file,
-                null, null, null, null, null)
+            else -> return returnRepositoryFile(file, fullPath)
         }
+    }
+
+    private fun returnRepositoryFile(file: File, fullPath: Path): RepositoryEntity? {
+        val entry: Optional<FileEntry> = entryRepository.findById(file.path)
+        return if (entry.isPresent) {
+            getFileWithMetadata(file, fullPath, entry.get())
+        } else {
+            RepositoryFile(file.name, rootPath.relativize(fullPath).toString(), file,
+                    null, null, null, null, null)
+        }
+    }
+
+    private fun getFileWithMetadata(file: File, fullPath: Path, fileEntry: FileEntry): RepositoryEntity? {
+        val metadata = fileEntry.metadata!!
+        // TODO: add thumbnail
+        return RepositoryFile(file.name, rootPath.relativize(fullPath).toString(), file,
+                metadata.title, metadata.author, metadata.description, metadata.mimeType, null)
     }
 }
