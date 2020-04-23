@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service
 @Service
 class Sha256FileHashProvider : FileHashProvider {
     companion object {
-        const val algorithm = "SHA3-256"
+        const val algorithm = "SHA-256"
     }
 
     override fun calculate(file: File): String {
