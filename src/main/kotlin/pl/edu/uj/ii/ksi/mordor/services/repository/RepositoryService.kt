@@ -7,6 +7,7 @@ import java.nio.file.Paths
 import java.util.Optional
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.core.io.InputStreamSource
 import org.springframework.stereotype.Service
 import pl.edu.uj.ii.ksi.mordor.exceptions.BadRequestException
 import pl.edu.uj.ii.ksi.mordor.persistence.entities.FileEntry
@@ -46,6 +47,11 @@ class RepositoryService(
 
     fun fileExists(path: String): Boolean {
         return getAbsolutePath(path).toFile().exists()
+    }
+
+    @Suppress("NotImplementedDeclaration")
+    fun saveFile(path: String, inputStreamSource: InputStreamSource) {
+        TODO("Not yet implemented")
     }
 
     private fun getDirectoryChildren(fullPath: Path, includeHiddenFiles: Boolean): List<RepositoryEntity> {
