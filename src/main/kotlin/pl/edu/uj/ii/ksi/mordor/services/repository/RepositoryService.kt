@@ -50,7 +50,7 @@ class RepositoryService(
     }
 
     @Suppress("NotImplementedDeclaration")
-    fun saveFile(path: String, inputStreamSource: InputStreamSource) {
+    fun saveFile(path: String, inputStreamSource: InputStreamSource): RepositoryEntity? {
         TODO("Not yet implemented")
     }
 
