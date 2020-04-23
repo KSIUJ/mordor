@@ -8,21 +8,31 @@
 <div layout:fragment="content">
     <div class="container-fluid">
         <h1 th:text="'Review of session #' + ${sessionId}"></h1>
-        <div>
-            <a th:href="'/review/approve/' + ${userId} + '/' + ${sessionId} + '/'" class="btn btn-danger">Reject</a>
-            <a th:href="'/review/reject/' + ${userId} + '/' + ${sessionId} + '/'" class="btn btn-success">Approve</a>
+        <div class="row">
+            <form class="d-inline-flex p-2" method="POST" th:action="@{'/review/reject/' + ${userId} + '/' + ${sessionId} + '/'}">
+                <button type="submit" name="submit" value="value" class="btn btn-danger">Reject</button>
+            </form>
+            <form class="d-inline-flex p-2" method="POST" th:action="@{'/review/approve/' + ${userId} + '/' + ${sessionId} + '/'}">
+                <button type="submit" name="submit" value="value" class="btn btn-success">Approve</button>
+            </form>
         </div>
     </div>
 
-<!--    <ul th:unless="${files.empty}" class="list-group list-group-flush">-->
-<!--    <th:block th:each="entry : ${files}">-->
-<!--        <li class="list-group-item">-->
-<!--            <i th:attr="class='mx-2 fas fa-lg ' + ${entry.iconName}"></i>-->
-<!--            <a th:text="${entry.name}"></a>-->
-<!--        </li>-->
-<!--    </th:block>-->
-<!--    </ul>-->
 
+    <div class="container-fluid pt-2">
+        <div th:if="${files.empty}">
+            <h5>There are no files here.</h5>
+        </div>
+
+        <ul th:unless="${files.empty}" class="list-group list-group-flush">
+            <th:block th:each="entry : ${files}">
+                <li class="list-group-item">
+                    <i th:attr="class='mx-2 fas fa-lg ' + ${entry.iconName}"></i>
+                    <a th:text="${entry.name}"></a>
+                </li>
+            </th:block>
+        </ul>
+    </div>
 </div>
 </body>
 </html>

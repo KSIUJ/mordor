@@ -38,12 +38,12 @@ class FileManagementController(
         if (result.hasErrors()) {
             return ModelAndView("management/upload", HttpStatus.BAD_REQUEST)
         }
-        return ModelAndView("/file/")
+        return ModelAndView(RedirectView("/file/"))
     }
 
     @GetMapping("/review/")
     fun sessionReviewList(): ModelAndView {
-        val sessions = arrayOf<SessionEntry>()
+        val sessions = arrayOf(SessionEntry(1, "jaki", "4567"))
 
         // TODO: - sort by timestamp
         val sortedSessions = sessions.sortedBy { it.userName }
@@ -61,7 +61,7 @@ class FileManagementController(
         return ModelAndView("review/session_review", mapOf(
                 "sessionId" to sessionId,
                 "userId" to userId,
-                "files" to arrayOf<FilesystemController.FileEntry>()
+                "files" to listOf<FilesystemController.FileEntry>()
         ))
 //        val user = userRepository.findById(userId)
 //        if (user.isPresent) {
