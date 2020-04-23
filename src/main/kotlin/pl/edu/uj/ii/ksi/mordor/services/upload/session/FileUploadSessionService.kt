@@ -1,21 +1,20 @@
 package pl.edu.uj.ii.ksi.mordor.services.upload.session
 
-import java.awt.print.Pageable
 import org.apache.commons.io.monitor.FileEntry
-import org.springframework.data.domain.Page
 import org.springframework.stereotype.Service
 
 @Service
+@Suppress("NotImplementedDeclaration")
 class FileUploadSessionService {
-    fun accept(uploadSession: FileUploadSession) {}
-
-    fun reject(uploadSession: FileUploadSession) {}
-
     fun getAllFiles(uploadSession: FileUploadSession): List<FileEntry> {
-        return ArrayList()
+        TODO("Not yet implemented")
     }
 
-    fun getAllSessions(pageable: Pageable): Page<FileUploadSession> {
-        return Page.empty()
+    fun accept(uploadSession: FileUploadSession) {
+        TODO("Not yet implemented")
+    }
+
+    fun reject(uploadSession: FileUploadSession) {
+        TODO("Not yet implemented")
     }
 }
