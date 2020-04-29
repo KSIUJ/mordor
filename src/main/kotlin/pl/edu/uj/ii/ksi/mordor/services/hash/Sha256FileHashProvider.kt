@@ -1,5 +1,6 @@
 package pl.edu.uj.ii.ksi.mordor.services.hash
 
+import com.coremedia.iso.Hex
 import java.io.File
 import java.nio.file.Files
 import java.security.MessageDigest
@@ -14,6 +15,6 @@ class Sha256FileHashProvider : FileHashProvider {
     override fun calculate(file: File): String {
         val messageDigest = MessageDigest.getInstance(algorithm)
         val bytes = Files.readAllBytes(file.toPath())
-        return messageDigest.digest(bytes).toString()
+        return Hex.encodeHex(messageDigest.digest(bytes))
     }
 }

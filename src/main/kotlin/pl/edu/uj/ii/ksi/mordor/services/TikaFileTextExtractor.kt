@@ -1,28 +1,31 @@
 package pl.edu.uj.ii.ksi.mordor.services
 
 import java.io.File
+import java.io.IOException
+import kotlin.math.min
 import org.apache.tika.Tika
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryService
 
 @Service
 class TikaFileTextExtractor(private val tika: Tika) : FileTextExtractor {
-    private var maxLength: Int? = null
-
-    override fun maxLength(maxLength: Int): FileTextExtractor {
-        this.maxLength = maxLength
-        return this
+    companion object {
+        private val logger = LoggerFactory.getLogger(RepositoryService::class.java)
     }
 
-    override fun extract(file: File): String? {
-        val text = tika.parse(file).readText()
-        return trim(text)
-    }
-
-    private fun trim(text: String): String {
-        return if (maxLength != null) {
-            text.toCharArray().take(maxLength ?: text.length).toString()
-        } else {
-            text
+    override fun extract(file: File, maxLength: Int): String? {
+        return try {
+            val text = tika.parse(file).readText()
+            if (maxLength >= 0) {
+                val endIndex = min(text.length, maxLength)
+                text.subSequence(0, endIndex).toString()
+            } else {
+                text
+            }
+        } catch (e: IOException) {
+            logger.warn("Extraction of file text failed, returning empty text instead", e)
+            ""
         }
     }
 }

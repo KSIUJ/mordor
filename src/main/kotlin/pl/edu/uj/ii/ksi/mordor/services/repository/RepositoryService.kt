@@ -1,6 +1,7 @@
 package pl.edu.uj.ii.ksi.mordor.services.repository
 
 import java.io.File
+import java.io.FileOutputStream
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -9,14 +10,17 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.io.InputStreamSource
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import pl.edu.uj.ii.ksi.mordor.exceptions.BadRequestException
 import pl.edu.uj.ii.ksi.mordor.persistence.entities.FileEntry
 import pl.edu.uj.ii.ksi.mordor.persistence.repositories.FileEntryRepository
+import pl.edu.uj.ii.ksi.mordor.services.FileEntryCreator
 
 @Service
 class RepositoryService(
     @Value("\${mordor.root_path}") private val rootPathStr: String,
-    private val entryRepository: FileEntryRepository
+    private val entryRepository: FileEntryRepository,
+    private val entryCreator: FileEntryCreator
 ) {
     companion object {
         private val logger = LoggerFactory.getLogger(RepositoryService::class.java)
@@ -49,9 +53,69 @@ class RepositoryService(
         return getAbsolutePath(path).toFile().exists()
     }
 
-    @Suppress("NotImplementedDeclaration")
     fun saveFile(path: String, inputStreamSource: InputStreamSource): RepositoryEntity? {
-        TODO("Not yet implemented")
+        val inputStream = inputStreamSource.inputStream
+        val outputPath = getAbsolutePath(path)
+
+        outputPath.toFile().mkdirs()
+        val outputStream = FileOutputStream(outputPath.toString())
+        outputStream.write(inputStream.readBytes())
+        entryCreator.create(outputPath.toFile())
+
+        return getEntity(outputPath.toString())
+    }
+
+    @Transactional
+    fun move(from: String, to: String) {
+        val absoluteToPath = getAbsolutePath(to)
+        val entity = getEntity(from)
+        val absoluteFromPath = getAbsolutePath(from)
+
+        if (entity is RepositoryFile) {
+            Files.move(absoluteFromPath, absoluteToPath)
+            moveEntry(absoluteToPath, absoluteFromPath)
+        } else {
+            val directory = entity as RepositoryDirectory
+            directory.getChildren().forEach { child ->
+                val toEntityPath = "$to/${Paths.get(child.relativePath).fileName}"
+                val fromEntityPath = "$from/${Paths.get(child.relativePath).fileName}"
+                move(fromEntityPath, toEntityPath)
+            }
+            Files.delete(absoluteFromPath)
+        }
+    }
+
+    private fun moveEntry(absoluteToPath: Path, absoluteFromPath: Path) {
+        if (entryRepository.existsById(absoluteToPath.toString())) {
+            entryRepository.deleteById(absoluteToPath.toString())
+        }
+        val entryResult: Optional<FileEntry> = entryRepository.findById(absoluteFromPath.toString())
+
+        val entry: FileEntry
+        if (entryResult.isPresent) {
+            entry = entryResult.get()
+            entry.path = absoluteToPath.toString()
+        } else {
+            entry = entryCreator.create(absoluteToPath.toFile())!!
+        }
+        entryRepository.save(entry)
+    }
+
+    @Transactional
+    fun delete(path: String) {
+        val absolutePath = getAbsolutePath(path)
+        val entity = getEntity(path)
+
+        if (entity is RepositoryFile) {
+            Files.delete(absolutePath)
+            entryRepository.deleteById(absolutePath.toString())
+        } else {
+            val directory = entity as RepositoryDirectory
+            directory.getChildren().forEach { child ->
+                val entityPath = entity.relativePath + Paths.get(child.relativePath).fileName
+                delete(entityPath)
+            }
+        }
     }
 
     private fun getDirectoryChildren(fullPath: Path, includeHiddenFiles: Boolean): List<RepositoryEntity> {
@@ -75,7 +139,7 @@ class RepositoryService(
             !file.exists() -> return null
             !file.canRead() -> return null
             file.isDirectory -> return object : RepositoryDirectory(file.name,
-                rootPath.relativize(fullPath).toString()) {
+                    rootPath.relativize(fullPath).toString()) {
                 override fun getChildren(includeHiddenFiles: Boolean): List<RepositoryEntity> {
                     return getDirectoryChildren(fullPath, includeHiddenFiles)
                 }
@@ -87,17 +151,13 @@ class RepositoryService(
     private fun returnRepositoryFile(file: File, fullPath: Path): RepositoryEntity? {
         val entry: Optional<FileEntry> = entryRepository.findById(file.path)
         return if (entry.isPresent) {
-            getFileWithMetadata(file, fullPath, entry.get())
+            val metadata = entry.get().metadata!!
+            // TODO: add thumbnail
+            RepositoryFile(file.name, rootPath.relativize(fullPath).toString(), file,
+                    metadata.title, metadata.author, metadata.description, metadata.mimeType, null)
         } else {
             RepositoryFile(file.name, rootPath.relativize(fullPath).toString(), file,
                     null, null, null, null, null)
         }
-    }
-
-    private fun getFileWithMetadata(file: File, fullPath: Path, fileEntry: FileEntry): RepositoryEntity? {
-        val metadata = fileEntry.metadata!!
-        // TODO: add thumbnail
-        return RepositoryFile(file.name, rootPath.relativize(fullPath).toString(), file,
-                metadata.title, metadata.author, metadata.description, metadata.mimeType, null)
     }
 }
