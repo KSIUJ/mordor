@@ -13,7 +13,6 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.repository.PagingAndSortingRepository
 import org.springframework.stereotype.Service
-import pl.edu.uj.ii.ksi.mordor.persistence.entities.User
 import pl.edu.uj.ii.ksi.mordor.persistence.repositories.UserRepository
 import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryDirectory
 import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryService
