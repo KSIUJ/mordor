@@ -5,8 +5,6 @@ import pl.edu.uj.ii.ksi.mordor.persistence.entities.User
 
 data class FileUploadSession(
     val id: String,
-
     val user: User,
-
     val creationDate: LocalDateTime
 )
