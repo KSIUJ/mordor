@@ -6,11 +6,13 @@ import org.junit.Assert.*
 import org.junit.Test
 import pl.edu.uj.ii.ksi.mordor.exceptions.BadRequestException
 import pl.edu.uj.ii.ksi.mordor.persistence.repositories.FileEntryRepository
+import pl.edu.uj.ii.ksi.mordor.services.FileEntryCreator
 
 class RepositoryServiceTest {
     private val mockEntryRepository = mock<FileEntryRepository> {}
+    private val mockEntryCreator = mock<FileEntryCreator> {}
 
-    private val repositoryService = RepositoryService("/srv/mordor", mockEntryRepository)
+    private val repositoryService = RepositoryService("/srv/mordor", mockEntryRepository, mockEntryCreator)
 
     @Test
     fun getAbsolutePath_correct() {
