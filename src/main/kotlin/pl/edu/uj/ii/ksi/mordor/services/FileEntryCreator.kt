@@ -2,33 +2,31 @@ package pl.edu.uj.ii.ksi.mordor.services
 
 import java.io.File
 import javax.persistence.EntityManager
-import javax.persistence.criteria.CriteriaQuery
-import javax.persistence.criteria.Root
-import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import pl.edu.uj.ii.ksi.mordor.persistence.entities.FileContent
 import pl.edu.uj.ii.ksi.mordor.persistence.entities.FileEntry
 import pl.edu.uj.ii.ksi.mordor.persistence.entities.FileMetadata
+import pl.edu.uj.ii.ksi.mordor.persistence.repositories.FileMetadataRepository
 import pl.edu.uj.ii.ksi.mordor.services.hash.FileHashProvider
-import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryService
 
 @Service
 class FileEntryCreator(
     private val metadataExtractor: MetadataExtractor,
     private val entityManager: EntityManager,
     private val fileTextExtractor: FileTextExtractor,
-    private val hashProvider: FileHashProvider
+    private val hashProvider: FileHashProvider,
+    private val metadataRepository: FileMetadataRepository
 ) {
 
     companion object {
         private const val contentMaxLength: Int = 24 * 1024
-        private val logger = LoggerFactory.getLogger(RepositoryService::class.java)
     }
 
     @Transactional
     fun create(file: File): FileEntry? {
-        val metadata = findMetadataWithSameHash(file)
+        val hash = hashProvider.calculate(file)
+        val metadata = metadataRepository.findByFileHash(hash)
         return if (metadata == null) {
             createNewMetadata(file)
         } else addEntryToExistingMetadata(metadata, file)
@@ -59,17 +57,5 @@ class FileEntryCreator(
         entityManager.persist(metadata)
         entityManager.persist(entry)
         return entry
-    }
-
-    private fun findMetadataWithSameHash(file: File): FileMetadata? {
-        val hash = hashProvider.calculate(file)
-        val builder = entityManager.criteriaBuilder
-        var query: CriteriaQuery<FileMetadata> = builder.createQuery(FileMetadata::class.java)
-        val criteria: Root<FileMetadata> = query.from(FileMetadata::class.java)
-        query = query
-                .select(criteria)
-                .where(builder.equal(criteria.get<String>("fileHash"), hash))
-
-        return entityManager.createQuery(query).resultList.getOrNull(0)
     }
 }

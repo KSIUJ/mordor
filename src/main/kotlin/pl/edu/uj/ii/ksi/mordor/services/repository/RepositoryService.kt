@@ -2,13 +2,13 @@ package pl.edu.uj.ii.ksi.mordor.services.repository
 
 import java.io.File
 import java.io.FileOutputStream
+import java.io.InputStream
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.Optional
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.core.io.InputStreamSource
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import pl.edu.uj.ii.ksi.mordor.exceptions.BadRequestException
@@ -53,13 +53,12 @@ class RepositoryService(
         return getAbsolutePath(path).toFile().exists()
     }
 
-    fun saveFile(path: String, inputStreamSource: InputStreamSource): RepositoryEntity? {
-        val inputStream = inputStreamSource.inputStream
+    fun saveFile(path: String, inputStream: InputStream): RepositoryEntity? {
         val outputPath = getAbsolutePath(path)
 
         outputPath.toFile().mkdirs()
         val outputStream = FileOutputStream(outputPath.toString())
-        outputStream.write(inputStream.readBytes())
+        inputStream.copyTo(outputStream)
         entryCreator.create(outputPath.toFile())
 
         return getEntity(outputPath.toString())
