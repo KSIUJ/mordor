@@ -101,7 +101,7 @@ class RepositoryService(
     }
 
     @Transactional
-    fun delete(path: String, recursive : Boolean = false) {
+    fun delete(path: String, recursive: Boolean = false) {
         val absolutePath = getAbsolutePath(path)
         val entity = getEntity(path)
 
