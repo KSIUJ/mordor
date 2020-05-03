@@ -28,7 +28,6 @@ class FileUploadSessionRepository(
     override fun <S : FileUploadSession> save(session: S): S {
         val absolutePath = repositoryService.getAbsolutePath(getPathOfSession(session))
         absolutePath.toFile().mkdirs()
-        // TODO: set timestamp
         return session
     }
 

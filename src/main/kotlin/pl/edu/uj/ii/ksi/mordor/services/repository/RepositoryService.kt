@@ -66,7 +66,7 @@ class RepositoryService(
     }
 
     @Transactional
-    fun move(from: String, to: String) {
+    fun move(from: String, to: String, recursive: Boolean = false) {
         val absoluteToPath = getAbsolutePath(to)
         val entity = getEntity(from)
         val absoluteFromPath = getAbsolutePath(from)
@@ -74,9 +74,8 @@ class RepositoryService(
         if (entity is RepositoryFile) {
             Files.move(absoluteFromPath, absoluteToPath)
             moveEntry(absoluteToPath, absoluteFromPath)
-        } else {
-            val directory = entity as RepositoryDirectory
-            directory.getChildren().forEach { child ->
+        } else if (entity is RepositoryDirectory && recursive) {
+            entity.getChildren().forEach { child ->
                 val toEntityPath = "$to/${Paths.get(child.relativePath).fileName}"
                 val fromEntityPath = "$from/${Paths.get(child.relativePath).fileName}"
                 move(fromEntityPath, toEntityPath)
@@ -102,16 +101,15 @@ class RepositoryService(
     }
 
     @Transactional
-    fun delete(path: String) {
+    fun delete(path: String, recursive : Boolean = false) {
         val absolutePath = getAbsolutePath(path)
         val entity = getEntity(path)
 
         if (entity is RepositoryFile) {
             Files.delete(absolutePath)
             entryRepository.deleteById(absolutePath.toString())
-        } else {
-            val directory = entity as RepositoryDirectory
-            directory.getChildren().forEach { child ->
+        } else if (entity is RepositoryDirectory && recursive) {
+            entity.getChildren().forEach { child ->
                 val entityPath = entity.relativePath + Paths.get(child.relativePath).fileName
                 delete(entityPath)
             }

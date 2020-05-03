@@ -24,8 +24,8 @@ class TikaFileTextExtractor(private val tika: Tika) : FileTextExtractor {
                 text
             }
         } catch (e: IOException) {
-            logger.warn("Extraction of file text failed, returning empty text instead", e)
-            ""
+            logger.warn("Extraction of file text failed, returning null instead", e)
+            null
         }
     }
 }

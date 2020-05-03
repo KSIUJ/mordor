@@ -26,6 +26,7 @@ class MetadataCrawler(
         File(rootPathStr).walkTopDown()
                 .filter { file -> needMetadata(file) }
                 .forEach { file ->
+                    logger.debug("Creating entry for file ${file.path}")
                     fileEntryCreator.create(file) }
         logger.info("Metadata gathering finished successfully")
     }

@@ -14,7 +14,6 @@ import pl.edu.uj.ii.ksi.mordor.services.hash.FileHashProvider
 import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryService
 
 @Service
-@Transactional
 class FileEntryCreator(
     private val metadataExtractor: MetadataExtractor,
     private val entityManager: EntityManager,
@@ -23,11 +22,11 @@ class FileEntryCreator(
 ) {
 
     companion object {
-        // TODO: move to config
         private const val contentMaxLength: Int = 24 * 1024
         private val logger = LoggerFactory.getLogger(RepositoryService::class.java)
     }
 
+    @Transactional
     fun create(file: File): FileEntry? {
         val metadata = findMetadataWithSameHash(file)
         return if (metadata == null) {
@@ -39,12 +38,12 @@ class FileEntryCreator(
         val metadata: FileMetadata? = metadataExtractor.extract(file)
         val contentText: String? = fileTextExtractor.extract(file, contentMaxLength)
 
-        if (metadata == null || contentText == null) return null
+        if (metadata == null) return null
 
         return saveMetadata(metadata, contentText, file)
     }
 
-    private fun saveMetadata(metadata: FileMetadata, contentText: String, file: File): FileEntry? {
+    private fun saveMetadata(metadata: FileMetadata, contentText: String?, file: File): FileEntry? {
         entityManager.persist(metadata)
         val content = FileContent(id = metadata.id, text = contentText, file = metadata)
         metadata.crawledContent = content

@@ -32,7 +32,9 @@ class MetadataGarbageCollector(
     }
 
     private fun checkFile(entry: FileEntry) {
+        logger.debug("Checking entry ${entry.path}")
         if (!repositoryService.fileExists(entry.path)) {
+            logger.debug("File doesn't exists, deleting entry ${entry.path}")
             entryRepository.delete(entry)
         }
     }
