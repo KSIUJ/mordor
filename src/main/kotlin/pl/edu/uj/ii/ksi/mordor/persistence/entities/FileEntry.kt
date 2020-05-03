@@ -11,5 +11,7 @@ data class FileEntry(
     var path: String,
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    var metadata: FileMetadata
-)
+    var metadata: FileMetadata?
+) {
+    override fun toString(): String { return "${this.javaClass.simpleName}-$path" }
+}

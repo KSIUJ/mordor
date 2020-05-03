@@ -70,6 +70,7 @@ dependencies {
     compile("org.jetbrains.kotlin:kotlin-reflect")
     compile("org.glassfish.jaxb:jaxb-runtime:2.3.2")
     compile("commons-io:commons-io:2.6")
+    compile("org.apache.tika:tika-parsers:1.24")
 
     // Remove devtools for release
     runtime('org.springframework.boot:spring-boot-devtools')
