@@ -56,7 +56,7 @@ class RepositoryService(
     fun saveFile(path: String, inputStream: InputStream): RepositoryEntity? {
         val outputPath = getAbsolutePath(path)
 
-        outputPath.toFile().mkdirs()
+        outputPath.parent.toFile().mkdirs()
         val outputStream = FileOutputStream(outputPath.toString())
         inputStream.copyTo(outputStream)
         entryCreator.create(outputPath.toFile())

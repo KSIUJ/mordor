@@ -17,7 +17,8 @@ class FileUploadSessionService(
 ) {
     fun getRepositoryServiceOfSession(uploadSession: FileUploadSession): RepositoryService {
         val path = sessionRepository.getPathOfSession(uploadSession)
-        return RepositoryService(path, entryRepository, entryCreator)
+        val absolutePath = repositoryService.getAbsolutePath(path).toString()
+        return RepositoryService(absolutePath, entryRepository, entryCreator)
     }
 
     fun approve(uploadSession: FileUploadSession) {
