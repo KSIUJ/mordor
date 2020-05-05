@@ -10,8 +10,10 @@ import org.springframework.stereotype.Service
 import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryService
 
 @Service
-class AutoDetectTextExtractor(private val tika: Tika,
-                              private val tesseract: Tesseract) : FileTextExtractor{
+class AutoDetectTextExtractor(
+    private val tika: Tika,
+    private val tesseract: Tesseract
+) : FileTextExtractor {
 
     companion object {
         private val logger = LoggerFactory.getLogger(RepositoryService::class.java)
@@ -20,8 +22,9 @@ class AutoDetectTextExtractor(private val tika: Tika,
     override fun extract(file: File, maxLength: Int): String? {
         try {
             val tikaContent = TikaFileTextExtractor(tika).extract(file)
-            if (!isScanned(tikaContent))
+            if (!isScanned(tikaContent)) {
                 return tikaContent
+            }
             val type = tika.detect(file)
             if (type == "application/pdf") {
                 return PDFTextExtractor(tesseract).extract(file)
@@ -38,9 +41,9 @@ class AutoDetectTextExtractor(private val tika: Tika,
     }
 
     private fun isScanned(content: String?): Boolean {
-        if (content == null)
+        if (content == null) {
             return true
+        }
         return content.trim().isEmpty()
     }
-
 }

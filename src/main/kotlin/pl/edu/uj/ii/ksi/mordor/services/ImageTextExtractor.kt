@@ -38,6 +38,3 @@ class ImageTextExtractor(private val tesseract: Tesseract) : FileTextExtractor {
         return null
     }
 }
-
-
-

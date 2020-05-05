@@ -14,4 +14,3 @@ class TesseractConfiguration {
         return tesseract
     }
 }
-

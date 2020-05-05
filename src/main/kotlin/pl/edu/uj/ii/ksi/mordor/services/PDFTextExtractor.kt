@@ -42,4 +42,3 @@ class PDFTextExtractor(private val tesseract: Tesseract) : FileTextExtractor {
         return bufferedImages
     }
 }
-
