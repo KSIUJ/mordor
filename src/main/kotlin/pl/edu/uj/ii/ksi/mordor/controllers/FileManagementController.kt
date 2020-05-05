@@ -2,6 +2,7 @@ package pl.edu.uj.ii.ksi.mordor.controllers
 
 import javax.validation.Valid
 import org.springframework.http.HttpStatus
+import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Controller
 import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.GetMapping
@@ -13,10 +14,14 @@ import org.springframework.web.servlet.view.RedirectView
 import pl.edu.uj.ii.ksi.mordor.exceptions.BadRequestException
 import pl.edu.uj.ii.ksi.mordor.forms.FileUploadForm
 import pl.edu.uj.ii.ksi.mordor.persistence.repositories.UserRepository
+import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryService
+import pl.edu.uj.ii.ksi.mordor.services.upload.session.FileUploadSessionService
 
 @Controller
 class FileManagementController(
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val fileUploadSessionService: FileUploadSessionService,
+    private val repositoryService: RepositoryService
 ) {
     data class SessionEntry(
         val userId: Long,
@@ -32,13 +37,21 @@ class FileManagementController(
     @PostMapping("/management/upload/")
     fun uploadMultipartFile(
         @Valid @ModelAttribute("form") model: FileUploadForm,
+        authentication: Authentication,
         result: BindingResult
     ): ModelAndView {
-        // TODO: - Add file to repo when merged with ms-1
+        val username = authentication.name
+        val user = userRepository.findByUserName(username)
         if (result.hasErrors()) {
             return ModelAndView("management/upload", HttpStatus.BAD_REQUEST)
         }
-        return ModelAndView(RedirectView("/file/"))
+        user?.let {
+            val session = fileUploadSessionService.createFileSession(user)
+            val repository = fileUploadSessionService.getRepositoryServiceOfSession(session)
+            repository.saveFile(model.mountPath, model.file!!.inputStream)
+            return ModelAndView(RedirectView("/management/upload/"))
+        }
+        throw BadRequestException("No user for username $username")
     }
 
     @GetMapping("/review/")
