@@ -1,5 +1,6 @@
 package pl.edu.uj.ii.ksi.mordor.services
 
+import org.springframework.beans.factory.annotation.Qualifier
 import java.io.File
 import javax.persistence.EntityManager
 import org.springframework.stereotype.Service
@@ -12,11 +13,11 @@ import pl.edu.uj.ii.ksi.mordor.services.hash.FileHashProvider
 
 @Service
 class FileEntryCreator(
-    private val metadataExtractor: MetadataExtractor,
-    private val entityManager: EntityManager,
-    private val fileTextExtractor: FileTextExtractor,
-    private val hashProvider: FileHashProvider,
-    private val metadataRepository: FileMetadataRepository
+        private val metadataExtractor: MetadataExtractor,
+        private val entityManager: EntityManager,
+        @Qualifier("autoDetectTextExtractor") private val fileTextExtractor: FileTextExtractor,
+        private val hashProvider: FileHashProvider,
+        private val metadataRepository: FileMetadataRepository
 ) {
 
     companion object {
