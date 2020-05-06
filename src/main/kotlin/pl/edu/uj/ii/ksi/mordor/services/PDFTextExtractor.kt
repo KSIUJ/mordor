@@ -29,16 +29,17 @@ class PDFTextExtractor(private val tesseract: Tesseract) : FileTextExtractor {
     private fun formatPDF(pdfFile: File): LinkedList<BufferedImage?> {
         val bufferedImages = LinkedList<BufferedImage?>()
         val doc: PDDocument = PDDocument.load(pdfFile)
-        for (page in doc.pages) {
-            val resources = page.resources
-            for (xObjectName in resources.xObjectNames) {
-                val xObject = resources.getXObject(xObjectName)
-                if (xObject is PDImageXObject) {
-                    bufferedImages.add(xObject.image)
+        doc.use {
+            for (page in doc.pages) {
+                val resources = page.resources
+                for (xObjectName in resources.xObjectNames) {
+                    val xObject = resources.getXObject(xObjectName)
+                    if (xObject is PDImageXObject) {
+                        bufferedImages.add(xObject.image)
+                    }
                 }
             }
         }
-        doc.close()
         return bufferedImages
     }
 }

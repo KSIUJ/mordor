@@ -9,11 +9,16 @@ import net.sourceforge.tess4j.TesseractException
 import net.sourceforge.tess4j.util.ImageHelper
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryService
 
 @Service
 class ImageTextExtractor(private val tesseract: Tesseract) : FileTextExtractor {
 
     val maxSkewAngle = 0.05
+
+    companion object {
+        private val logger = LoggerFactory.getLogger(RepositoryService::class.java)
+    }
 
     override fun extract(file: File, maxLength: Int): String? {
         return extractTextFromBufferedImage(ImageIO.read(file))
@@ -33,7 +38,7 @@ class ImageTextExtractor(private val tesseract: Tesseract) : FileTextExtractor {
                     .replace("\\n{2,}", "\n")
                     .trim { c -> c <= ' ' }
         } catch (e: TesseractException) {
-            LoggerFactory.getLogger(this.javaClass).error("Tesseract is unable do process OCR on image", e)
+            logger.error("Tesseract is unable do process OCR on image", e)
         }
         return null
     }

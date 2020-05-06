@@ -71,8 +71,8 @@ dependencies {
     compile("org.glassfish.jaxb:jaxb-runtime:2.3.2")
     compile("commons-io:commons-io:2.6")
     compile("org.apache.tika:tika-parsers:1.24")
-    compile("org.apache.pdfbox:pdfbox:2.0.1")
-    compile("net.sourceforge.tess4j:tess4j:3.4.0")
+    compile("org.apache.pdfbox:pdfbox:2.0.19")
+    compile("net.sourceforge.tess4j:tess4j:4.5.1")
 
     // Remove devtools for release
     runtime('org.springframework.boot:spring-boot-devtools')
