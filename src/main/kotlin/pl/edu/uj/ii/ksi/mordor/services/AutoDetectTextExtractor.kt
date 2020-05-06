@@ -2,9 +2,8 @@ package pl.edu.uj.ii.ksi.mordor.services
 
 import java.io.File
 import java.io.IOException
-import net.sourceforge.tess4j.Tesseract
-import net.sourceforge.tess4j.TesseractException
 import org.apache.tika.Tika
+import org.bytedeco.tesseract.TessBaseAPI
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryService
@@ -12,7 +11,7 @@ import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryService
 @Service
 class AutoDetectTextExtractor(
     private val tika: Tika,
-    private val tesseract: Tesseract
+    private val tessBaseAPI: TessBaseAPI
 ) : FileTextExtractor {
 
     companion object {
@@ -26,14 +25,9 @@ class AutoDetectTextExtractor(
                 return tikaContent
             }
             val type = tika.detect(file)
-            if (type == "application/pdf") {
-                return PDFTextExtractor(tesseract).extract(file)
-            }
             if (type.startsWith("image")) {
-                return ImageTextExtractor(tesseract).extract(file)
+                return BytedecoImageTextExtractor(tessBaseAPI).extract(file)
             }
-        } catch (e: TesseractException) {
-            logger.error("Tesseract is unable do process OCR", e)
         } catch (e: IOException) {
             logger.error("File can not be read", e)
         }
