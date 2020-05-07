@@ -74,10 +74,11 @@ class RepositoryService(
             Files.move(absoluteFromPath, absoluteToPath)
             moveEntry(absoluteToPath, absoluteFromPath)
         } else if (entity is RepositoryDirectory && recursive) {
+            absoluteToPath.toFile().mkdir()
             entity.getChildren().forEach { child ->
                 val toEntityPath = "$to/${Paths.get(child.relativePath).fileName}"
                 val fromEntityPath = "$from/${Paths.get(child.relativePath).fileName}"
-                move(fromEntityPath, toEntityPath)
+                move(fromEntityPath, toEntityPath, recursive)
             }
             Files.delete(absoluteFromPath)
         }
@@ -109,9 +110,10 @@ class RepositoryService(
             entryRepository.deleteById(absolutePath.toString())
         } else if (entity is RepositoryDirectory && recursive) {
             entity.getChildren().forEach { child ->
-                val entityPath = entity.relativePath + Paths.get(child.relativePath).fileName
-                delete(entityPath)
+                val entityPath = entity.relativePath + "/" + Paths.get(child.relativePath).fileName
+                delete(entityPath, recursive)
             }
+            Files.delete(absolutePath)
         }
     }
 

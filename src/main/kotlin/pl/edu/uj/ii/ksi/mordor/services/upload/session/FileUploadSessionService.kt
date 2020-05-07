@@ -24,7 +24,7 @@ class FileUploadSessionService(
     fun approve(uploadSession: FileUploadSession) {
         val currentPath = sessionRepository.getPathOfSession(uploadSession)
         val destinationPath = "."
-        repositoryService.move(currentPath, destinationPath)
+        repositoryService.move(currentPath, destinationPath, true)
     }
 
     fun reject(uploadSession: FileUploadSession) {
