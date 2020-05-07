@@ -7,7 +7,7 @@
 <body>
 <div layout:fragment="content">
     <h1>Upload new file</h1>
-    <form th:action="@{'/management/upload/'}" th:object="${form}" method="post" enctype="multipart/form-data">
+    <form th:action="@{/upload/}" th:object="${form}" method="post" enctype="multipart/form-data">
         <div class="form-group">
             <label for="file">File</label>
             <div class="custom-file">

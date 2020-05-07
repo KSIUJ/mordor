@@ -18,21 +18,19 @@
         </div>
     </div>
 
-
-    <div class="container-fluid pt-2">
-        <div th:if="${files.empty}">
-            <h5>There are no files here.</h5>
-        </div>
-
-        <ul th:unless="${files.empty}" class="list-group list-group-flush">
-            <th:block th:each="entry : ${files}">
-                <li class="list-group-item">
-                    <i th:attr="class='mx-2 fas fa-lg ' + ${entry.iconName}"></i>
-                    <a th:text="${entry.name}"></a>
-                </li>
-            </th:block>
-        </ul>
+    <div th:if="${files.empty}">
+        <h5>There are no files here.</h5>
     </div>
+
+    <ul th:unless="${files.empty}" class="list-group list-group-flush">
+        <th:block th:each="entry : ${files}">
+            <li class="list-group-item">
+                <i th:attr="class='mx-2 fas fa-lg ' + ${entry.iconName}"></i>
+                <a th:attr="href='/review/'+${userId}+'/'+${sessionId}+'/'+${entry.path}" th:text="${entry.name}"></a>
+            </li>
+        </th:block>
+    </ul>
+
 </div>
 </body>
 </html>
