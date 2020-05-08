@@ -1,4 +1,4 @@
-package pl.edu.uj.ii.ksi.mordor.controllers
+package pl.edu.uj.ii.ksi.mordor.controllers.session
 
 import javax.servlet.http.HttpServletRequest
 import org.apache.commons.io.FileUtils
@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 import org.springframework.web.util.UriUtils
+import pl.edu.uj.ii.ksi.mordor.controllers.FilesystemController
 import pl.edu.uj.ii.ksi.mordor.exceptions.BadRequestException as BadRequestException
 import pl.edu.uj.ii.ksi.mordor.exceptions.NotFoundException
 import pl.edu.uj.ii.ksi.mordor.persistence.entities.Permission
@@ -29,6 +30,7 @@ class SessionReviewController(
     private val fileUploadSessionService: FileUploadSessionService,
     private val sessionRepository: FileUploadSessionRepository,
     private val iconNameProvider: IconNameProvider,
+    private val fileUploadSessionRepository: FileUploadSessionRepository,
     @Value("\${mordor.list_hidden_files:false}") private val listHiddenFiles: Boolean,
     @Value("\${mordor.preview.max_text_bytes:1048576}") private val maxTextBytes: Int,
     @Value("\${mordor.preview.max_image_bytes:10485760}") private val maxImageBytes: Int
@@ -55,9 +57,9 @@ class SessionReviewController(
         return path.trim('/').replace("/", " / ") + (if (path.isNotEmpty()) " - " else "") + "Mordor"
     }
 
-    private fun createBreadcrumb(entity: RepositoryEntity): List<RelativeDir> {
-        val pathBreadcrumb = mutableListOf(RelativeDir("Home", "/file/"))
-        var prev = "/file/"
+    private fun createBreadcrumb(entity: RepositoryEntity, sessionId: String, userId: Long): List<RelativeDir> {
+        val pathBreadcrumb = mutableListOf(RelativeDir("Home", "/review/$userId/$sessionId/"))
+        var prev = "/review/$userId/$sessionId/"
         entity.relativePath.split('/').forEach { dir ->
             pathBreadcrumb.add(RelativeDir(dir, prev + dir))
             prev = "$prev$dir/"
@@ -69,7 +71,7 @@ class SessionReviewController(
         if (entity.file.length() > maxTextBytes) {
             return ModelAndView("review/preview", mapOf(
                     "title" to createTitle(path),
-                    "path" to createBreadcrumb(entity),
+                    "path" to createBreadcrumb(entity, sessionId, userId),
                     "download" to "/download/${entity.relativePath}",
                     "type" to FileType.TOO_LARGE.previewType,
                     "sessionId" to sessionId,
@@ -81,7 +83,7 @@ class SessionReviewController(
         return ModelAndView("review/preview", mapOf(
                 "title" to createTitle(path),
                 "text" to text,
-                "path" to createBreadcrumb(entity),
+                "path" to createBreadcrumb(entity, sessionId, userId),
                 "download" to "/download/${entity.relativePath}",
                 "type" to FileType.CODE.previewType,
                 "sessionId" to sessionId,
@@ -93,7 +95,7 @@ class SessionReviewController(
         return ModelAndView("review/preview", mapOf(
                 "title" to createTitle(path),
                 "raw" to "/raw/$path",
-                "path" to createBreadcrumb(entity),
+                "path" to createBreadcrumb(entity, sessionId, userId),
                 "download" to "/download/${entity.relativePath}",
                 "type" to FileType.PAGE.previewType,
                 "sessionId" to sessionId,
@@ -105,8 +107,8 @@ class SessionReviewController(
         if (entity.file.length() > maxImageBytes) {
             return ModelAndView("review/preview", mapOf(
                     "title" to createTitle(path),
-                    "path" to createBreadcrumb(entity),
-                    "download" to "/download/${entity.relativePath}",
+                    "path" to createBreadcrumb(entity, sessionId, userId),
+                    "download" to "/download/${path}",
                     "type" to FileType.TOO_LARGE.previewType,
                     "sessionId" to sessionId,
                     "userId" to userId
@@ -114,8 +116,8 @@ class SessionReviewController(
         }
         return ModelAndView("review/preview", mapOf(
                 "title" to createTitle(path),
-                "path" to createBreadcrumb(entity),
-                "download" to "/download/${entity.relativePath}",
+                "path" to createBreadcrumb(entity, sessionId, userId),
+                "download" to "/download/${path}",
                 "type" to FileType.IMAGE.previewType,
                 "sessionId" to sessionId,
                 "userId" to userId
@@ -124,7 +126,7 @@ class SessionReviewController(
 
     @Secured(Permission.MANAGE_FILES_STR)
     @GetMapping("/review/")
-    fun sessionReviewList(): ModelAndView {
+    fun sessionRevewiList(): ModelAndView {
         val sessions = sessionRepository.findAll()
         val sessionEntries = sessions.mapNotNull { session ->
             session.user.id?.let { it -> SessionEntry(it, session.user.userName, session.id) }
@@ -147,6 +149,7 @@ class SessionReviewController(
             val repository = fileUploadSessionService.getRepositoryServiceOfSession(session.get())
             val path = request.servletPath.removePrefix("/review/$userId/$sessionId/")
             val entity = repository.getEntity(path) ?: throw NotFoundException("Session with $sessionId")
+            val entityRelativePath = fileUploadSessionRepository.getPathOfId(Pair(userId, sessionId)) + "/" + path
             val canListHidden = listHiddenFiles || SecurityContextHolder.getContext().authentication.authorities
                     .contains(Permission.ROLE_LIST_HIDDEN_FILES)
             if (entity is RepositoryDirectory) {
@@ -166,15 +169,15 @@ class SessionReviewController(
                 ))
             } else if (entity is RepositoryFile) {
                 when {
-                    entity.isPage ->
-                        return previewPage(entity, path, sessionId, userId)
-                    entity.mimeType.startsWith("text/") || entity.isCode ->
-                        return previewText(entity, path, sessionId, userId)
-                    entity.isDisplayableImage ->
-                        return previewImage(entity, path, sessionId, userId)
+                entity.isPage ->
+                    return previewPage(entity, entityRelativePath, sessionId, userId)
+                entity.mimeType.startsWith("text/") || entity.isCode ->
+                    return previewText(entity, entityRelativePath, sessionId, userId)
+                entity.isDisplayableImage ->
+                    return previewImage(entity, entityRelativePath, sessionId, userId)
                 }
             }
-            return ModelAndView(RedirectView(urlEncodePath("/download/${entity.relativePath}")))
+                return ModelAndView(RedirectView(urlEncodePath("/download/$entityRelativePath")))
         }
         throw BadRequestException("Session entity is invalid")
     }
