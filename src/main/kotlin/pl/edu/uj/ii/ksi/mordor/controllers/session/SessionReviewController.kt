@@ -11,19 +11,19 @@ import org.springframework.web.servlet.view.RedirectView
 import org.springframework.web.util.UriUtils
 import pl.edu.uj.ii.ksi.mordor.exceptions.BadRequestException as BadRequestException
 import pl.edu.uj.ii.ksi.mordor.exceptions.NotFoundException
+import pl.edu.uj.ii.ksi.mordor.model.SessionEntry as SessionEntry
 import pl.edu.uj.ii.ksi.mordor.persistence.entities.Permission
 import pl.edu.uj.ii.ksi.mordor.persistence.repositories.UserRepository
 import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryDirectory
 import pl.edu.uj.ii.ksi.mordor.services.upload.session.FileUploadSessionRepository
 import pl.edu.uj.ii.ksi.mordor.services.upload.session.FileUploadSessionService
-import pl.edu.uj.ii.ksi.mordor.model.SessionEntry as SessionEntry
 
 @Controller
 class SessionReviewController(
-        private val userRepository: UserRepository,
-        private val fileUploadSessionService: FileUploadSessionService,
-        private val sessionRepository: FileUploadSessionRepository,
-        private val previewFactory: ReviewViewsFactory
+    private val userRepository: UserRepository,
+    private val fileUploadSessionService: FileUploadSessionService,
+    private val sessionRepository: FileUploadSessionRepository,
+    private val previewFactory: ReviewViewsFactory
 ) {
     @Secured(Permission.MANAGE_FILES_STR)
     @GetMapping("/review/")

@@ -1,6 +1,6 @@
-<div th:fragment="confirmation-modal (message, action, method)"
-           th:assert="${!#strings.isEmpty(message) and !#strings.isEmpty(action) and !#strings.isEmpty(method)}">
-    <div class="modal fade" id="confirm" role="dialog" tabindex="-1" aria-labelledby="confirm-label" aria-hidden="true"
+<div th:fragment="confirmation-modal (id, message, action, method)"
+           th:assert="${!#strings.isEmpty(id) and !#strings.isEmpty(message) and !#strings.isEmpty(action) and !#strings.isEmpty(method)}">
+    <div class="modal fade" th:id="${id}" role="dialog" tabindex="-1" aria-labelledby="confirm-label" aria-hidden="true"
          sec:authorize="hasRole('ROLE_MANAGE_FILES')">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">

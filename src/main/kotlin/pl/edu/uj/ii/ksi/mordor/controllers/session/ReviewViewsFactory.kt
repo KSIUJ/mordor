@@ -8,22 +8,22 @@ import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 import org.springframework.web.util.UriUtils
 import pl.edu.uj.ii.ksi.mordor.controllers.FilesystemController
+import pl.edu.uj.ii.ksi.mordor.model.FileType as FileType
+import pl.edu.uj.ii.ksi.mordor.model.RelativeDirectory as RelativeDirectory
 import pl.edu.uj.ii.ksi.mordor.persistence.entities.Permission
 import pl.edu.uj.ii.ksi.mordor.services.IconNameProvider
 import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryDirectory
 import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryEntity
 import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryFile
 import pl.edu.uj.ii.ksi.mordor.services.upload.session.FileUploadSessionRepository
-import pl.edu.uj.ii.ksi.mordor.model.RelativeDirectory as RelativeDirectory
-import pl.edu.uj.ii.ksi.mordor.model.FileType as FileType
 
 @Service
 class ReviewViewsFactory(
-        private val fileUploadSessionRepository: FileUploadSessionRepository,
-        private val iconNameProvider: IconNameProvider,
-        @Value("\${mordor.preview.max_image_bytes:10485760}") private val maxImageBytes: Int,
-        @Value("\${mordor.preview.max_text_bytes:1048576}") private val maxTextBytes: Int,
-        @Value("\${mordor.list_hidden_files:false}") private val listHiddenFiles: Boolean
+    private val fileUploadSessionRepository: FileUploadSessionRepository,
+    private val iconNameProvider: IconNameProvider,
+    @Value("\${mordor.preview.max_image_bytes:10485760}") private val maxImageBytes: Int,
+    @Value("\${mordor.preview.max_text_bytes:1048576}") private val maxTextBytes: Int,
+    @Value("\${mordor.list_hidden_files:false}") private val listHiddenFiles: Boolean
 ) {
 
     private fun createTitle(file: RepositoryFile): String {
@@ -45,7 +45,7 @@ class ReviewViewsFactory(
             return ModelAndView("review/preview", mapOf(
                     "title" to createTitle(file),
                     "path" to createBreadcrumb(file, sessionId, userId),
-                    "download" to "/download/${path}",
+                    "download" to "/download/$path",
                     "type" to FileType.TOO_LARGE.previewType,
                     "sessionId" to sessionId,
                     "userId" to userId
@@ -54,7 +54,7 @@ class ReviewViewsFactory(
         return ModelAndView("review/preview", mapOf(
                 "title" to createTitle(file),
                 "path" to createBreadcrumb(file, sessionId, userId),
-                "download" to "/download/${path}",
+                "download" to "/download/$path",
                 "type" to FileType.IMAGE.previewType,
                 "sessionId" to sessionId,
                 "userId" to userId
@@ -66,7 +66,7 @@ class ReviewViewsFactory(
             return ModelAndView("review/preview", mapOf(
                     "title" to createTitle(file),
                     "path" to createBreadcrumb(file, sessionId, userId),
-                    "download" to "/download/${path}",
+                    "download" to "/download/$path",
                     "type" to FileType.TOO_LARGE.previewType,
                     "sessionId" to sessionId,
                     "userId" to userId
@@ -78,7 +78,7 @@ class ReviewViewsFactory(
                 "title" to createTitle(file),
                 "text" to text,
                 "path" to createBreadcrumb(file, sessionId, userId),
-                "download" to "/download/${path}",
+                "download" to "/download/$path",
                 "type" to FileType.CODE.previewType,
                 "sessionId" to sessionId,
                 "userId" to userId
@@ -90,7 +90,7 @@ class ReviewViewsFactory(
                 "title" to createTitle(file),
                 "raw" to "/raw/$path",
                 "path" to createBreadcrumb(file, sessionId, userId),
-                "download" to "/download/${path}",
+                "download" to "/download/$path",
                 "type" to FileType.PAGE.previewType,
                 "sessionId" to sessionId,
                 "userId" to userId
@@ -110,7 +110,7 @@ class ReviewViewsFactory(
                     return previewImage(entity, entityPath, sessionId, userId)
             }
         }
-        return ModelAndView(RedirectView(urlEncodePath("/download/${entityPath}")))
+        return ModelAndView(RedirectView(urlEncodePath("/download/$entityPath")))
     }
 
     fun listFor(entity: RepositoryDirectory, userId: Long, sessionId: String): ModelAndView {
@@ -127,7 +127,7 @@ class ReviewViewsFactory(
                 "sessionId" to sessionId,
                 "userId" to userId,
                 "files" to children,
-                "path" to  createBreadcrumb(entity, sessionId, userId)
+                "path" to createBreadcrumb(entity, sessionId, userId)
         ))
     }
 

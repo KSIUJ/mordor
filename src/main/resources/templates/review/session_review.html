@@ -6,17 +6,8 @@
 </head>
 <body>
 <div layout:fragment="content">
-    <div class="container-fluid">
-        <h1 th:text="'Review of session #' + ${sessionId}"></h1>
-        <div class="row">
-            <form class="d-inline-flex p-2" method="POST" th:action="@{'/review/reject/' + ${userId} + '/' + ${sessionId} + '/'}">
-                <button type="submit" name="submit" value="value" class="btn btn-danger">Reject</button>
-            </form>
-            <form class="d-inline-flex p-2" method="POST" th:action="@{'/review/approve/' + ${userId} + '/' + ${sessionId} + '/'}">
-                <button type="submit" name="submit" value="value" class="btn btn-success">Approve</button>
-            </form>
-        </div>
-    </div>
+
+    <div th:replace="review/session_management_bar :: session-bar (userId=${userId}, sessionId=${sessionId})"/>
 
     <div th:replace="components/breadcrumb :: breadcrumb (path=${path}, dir=${dir})"/>
 
