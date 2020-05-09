@@ -121,7 +121,7 @@ class ReviewViewsFactory(
                 .sortedBy { it.name }
                 .map { entry ->
                     FilesystemController.FileEntry(entry.relativePath,
-                            entry.name, iconNameProvider.getIconName(entry))
+                            entry.name, iconNameProvider.getIconName(entry), entity.relativePath + entry.relativePath)
                 }
         return ModelAndView("review/session_review", mapOf(
                 "sessionId" to sessionId,

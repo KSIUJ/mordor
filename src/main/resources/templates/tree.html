@@ -14,17 +14,17 @@
     </div>
 
     <ul th:unless="${children.empty}" class="list-group list-group-flush">
-        <th:block th:each="entry : ${children}">
+        <th:block th:each="entry, iter : ${children}">
             <li class="list-group-item">
                 <i th:attr="class='mx-2 fas fa-lg ' + ${entry.iconName}"></i>
                 <a th:attr="href='/file/'+${entry.path}" th:text="${entry.name}"></a>
 
                 <a class="btn btn-danger float-right"
                    href="#"
-                   data-toggle="modal" data-target="#confirm"
+                   data-toggle="modal" th:attr="data-target='#confirm'+${iter.index}"
                    sec:authorize="hasRole('ROLE_MANAGE_FILES')"><i class="fas fa-trash"></i></a>
             </li>
-            <div th:replace="components/confirmation_modal :: confirmation-modal (id='confirm',message='Do you really want to remove this file?', action='/delete/' + ${entry.path}, method='delete')"/>
+            <div th:replace="components/confirmation_modal :: confirmation-modal (id='confirm'+${iter.index}, message='Do you really want to remove this file?', action='/delete/' + ${entry.relativePath}, method='delete')"/>
         </th:block>
     </ul>
 

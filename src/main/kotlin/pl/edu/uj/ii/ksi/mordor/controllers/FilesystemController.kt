@@ -34,7 +34,8 @@ class FilesystemController(
     data class FileEntry(
         val path: String,
         val name: String,
-        val iconName: String
+        val iconName: String,
+        val relativePath: String
     )
 
     private data class RelativeDir(
@@ -130,7 +131,8 @@ class FilesystemController(
                 .sortedWith(compareBy({ it !is RepositoryDirectory }, { it.name }))
                 .map { entry ->
                     FileEntry(entry.relativePath +
-                        if (entry is RepositoryDirectory) "/" else "", entry.name, iconNameProvider.getIconName(entry))
+                        if (entry is RepositoryDirectory) "/" else "",
+                            entry.name, iconNameProvider.getIconName(entry), entity.relativePath + entry.relativePath)
                 }
 
             return ModelAndView("tree", mapOf(
@@ -197,13 +199,13 @@ class FilesystemController(
         val mountPathElements = if (path.endsWith("/")) path.dropLast(1).split("/") else path.split("/")
         val mountPath = mountPathElements.joinToString("/")
         if (entity is RepositoryDirectory) {
-            // TODO: - Remove directory from DB when merged with ms-1
+            repoService.delete(entity.relativePath, true)
             return when (mountPathElements.size) {
                 1 -> ModelAndView(RedirectView("/file/"))
                 else -> ModelAndView(RedirectView("/file/$mountPath/"))
             }
         } else if (entity is RepositoryFile) {
-            // TODO: - Remove directory from DB when merged with ms-1
+            repoService.delete(entity.relativePath, false)
             return ModelAndView(RedirectView("/file/$mountPath/"))
         }
         return ModelAndView("/file/")
