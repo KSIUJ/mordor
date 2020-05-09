@@ -1,5 +1,7 @@
 package pl.edu.uj.ii.ksi.mordor.controllers.session
 
+import java.time.format.DateTimeFormatter as DateTimeFormatter
+import java.time.format.FormatStyle
 import javax.servlet.http.HttpServletRequest
 import org.springframework.security.access.annotation.Secured
 import org.springframework.stereotype.Controller
@@ -25,12 +27,18 @@ class SessionReviewController(
     private val sessionRepository: FileUploadSessionRepository,
     private val previewFactory: ReviewViewsFactory
 ) {
+
+    private val formatter: DateTimeFormatter = DateTimeFormatter
+            .ofLocalizedDateTime(FormatStyle.MEDIUM)
+
     @Secured(Permission.MANAGE_FILES_STR)
     @GetMapping("/review/")
     fun sessionReviewList(): ModelAndView {
         val sessions = sessionRepository.findAll()
         val sessionEntries = sessions.mapNotNull { session ->
-            session.user.id?.let { it -> SessionEntry(it, session.user.userName, session.id) }
+            session.user.id?.let { id ->
+                SessionEntry(id, session.user.userName, session.id, session.creationDate.format(formatter))
+            }
         }
         val sortedEntries = sessionEntries.sortedBy { it.userName }
         return ModelAndView("review/list", mapOf(

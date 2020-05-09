@@ -44,7 +44,6 @@ class FileUploadController(
             val session = fileUploadSessionService.createFileSession(user)
             val repository = fileUploadSessionService.getRepositoryServiceOfSession(session)
 
-            // TODO make savefile throwing func
             repository.saveFile(model.mountPath, model.file!!.inputStream)
             return ModelAndView(RedirectView("/upload/"))
         }
