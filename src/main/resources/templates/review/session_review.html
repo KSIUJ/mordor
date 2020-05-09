@@ -18,6 +18,8 @@
         </div>
     </div>
 
+    <div th:replace="components/breadcrumb :: breadcrumb (path=${path}, dir=${dir})"/>
+
     <div th:if="${files.empty}">
         <h5>There are no files here.</h5>
     </div>

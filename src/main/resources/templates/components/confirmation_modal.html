@@ -1,5 +1,5 @@
 <div th:fragment="confirmation-modal (message, action, method)"
-     th:assert="${!#strings.isEmpty(message) and !#strings.isEmpty(action) and !#strings.isEmpty(method)}">
+           th:assert="${!#strings.isEmpty(message) and !#strings.isEmpty(action) and !#strings.isEmpty(method)}">
     <div class="modal fade" id="confirm" role="dialog" tabindex="-1" aria-labelledby="confirm-label" aria-hidden="true"
          sec:authorize="hasRole('ROLE_MANAGE_FILES')">
         <div class="modal-dialog modal-dialog-centered" role="document">
