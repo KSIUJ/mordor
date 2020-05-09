@@ -1,9 +1,7 @@
 package pl.edu.uj.ii.ksi.mordor.controllers.session
 
 import javax.servlet.http.HttpServletRequest
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.access.annotation.Secured
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -11,17 +9,14 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 import org.springframework.web.util.UriUtils
-import pl.edu.uj.ii.ksi.mordor.controllers.FilesystemController
 import pl.edu.uj.ii.ksi.mordor.exceptions.BadRequestException as BadRequestException
 import pl.edu.uj.ii.ksi.mordor.exceptions.NotFoundException
 import pl.edu.uj.ii.ksi.mordor.persistence.entities.Permission
 import pl.edu.uj.ii.ksi.mordor.persistence.repositories.UserRepository
-import pl.edu.uj.ii.ksi.mordor.services.IconNameProvider
 import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryDirectory
-import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryEntity
 import pl.edu.uj.ii.ksi.mordor.services.upload.session.FileUploadSessionRepository
 import pl.edu.uj.ii.ksi.mordor.services.upload.session.FileUploadSessionService
-import pl.edu.uj.ii.ksi.mordor.model.RelativeDirectory as RelativeDirectory
+import pl.edu.uj.ii.ksi.mordor.model.SessionEntry as SessionEntry
 
 @Controller
 class SessionReviewController(
@@ -30,12 +25,6 @@ class SessionReviewController(
         private val sessionRepository: FileUploadSessionRepository,
         private val previewFactory: ReviewViewsFactory
 ) {
-    data class SessionEntry(
-        val userId: Long,
-        val userName: String,
-        val sessionId: String
-    )
-
     @Secured(Permission.MANAGE_FILES_STR)
     @GetMapping("/review/")
     fun sessionReviewList(): ModelAndView {
@@ -50,7 +39,7 @@ class SessionReviewController(
     }
 
     @Secured(Permission.MANAGE_FILES_STR)
-    @GetMapping("/review/{userId}/{sessionId}/**")
+    @GetMapping("/review/files/{userId}/{sessionId}/**")
     fun sessionReviewPage(
         @PathVariable("userId") userId: Long,
         @PathVariable("sessionId") sessionId: String,
@@ -59,7 +48,7 @@ class SessionReviewController(
         val session = sessionRepository.findById(Pair(userId, sessionId))
         if (session.isPresent) {
             val repository = fileUploadSessionService.getRepositoryServiceOfSession(session.get())
-            val path = request.servletPath.removePrefix("/review/$userId/$sessionId/")
+            val path = request.servletPath.removePrefix("/review/files/$userId/$sessionId/")
             val entity = repository.getEntity(path) ?: throw NotFoundException("Session with $sessionId")
             if (entity is RepositoryDirectory) {
                 if (!request.servletPath.endsWith("/")) {

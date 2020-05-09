@@ -31,8 +31,8 @@ class ReviewViewsFactory(
     }
 
     private fun createBreadcrumb(entity: RepositoryEntity, sessionId: String, userId: Long): List<RelativeDirectory> {
-        val pathBreadcrumb = mutableListOf(RelativeDirectory("Session files", "/review/$userId/$sessionId/"))
-        var prev = "/review/$userId/$sessionId/"
+        val pathBreadcrumb = mutableListOf(RelativeDirectory("Session files", "/review/files/$userId/$sessionId/"))
+        var prev = "/review/files/$userId/$sessionId/"
         entity.relativePath.split('/').forEach { dir ->
             pathBreadcrumb.add(RelativeDirectory(dir, prev + dir))
             prev = "$prev$dir/"
@@ -110,7 +110,7 @@ class ReviewViewsFactory(
                     return previewImage(entity, entityPath, sessionId, userId)
             }
         }
-        return ModelAndView(RedirectView(urlEncodePath("/review/download/${entity.relativePath}")))
+        return ModelAndView(RedirectView(urlEncodePath("/download/${entityPath}")))
     }
 
     fun listFor(entity: RepositoryDirectory, userId: Long, sessionId: String): ModelAndView {

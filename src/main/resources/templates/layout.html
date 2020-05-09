@@ -64,6 +64,10 @@
                 <a href="/upload/" class="btn btn-outline-success my-2 my-sm-0 mr-2"
                    role="button">Upload a file</a>
             </li>
+            <li class="nav-item" sec:authorize="hasRole('ROLE_MANAGE_FILES')">
+                <a href="/review/" class="btn btn-outline-info my-2 my-sm-0 mr-2"
+                   role="button">Review uploads</a>
+            </li>
             <li class="nav-item" sec:authorize="hasRole('ROLE_ACCESS_ADMIN_PANEL')">
                 <a href="/admin/" class="btn btn-outline-primary my-2 my-sm-0 mr-2"
                    role="button">Admin</a>

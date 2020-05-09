@@ -28,7 +28,7 @@
         <th:block th:each="entry : ${files}">
             <li class="list-group-item">
                 <i th:attr="class='mx-2 fas fa-lg ' + ${entry.iconName}"></i>
-                <a th:attr="href='/review/'+${userId}+'/'+${sessionId}+'/'+${entry.path}" th:text="${entry.name}"></a>
+                <a th:attr="href='/review/files/'+${userId}+'/'+${sessionId}+'/'+${entry.path}" th:text="${entry.name}"></a>
             </li>
         </th:block>
     </ul>
