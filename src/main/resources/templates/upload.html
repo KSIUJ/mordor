@@ -37,7 +37,7 @@
                     let filename =  e.target.files[0].name;
                     $(e.target).siblings('.custom-file-label').html(filename);
                 }
-            })Array.from(files).map(file => file.name).reduce((acc, filename) => acc + "; " + filename) + ";";
+            })
         })
     </script>
 </th:block>

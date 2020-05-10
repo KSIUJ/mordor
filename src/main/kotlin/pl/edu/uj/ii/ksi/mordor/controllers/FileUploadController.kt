@@ -15,16 +15,19 @@ import pl.edu.uj.ii.ksi.mordor.exceptions.BadRequestException
 import pl.edu.uj.ii.ksi.mordor.forms.FileUploadForm
 import pl.edu.uj.ii.ksi.mordor.persistence.entities.Permission
 import pl.edu.uj.ii.ksi.mordor.persistence.repositories.UserRepository
+import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryService
 import pl.edu.uj.ii.ksi.mordor.services.upload.session.FileUploadSessionService
 
 @Controller
 class FileUploadController(
     private val userRepository: UserRepository,
-    private val fileUploadSessionService: FileUploadSessionService
+    private val fileUploadSessionService: FileUploadSessionService,
+    private val repositoryService: RepositoryService
 ) {
     @Secured(Permission.UPLOAD_STR)
     @GetMapping("/upload/")
     fun fileUploadPage(): ModelAndView {
+        val foo = repositoryService.getAllChildrenDirectories()
         return ModelAndView("upload", "form", FileUploadForm())
     }
 
