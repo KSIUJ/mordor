@@ -6,6 +6,13 @@
 </head>
 <body>
 <div layout:fragment="content">
+    <ul th:unless="${directoriesTree.empty}">
+        <th:block th:each="entry : ${directoriesTree}">
+            <li th:text="${entry.name}"></li>
+        </th:block>
+    </ul>
+
+
     <h1>Upload new file</h1>
     <form th:action="@{/upload/}" th:object="${form}" method="post" enctype="multipart/form-data">
         <div class="form-group">

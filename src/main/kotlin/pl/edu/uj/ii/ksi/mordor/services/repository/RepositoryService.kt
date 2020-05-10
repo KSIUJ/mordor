@@ -65,24 +65,6 @@ class RepositoryService(
         return getEntity(outputPath.toString())
     }
 
-    fun getAllDirectories(): List<RepositoryDirectory> {
-        return getAllChildrenDirectories()
-    }
-
-    fun getAllChildrenDirectories(path: String=""): List<RepositoryDirectory> {
-        val entity = getEntity(path)
-        if (entity is RepositoryDirectory) {
-            val directories = listOf(entity)
-            val children = entity.getChildren(false)
-            val filtered = children.filterIsInstance<RepositoryDirectory>()
-            val mapped = filtered.map { getAllChildrenDirectories(it.relativePath) }
-            val flattened = mapped.flatten()
-//            val childrenDirectories = entity.getChildren(false).filterIsInstance<RepositoryDirectory>().map { getAllChildrenDirectories(it.relativePath) }.flatten()
-            return directories + flattened
-        }
-        return emptyList()
-    }
-
     @Transactional
     fun move(from: String, to: String, recursive: Boolean = false) {
         val absoluteToPath = getAbsolutePath(to)
