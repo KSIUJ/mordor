@@ -43,8 +43,9 @@ class FileUploadController(
         user?.let {
             val session = fileUploadSessionService.createFileSession(user)
             val repository = fileUploadSessionService.getRepositoryServiceOfSession(session)
-
-            repository.saveFile(model.mountPath, model.file!!.inputStream)
+            for (file in model.files) {
+                repository.saveFile("${model.mountPath}/${file.originalFilename}", file.inputStream)
+            }
             return ModelAndView(RedirectView("/upload/"))
         }
         throw BadRequestException("No user for username $username")

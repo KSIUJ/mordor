@@ -9,15 +9,15 @@
     <h1>Upload new file</h1>
     <form th:action="@{/upload/}" th:object="${form}" method="post" enctype="multipart/form-data">
         <div class="form-group">
-            <label for="file">File</label>
+            <label for="files">Files</label>
             <div class="custom-file">
-                <input type="file" class="custom-file-input " th:field="*{file}" id="file">
-                <label class="custom-file-label" for="file">Choose file</label>
+                <input type="file" class="custom-file-input " th:field="*{files}" id="files" multiple="multiple">
+                <label class="custom-file-label" for="files">Choose files</label>
             </div>
-            <div class="alert alert-danger" th:if="${#fields.hasErrors('file')}" th:errors="*{file}">error</div>
+            <div class="alert alert-danger" th:if="${#fields.hasErrors('files')}" th:errors="*{files}">error</div>
         </div>
         <div class="form-group">
-            <label th:for="mountPath">File Destination</label>
+            <label th:for="mountPath">Files Destination</label>
             <input type="text" class="form-control" th:name="mountPath" />
             <div class="alert alert-danger" th:if="${#fields.hasErrors('mountPath')}" th:errors="*{mountPath}">error</div>
         </div>
@@ -28,10 +28,16 @@
 <th:block layout:fragment="script">
     <script>
         $(document).ready(function(){
-            $('#file').on('change', function(e) {
-                let fileName =  e.target.files[0].name;
-                $(e.target).siblings('.custom-file-label').html(fileName);
-            })
+            $('#files').on('change', function(e) {
+                let files = e.target.files;
+                if (files.length > 1) {
+                    let filenames = Array.from(files).map(file => file.name).reduce((acc, filename) => acc + "; " + filename) + ";";
+                    $(e.target).siblings('.custom-file-label').html(filenames);
+                } else {
+                    let filename =  e.target.files[0].name;
+                    $(e.target).siblings('.custom-file-label').html(filename);
+                }
+            })Array.from(files).map(file => file.name).reduce((acc, filename) => acc + "; " + filename) + ";";
         })
     </script>
 </th:block>

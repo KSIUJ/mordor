@@ -1,12 +1,12 @@
 package pl.edu.uj.ii.ksi.mordor.forms
 
 import javax.validation.constraints.NotBlank
+import javax.validation.constraints.NotEmpty
 import org.springframework.web.multipart.MultipartFile
-import pl.edu.uj.ii.ksi.mordor.utilities.validators.file.FileNotEmpty
 
 data class FileUploadForm(
-    @get:FileNotEmpty
-    var file: MultipartFile? = null,
+    @get:NotEmpty.List
+    var files: List<MultipartFile> = emptyList(),
 
     @get:NotBlank
     var mountPath: String = ""
