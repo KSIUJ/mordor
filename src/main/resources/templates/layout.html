@@ -60,7 +60,7 @@
                 <a href="/login/" class="btn btn-outline-success my-2 my-sm-0"
                    role="button">Login</a>
             </li>
-            <li class="nav-item" sec:authorize="isAuthenticated()">
+            <li class="nav-item" sec:authorize="hasRole('ROLE_UPLOAD')">
                 <a href="/upload/" class="btn btn-outline-success my-2 my-sm-0 mr-2"
                    role="button">Upload a file</a>
             </li>
