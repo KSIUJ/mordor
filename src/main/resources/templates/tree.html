@@ -6,23 +6,28 @@
 </head>
 <body>
 <div layout:fragment="content">
-    <ol class="breadcrumb">
-        <li th:each="dir, itrStat : ${path}" th:class="${itrStat.last}? 'breadcrumb-item active' : 'breadcrumb-item'">
-            <a th:unless="${itrStat.last}" th:href="${dir.path}" th:text="${dir.name}">directory</a>
-            <span th:if="${itrStat.last}" th:text="${dir.name}">current directory</span>
-        </li>
-    </ol>
+
+    <div th:replace="components/breadcrumb :: breadcrumb (path=${path}, dir=${dir})"/>
 
     <div th:if="${children.empty}">
         <div>There are no files here.</div>
     </div>
 
     <ul th:unless="${children.empty}" class="list-group list-group-flush">
-        <li th:each="entry : ${children}" class="list-group-item">
-            <i th:attr="class='mx-2 fas fa-lg ' + ${entry.iconName}"></i>
-            <a th:attr="href='/file/'+${entry.path}" th:text="${entry.name}"></a>
-        </li>
+        <th:block th:each="entry, iter : ${children}">
+            <li class="list-group-item">
+                <i th:attr="class='mx-2 fas fa-lg ' + ${entry.iconName}"></i>
+                <a th:attr="href='/file/'+${entry.path}" th:text="${entry.name}"></a>
+
+                <a class="btn btn-danger float-right"
+                   href="#"
+                   data-toggle="modal" th:attr="data-target='#confirm'+${iter.index}"
+                   sec:authorize="hasRole('ROLE_MANAGE_FILES')"><i class="fas fa-trash"></i></a>
+            </li>
+            <div th:replace="components/confirmation_modal :: confirmation-modal (id='confirm'+${iter.index}, message='Do you really want to remove this file?', action='/delete/' + ${entry.relativePath}, method='delete')"/>
+        </th:block>
     </ul>
+
 </div>
 </body>
 </html>

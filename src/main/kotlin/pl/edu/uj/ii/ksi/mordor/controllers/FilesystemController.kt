@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.access.annotation.Secured
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Controller
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.servlet.ModelAndView
@@ -33,13 +34,21 @@ class FilesystemController(
     data class FileEntry(
         val path: String,
         val name: String,
-        val iconName: String
+        val iconName: String,
+        val relativePath: String
     )
 
     private data class RelativeDir(
         val name: String,
         var path: String
     )
+
+    private enum class FileType(val previewType: String) {
+        IMAGE("IMAGE"),
+        PAGE("PAGE"),
+        TOO_LARGE("TOO_LARGE"),
+        CODE("CODE")
+    }
 
     private fun createBreadcrumb(entity: RepositoryEntity): List<RelativeDir> {
         val pathBreadcrumb = mutableListOf(RelativeDir("Home", "/file/"))
@@ -61,43 +70,48 @@ class FilesystemController(
 
     private fun previewText(entity: RepositoryFile, path: String): ModelAndView {
         if (entity.file.length() > maxTextBytes) {
-            return ModelAndView("preview_too_large", mapOf(
+            return ModelAndView("preview/preview", mapOf(
                 "title" to createTitle(path),
                 "path" to createBreadcrumb(entity),
-                "download" to "/download/${entity.relativePath}"
+                "download" to "/download/${entity.relativePath}",
+                "type" to FileType.TOO_LARGE.previewType
             ))
         }
         val text = FileUtils.readFileToString(entity.file, "utf-8")
         // TODO: detect encoding
-        return ModelAndView("preview_code", mapOf(
+        return ModelAndView("preview/preview", mapOf(
             "title" to createTitle(path),
             "text" to text,
             "path" to createBreadcrumb(entity),
-            "download" to "/download/${entity.relativePath}"
+            "download" to "/download/${entity.relativePath}",
+            "type" to FileType.CODE.previewType
         ))
     }
 
     private fun previewImage(entity: RepositoryFile, path: String): ModelAndView {
         if (entity.file.length() > maxImageBytes) {
-            return ModelAndView("preview_too_large", mapOf(
+            return ModelAndView("preview/preview", mapOf(
                 "title" to createTitle(path),
                 "path" to createBreadcrumb(entity),
-                "download" to "/download/${entity.relativePath}"
+                "download" to "/download/${entity.relativePath}",
+                "type" to FileType.TOO_LARGE.previewType
             ))
         }
-        return ModelAndView("preview_image", mapOf(
+        return ModelAndView("preview/preview", mapOf(
             "title" to createTitle(path),
             "path" to createBreadcrumb(entity),
-            "download" to "/download/${entity.relativePath}"
+            "download" to "/download/${entity.relativePath}",
+            "type" to FileType.IMAGE.previewType
         ))
     }
 
     private fun previewPage(entity: RepositoryFile, path: String): ModelAndView {
-        return ModelAndView("preview_page", mapOf(
+        return ModelAndView("preview/preview", mapOf(
             "title" to createTitle(path),
             "raw" to "/raw/$path",
             "path" to createBreadcrumb(entity),
-            "download" to "/download/${entity.relativePath}"
+            "download" to "/download/${entity.relativePath}",
+            "type" to FileType.PAGE.previewType
         ))
     }
 
@@ -117,7 +131,8 @@ class FilesystemController(
                 .sortedWith(compareBy({ it !is RepositoryDirectory }, { it.name }))
                 .map { entry ->
                     FileEntry(entry.relativePath +
-                        if (entry is RepositoryDirectory) "/" else "", entry.name, iconNameProvider.getIconName(entry))
+                        if (entry is RepositoryDirectory) "/" else "",
+                            entry.name, iconNameProvider.getIconName(entry), entity.relativePath + entry.relativePath)
                 }
 
             return ModelAndView("tree", mapOf(
@@ -174,5 +189,25 @@ class FilesystemController(
     @ExceptionHandler(value = [NotFoundException::class])
     fun notFoundException(ex: NotFoundException): ModelAndView {
         return ModelAndView("404", "path", ex.path)
+    }
+
+    @Secured(Permission.MANAGE_FILES_STR)
+    @DeleteMapping("/delete/**")
+    fun deleteResource(request: HttpServletRequest): ModelAndView {
+        val path = request.servletPath.removePrefix("/delete/")
+        val entity = repoService.getEntity(path) ?: throw NotFoundException(path)
+        val mountPathElements = if (path.endsWith("/")) path.dropLast(1).split("/") else path.split("/")
+        val mountPath = mountPathElements.joinToString("/")
+        if (entity is RepositoryDirectory) {
+            repoService.delete(entity.relativePath, true)
+            return when (mountPathElements.size) {
+                1 -> ModelAndView(RedirectView("/file/"))
+                else -> ModelAndView(RedirectView("/file/$mountPath/"))
+            }
+        } else if (entity is RepositoryFile) {
+            repoService.delete(entity.relativePath, false)
+            return ModelAndView(RedirectView("/file/$mountPath/"))
+        }
+        return ModelAndView("/file/")
     }
 }

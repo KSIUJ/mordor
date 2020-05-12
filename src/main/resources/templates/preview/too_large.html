@@ -1,0 +1,12 @@
+<div th:fragment="preview-too-large (download)" th:assert="${!#strings.isEmpty(download)}">
+    <div class="card mt-2">
+        <div class="card-header">
+            <a href="#" th:href="@{${download}}" class="btn btn-secondary"><i class="fas fa-download"></i> Download</a>
+        </div>
+        <div class="card-body m-0">
+            <div class="alert alert-warning m-0" role="alert">
+                This file is too large to be previewed, <a href="#" th:href="@{${download}}">download it instead</a>.
+            </div>
+        </div>
+    </div>
+</div>

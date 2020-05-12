@@ -18,28 +18,20 @@ class TikaMetadataExtractor(private val tika: Tika, private val hashProvider: Fi
 
     override fun extract(file: File): FileMetadata? {
         return try {
-            val tikaMetadata = getTikaMetadata(file)
+            val metadata = getTikaMetadata(file)
 
             FileMetadata(
-                    author = tikaMetadata.get("Author"),
-                    description = tikaMetadata.get("Subject"),
+                    author = metadata.get("Author"),
+                    description = metadata.get("Subject"),
                     fileHash = hashProvider.calculate(file),
-                    title = tikaMetadata.get("Author"),
-                    mimeType = tikaMetadata.get("Author"),
+                    title = metadata.get("Author"),
+                    mimeType = metadata.get("Author"),
                     thumbnail = null,
                     crawledContent = null
             )
         } catch (e: IOException) {
             logger.warn("Extraction of metadata text failed, returning empty metadata instead", e)
-            FileMetadata(
-                    author = null,
-                    description = null,
-                    fileHash = null,
-                    title = null,
-                    mimeType = null,
-                    thumbnail = null,
-                    crawledContent = null
-            )
+            null
         }
     }
 

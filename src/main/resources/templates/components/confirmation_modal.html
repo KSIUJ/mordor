@@ -1,0 +1,23 @@
+<div th:fragment="confirmation-modal (id, message, action, method)"
+           th:assert="${!#strings.isEmpty(id) and !#strings.isEmpty(message) and !#strings.isEmpty(action) and !#strings.isEmpty(method)}">
+    <div class="modal fade" th:id="${id}" role="dialog" tabindex="-1" aria-labelledby="confirm-label" aria-hidden="true"
+         sec:authorize="hasRole('ROLE_MANAGE_FILES')">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirm-label">Confirmation</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" th:text="${message}"/>
+                <div class="modal-footer">
+                    <a class="btn btn-light" data-dismiss="modal" type="button">No</a>
+                    <form th:action="@{${action}}" th:method="${method}">
+                        <button type="submit" class="btn btn-danger">Yes</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
