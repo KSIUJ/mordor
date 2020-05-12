@@ -25,6 +25,10 @@ class FileUploadSessionRepository(
     @Value("\${mordor.pending_sessions_path:}") private val pendingSessionsPath: String
 ) : PagingAndSortingRepository<FileUploadSession, Pair<Long, String>> {
 
+    init {
+        repositoryService.getAbsolutePath(pendingSessionsPath).toFile().mkdirs()
+    }
+
     override fun <S : FileUploadSession> save(session: S): S {
         val absolutePath = repositoryService.getAbsolutePath(getPathOfSession(session))
         absolutePath.toFile().mkdirs()
