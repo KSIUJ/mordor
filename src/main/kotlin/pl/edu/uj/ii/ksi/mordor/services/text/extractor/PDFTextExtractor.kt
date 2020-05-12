@@ -1,4 +1,4 @@
-package pl.edu.uj.ii.ksi.mordor.services
+package pl.edu.uj.ii.ksi.mordor.services.text.extractor
 
 import java.awt.image.BufferedImage
 import java.io.File

@@ -1,4 +1,4 @@
-package pl.edu.uj.ii.ksi.mordor.services
+package pl.edu.uj.ii.ksi.mordor.services.text.extractor
 
 import java.io.File
 import java.io.IOException
@@ -22,10 +22,12 @@ class AutoDetectTextExtractor(
         try {
             val tikaContent = TikaFileTextExtractor(tika).extract(file)
             if (!isScanned(tikaContent)) {
+                logger.info("Extracted text from " + file.absolutePath + " using Tika")
                 return tikaContent
             }
             val type = tika.detect(file)
             if (type.startsWith("image")) {
+                logger.info("Extracted text from " + file.absolutePath + " using Bytedeco")
                 return BytedecoImageTextExtractor(tessBaseAPI).extract(file)
             }
         } catch (e: IOException) {

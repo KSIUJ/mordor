@@ -1,4 +1,4 @@
-package pl.edu.uj.ii.ksi.mordor.services
+package pl.edu.uj.ii.ksi.mordor.services.text.extractor
 
 import java.io.File
 import java.io.IOException
