@@ -11,6 +11,10 @@ class BytedecoImageTextExtractor(private val tessBaseAPI: TessBaseAPI) : FileTex
 
         val res = tessBaseAPI.GetUTF8Text().string.trimIndent()
 
-        return res.substring(0, res.length)
+        return if (maxLength >= 0 && maxLength < res.length) {
+            res.substring(0, maxLength)
+        } else {
+            res
+        }
     }
 }

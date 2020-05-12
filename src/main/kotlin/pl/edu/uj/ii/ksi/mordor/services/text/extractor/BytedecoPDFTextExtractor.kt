@@ -20,26 +20,35 @@ class BytedecoPDFTextExtractor(private val tessBaseAPI: TessBaseAPI) : FileTextE
     }
 
     override fun extract(file: File, maxLength: Int): String? {
-        val extracted = StringBuilder()
         val bufferedImages = formatPDF(file)
-
-        if (!bufferedImages.isEmpty()) {
-            val outputFile = File.createTempFile("temp", "jpg")
-            outputFile.createNewFile()
-            for (image in bufferedImages) {
-                try {
-                    ImageIO.write(image, "jpg", outputFile)
-                    val text: String? = BytedecoImageTextExtractor(tessBaseAPI).extract(outputFile, maxLength)
-                    if (text != null) {
-                        extracted.append(text)
-                    }
-                } catch (e: IOException) {
-                    logger.error("Could not retrieve text from " + file.absolutePath)
-                }
-            }
-            outputFile.delete()
+        if (bufferedImages.isEmpty()) {
+            return null
         }
-        return extracted.toString()
+
+        val extracted = StringBuilder()
+        val outputFile = File.createTempFile("temp", "jpg")
+        for (image in bufferedImages) {
+            if (maxLength >= 0 && extracted.length > maxLength) {
+                break
+            }
+
+            try {
+                ImageIO.write(image, "jpg", outputFile)
+                val text: String? = BytedecoImageTextExtractor(tessBaseAPI).extract(outputFile, maxLength)
+                if (text != null) {
+                    extracted.append(text)
+                }
+            } catch (e: IOException) {
+                logger.error("Could not retrieve text from " + file.absolutePath)
+            }
+        }
+        outputFile.delete()
+
+        return if (maxLength >= 0 && maxLength < extracted.length) {
+            extracted.toString().substring(0, maxLength)
+        } else {
+            extracted.toString()
+        }
     }
 
     private fun formatPDF(pdfFile: File): LinkedList<BufferedImage?> {

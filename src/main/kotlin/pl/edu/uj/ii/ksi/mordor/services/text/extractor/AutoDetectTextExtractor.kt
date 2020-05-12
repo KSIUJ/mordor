@@ -20,7 +20,7 @@ class AutoDetectTextExtractor(
 
     override fun extract(file: File, maxLength: Int): String? {
         try {
-            val tikaContent = TikaFileTextExtractor(tika).extract(file)
+            val tikaContent = TikaFileTextExtractor(tika).extract(file, maxLength)
             if (!isScanned(tikaContent)) {
                 logger.info("Extracted text from " + file.absolutePath + " using Tika")
                 return tikaContent
@@ -28,11 +28,11 @@ class AutoDetectTextExtractor(
             val type = tika.detect(file)
             if (type == "application/pdf") {
                 logger.info("Extracted text from " + file.absolutePath + " using Bytedeco for PDF")
-                return BytedecoPDFTextExtractor(tessBaseAPI).extract(file)
+                return BytedecoPDFTextExtractor(tessBaseAPI).extract(file, maxLength)
             }
             if (type.startsWith("image")) {
                 logger.info("Extracted text from " + file.absolutePath + " using Bytedeco")
-                return BytedecoImageTextExtractor(tessBaseAPI).extract(file)
+                return BytedecoImageTextExtractor(tessBaseAPI).extract(file, maxLength)
             }
         } catch (e: IOException) {
             logger.error("File can not be read", e)
