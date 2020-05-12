@@ -3,17 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <title>Upload a file</title>
+    <link rel="stylesheet" href="../static/style.css">
+    <link rel="stylesheet" href="../static/tree.css">
 </head>
 <body>
 <div layout:fragment="content">
-    <ul th:unless="${directoriesTree.empty}">
-        <th:block th:each="entry : ${directoriesTree}">
-            <li th:text="${entry.name}"></li>
-        </th:block>
-    </ul>
+
+    <div class="container-fluid">
+        <div class="col-md-10 col-sm-10 col-lg-10">
+            <div th:replace="directories_tree :: tree (directories=${directoriesTree})"></div>
+        </div>
+    </div>
 
 
-    <h1>Upload new file</h1>
+
+    <h1 id="woo">Upload new file</h1>
     <form th:action="@{/upload/}" th:object="${form}" method="post" enctype="multipart/form-data">
         <div class="form-group">
             <label for="files">Files</label>
@@ -44,7 +48,20 @@
                     let filename =  e.target.files[0].name;
                     $(e.target).siblings('.custom-file-label').html(filename);
                 }
-            })
+            });
+
+            $(document).on('click','.list-down-button', function(event) {
+                event.preventDefault();
+                $(event.target).parent().parent().children('ul').slideToggle()
+                var clicked = event.target;
+                $(clicked).toggleClass("fa-chevron-down  fa-chevron-up");
+            });
+
+            $('.directory-link').on('click', function (e) {
+                e.preventDefault();
+                let path = $(this).attr('data-path');
+                $('#woo').text(path);
+            });
         })
     </script>
 </th:block>

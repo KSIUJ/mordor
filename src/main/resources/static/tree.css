@@ -1,0 +1,30 @@
+.list-group-collapse {
+    overflow: hidden;
+}
+
+.list-group-collapse > li ul {
+    border-radius: 0px !important;
+    margin-right: -20px;
+    margin-bottom: -11px;
+    border-radius: 0px;
+    border-bottom: none;
+}
+
+.list-group-collapse > li {
+    border-radius: 0px !important;
+    border-left: none;
+    border-right: none;
+    padding-left: 2px;
+}
+
+.list-group-collapse > .subgroup {
+    border-radius: 0px !important;
+    border-left: none;
+    border-right: none;
+    padding-left: 2px;
+    border-bottom: none;
+}
+
+.subgroup {
+    display: none;
+}
