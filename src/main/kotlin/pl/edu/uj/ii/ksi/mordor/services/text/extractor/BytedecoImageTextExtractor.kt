@@ -1,10 +1,8 @@
 package pl.edu.uj.ii.ksi.mordor.services.text.extractor
 
-
-import org.bytedeco.tesseract.TessBaseAPI
-import org.bytedeco.leptonica.global.lept.pixRead
-
 import java.io.File
+import org.bytedeco.leptonica.global.lept.pixRead
+import org.bytedeco.tesseract.TessBaseAPI
 
 class BytedecoImageTextExtractor(private val tessBaseAPI: TessBaseAPI) : FileTextExtractor {
 

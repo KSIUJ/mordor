@@ -14,11 +14,11 @@ import pl.edu.uj.ii.ksi.mordor.services.text.extractor.FileTextExtractor
 
 @Service
 class FileEntryCreator(
-        private val metadataExtractor: MetadataExtractor,
-        private val entityManager: EntityManager,
-        @Qualifier("autoDetectTextExtractor") private val fileTextExtractor: FileTextExtractor,
-        private val hashProvider: FileHashProvider,
-        private val metadataRepository: FileMetadataRepository
+    private val metadataExtractor: MetadataExtractor,
+    private val entityManager: EntityManager,
+    @Qualifier("autoDetectTextExtractor") private val fileTextExtractor: FileTextExtractor,
+    private val hashProvider: FileHashProvider,
+    private val metadataRepository: FileMetadataRepository
 ) {
 
     companion object {
