@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en"
+      layout:decorate="~{layout}">
+<head>
+    <title th:text="${title}">Mordor</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <ol class="breadcrumb">
+        <li th:each="dir, itrStat : ${path}" th:class="${itrStat.last}? 'breadcrumb-item active' : 'breadcrumb-item'">
+            <a th:unless="${itrStat.last}" th:href="${dir.path}" th:text="${dir.name}">directory</a>
+            <span th:if="${itrStat.last}" th:text="${dir.name}">current directory</span>
+        </li>
+    </ol>
+
+    <th:block th:switch="${type}">
+        <div th:case="'IMAGE'">
+            <div th:replace="preview/image :: preview-image (download=${download})"/>
+        </div>
+        <div th:case="'CODE'">
+            <div th:replace="preview/code :: preview-code (download=${download}, text=${text})"/>
+        </div>
+        <div th:case="'PAGE'">
+            <div th:replace="preview/page :: preview-page (download=${download}, raw=${raw})"/>
+        </div>
+        <div th:case="'TOO_LARGE'">
+            <div th:replace="preview/too_large :: preview-too-large (download=${download}"/>
+        </div>
+    </th:block>
+</div>
+</body>
+</html>
