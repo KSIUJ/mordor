@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en"
+      layout:decorate="~{layout}">
+<head>
+    <title>Mordor - Review</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <h1>Sessions to review</h1>
+
+    <div th:if="${sessions.empty}">
+        <div>There are no sessions here.</div>
+    </div>
+
+    <table th:if="${!sessions.empty}" class="table">
+        <thead>
+        <tr>
+            <th scope="col">Identifier</th>
+            <th scope="col">Author</th>
+            <th scope="col">Upload time</th>
+        </tr>
+        </thead>
+        <tbody>
+        <th:block th:each="entry : ${sessions}">
+            <tr>
+                <td scope="row">
+                    <a th:attr="href='/review/files/' + ${entry.userId} + '/' + ${entry.sessionId} + '/'"
+                       th:text="${entry.sessionId}"/>
+                </td>
+                <td th:text="${entry.userName}"/>
+                <td th:text="${entry.timestamp}"/>
+            </tr>
+        </th:block>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

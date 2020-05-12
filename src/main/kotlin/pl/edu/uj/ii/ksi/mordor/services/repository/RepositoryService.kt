@@ -6,6 +6,7 @@ import java.io.InputStream
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.nio.file.StandardCopyOption
 import java.util.Optional
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
@@ -56,7 +57,7 @@ class RepositoryService(
     fun saveFile(path: String, inputStream: InputStream): RepositoryEntity? {
         val outputPath = getAbsolutePath(path)
 
-        outputPath.toFile().mkdirs()
+        outputPath.parent.toFile().mkdirs()
         val outputStream = FileOutputStream(outputPath.toString())
         inputStream.copyTo(outputStream)
         entryCreator.create(outputPath.toFile())
@@ -71,13 +72,14 @@ class RepositoryService(
         val absoluteFromPath = getAbsolutePath(from)
 
         if (entity is RepositoryFile) {
-            Files.move(absoluteFromPath, absoluteToPath)
+            Files.move(absoluteFromPath, absoluteToPath, StandardCopyOption.REPLACE_EXISTING)
             moveEntry(absoluteToPath, absoluteFromPath)
         } else if (entity is RepositoryDirectory && recursive) {
+            absoluteToPath.toFile().mkdir()
             entity.getChildren().forEach { child ->
                 val toEntityPath = "$to/${Paths.get(child.relativePath).fileName}"
                 val fromEntityPath = "$from/${Paths.get(child.relativePath).fileName}"
-                move(fromEntityPath, toEntityPath)
+                move(fromEntityPath, toEntityPath, recursive)
             }
             Files.delete(absoluteFromPath)
         }
@@ -89,14 +91,10 @@ class RepositoryService(
         }
         val entryResult: Optional<FileEntry> = entryRepository.findById(absoluteFromPath.toString())
 
-        val entry: FileEntry
+        entryCreator.create(absoluteToPath.toFile())
         if (entryResult.isPresent) {
-            entry = entryResult.get()
-            entry.path = absoluteToPath.toString()
-        } else {
-            entry = entryCreator.create(absoluteToPath.toFile())!!
+            entryRepository.delete(entryResult.get())
         }
-        entryRepository.save(entry)
     }
 
     @Transactional
@@ -109,9 +107,10 @@ class RepositoryService(
             entryRepository.deleteById(absolutePath.toString())
         } else if (entity is RepositoryDirectory && recursive) {
             entity.getChildren().forEach { child ->
-                val entityPath = entity.relativePath + Paths.get(child.relativePath).fileName
-                delete(entityPath)
+                val entityPath = entity.relativePath + "/" + Paths.get(child.relativePath).fileName
+                delete(entityPath, recursive)
             }
+            Files.delete(absolutePath)
         }
     }
 

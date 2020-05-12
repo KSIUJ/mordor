@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en"
+      layout:decorate="~{layout}">
+<head>
+    <title th:text="${title}">Mordor</title>
+</head>
+<body>
+<div layout:fragment="content">
+
+    <div th:replace="review/session_management_bar :: session-bar (userId=${userId}, sessionId=${sessionId})"/>
+
+    <div th:replace="components/breadcrumb :: breadcrumb (path=${path}, dir=${dir})"/>
+
+    <th:block th:switch="${type}">
+        <div th:case="'IMAGE'">
+            <div th:replace="preview/image :: preview-image (download=${download})"/>
+        </div>
+        <div th:case="'CODE'">
+            <div th:replace="preview/code :: preview-code (download=${download}, text=${text})"/>
+        </div>
+        <div th:case="'PAGE'">
+            <div th:replace="preview/page :: preview-page (download=${download}, raw=${raw})"/>
+        </div>
+        <div th:case="'TOO_LARGE'">
+            <div th:replace="preview/too_large :: preview-too-large (download=${download}"/>
+        </div>
+    </th:block>
+</div>
+</body>
+</html>
