@@ -44,7 +44,7 @@ class FileUploadSessionRepository(
     }
 
     override fun deleteById(id: Pair<Long, String>) {
-        repositoryService.delete(getPathOfId(id))
+        repositoryService.delete(getPathOfId(id), true)
     }
 
     override fun deleteAll(sessions: MutableIterable<FileUploadSession>) {

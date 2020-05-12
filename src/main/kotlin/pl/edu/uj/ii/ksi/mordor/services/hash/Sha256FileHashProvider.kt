@@ -2,7 +2,6 @@ package pl.edu.uj.ii.ksi.mordor.services.hash
 
 import com.coremedia.iso.Hex
 import java.io.File
-import java.nio.file.Files
 import java.security.MessageDigest
 import org.springframework.stereotype.Service
 
@@ -14,7 +13,7 @@ class Sha256FileHashProvider : FileHashProvider {
 
     override fun calculate(file: File): String {
         val messageDigest = MessageDigest.getInstance(algorithm)
-        val bytes = Files.readAllBytes(file.toPath())
-        return Hex.encodeHex(messageDigest.digest(bytes))
+        file.forEachBlock { buffer, bytesRead -> messageDigest.update(buffer, 0, bytesRead) }
+        return Hex.encodeHex(messageDigest.digest())
     }
 }

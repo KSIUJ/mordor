@@ -8,6 +8,7 @@ enum class Permission : GrantedAuthority {
     ROLE_WRITE,
     ROLE_LIST_HIDDEN_FILES,
     ROLE_ACCESS_ADMIN_PANEL,
+    ROLE_MANAGE_FILES,
     ROLE_MANAGE_USERS;
 
     companion object {
@@ -18,6 +19,7 @@ enum class Permission : GrantedAuthority {
         const val ACCESS_ADMIN_PANEL_STR = "ROLE_ACCESS_ADMIN_PANEL"
         const val LIST_HIDDENFILES_STR = "ROLE_LIST_HIDDEN_FILES"
         const val MANAGE_USERS_STR = "ROLE_MANAGE_USERS"
+        const val MANAGE_FILES_STR = "ROLE_MANAGE_FILES"
     }
 
     override fun getAuthority(): String {
