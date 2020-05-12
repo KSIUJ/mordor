@@ -24,12 +24,12 @@ class BytedecoPDFTextExtractor(private val tessBaseAPI: TessBaseAPI) : FileTextE
         val bufferedImages = formatPDF(file)
 
         if (!bufferedImages.isEmpty()) {
-            val outputfile = File("temp.jpg")
-            outputfile.createNewFile()
+            val outputFile = File.createTempFile("temp", "jpg")
+            outputFile.createNewFile()
             for (image in bufferedImages) {
                 try {
-                    ImageIO.write(image, "jpg", outputfile)
-                    val text: String? = BytedecoImageTextExtractor(tessBaseAPI).extract(outputfile, maxLength)
+                    ImageIO.write(image, "jpg", outputFile)
+                    val text: String? = BytedecoImageTextExtractor(tessBaseAPI).extract(outputFile, maxLength)
                     if (text != null) {
                         extracted.append(text)
                     }
@@ -37,7 +37,7 @@ class BytedecoPDFTextExtractor(private val tessBaseAPI: TessBaseAPI) : FileTextE
                     logger.error("Could not retrieve text from " + file.absolutePath)
                 }
             }
-            outputfile.delete()
+            outputFile.delete()
         }
         return extracted.toString()
     }
