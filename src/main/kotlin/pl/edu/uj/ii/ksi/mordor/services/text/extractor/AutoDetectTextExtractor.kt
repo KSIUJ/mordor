@@ -19,6 +19,14 @@ class AutoDetectTextExtractor(
     }
 
     override fun extract(file: File, maxLength: Int): String? {
+        val content = extractRaw(file, maxLength)
+        if (FileContentValidator().isValid(content)) {
+            return content
+        }
+        return null
+    }
+
+    private fun extractRaw(file: File, maxLength: Int): String? {
         try {
             val tikaContent = TikaFileTextExtractor(tika).extract(file, maxLength)
             if (!isScanned(tikaContent)) {
