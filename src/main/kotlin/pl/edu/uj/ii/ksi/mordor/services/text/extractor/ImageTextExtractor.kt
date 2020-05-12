@@ -1,45 +1,20 @@
 package pl.edu.uj.ii.ksi.mordor.services.text.extractor
 
-import com.recognition.software.jdeskew.ImageDeskew
-import java.awt.image.BufferedImage
 import java.io.File
-import javax.imageio.ImageIO
-import net.sourceforge.tess4j.Tesseract
-import net.sourceforge.tess4j.TesseractException
-import net.sourceforge.tess4j.util.ImageHelper
-import org.slf4j.LoggerFactory
-import org.springframework.stereotype.Service
-import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryService
+import org.bytedeco.leptonica.global.lept.pixRead
+import org.bytedeco.tesseract.TessBaseAPI
 
-@Service
-class ImageTextExtractor(private val tesseract: Tesseract) : FileTextExtractor {
-
-    val maxSkewAngle = 0.05
-
-    companion object {
-        private val logger = LoggerFactory.getLogger(RepositoryService::class.java)
-    }
+class ImageTextExtractor(private val tessBaseAPI: TessBaseAPI) : FileTextExtractor {
 
     override fun extract(file: File, maxLength: Int): String? {
-        return extractTextFromBufferedImage(ImageIO.read(file))
-    }
+        tessBaseAPI.SetImage(pixRead(file.absolutePath))
 
-    private fun correctTwisted(image: BufferedImage?): BufferedImage? {
-        val imageSkewAngle = ImageDeskew(image).skewAngle
-        if (kotlin.math.abs(imageSkewAngle) > maxSkewAngle) {
-            return ImageHelper.rotateImage(ImageHelper.convertImageToGrayscale(image), -imageSkewAngle)
-        }
-        return ImageHelper.convertImageToGrayscale(image)
-    }
+        val res = tessBaseAPI.GetUTF8Text().string.trimIndent()
 
-    fun extractTextFromBufferedImage(image: BufferedImage?): String? {
-        try {
-            return tesseract.doOCR(correctTwisted(image))
-                    .replace("\\n{2,}", "\n")
-                    .trim { c -> c <= ' ' }
-        } catch (e: TesseractException) {
-            logger.error("Tesseract is unable do process OCR on image", e)
+        return if (maxLength >= 0 && maxLength < res.length) {
+            res.substring(0, maxLength)
+        } else {
+            res
         }
-        return null
     }
 }
