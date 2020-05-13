@@ -44,7 +44,7 @@ class FileUploadController(
     @GetMapping("/upload/")
     fun fileUploadPage(): ModelAndView {
         val directoriesTree = getDirectoriesTree()
-        return ModelAndView("upload", mapOf(
+        return ModelAndView("upload/upload", mapOf(
                 "form" to FileUploadForm(),
                 "directoriesTree" to directoriesTree
         ))
@@ -60,13 +60,17 @@ class FileUploadController(
         val username = authentication.name
         val user = userRepository.findByUserName(username)
         if (result.hasErrors()) {
-            return ModelAndView("upload", HttpStatus.BAD_REQUEST)
+            return ModelAndView("upload/upload", HttpStatus.BAD_REQUEST)
         }
         user?.let {
             val session = fileUploadSessionService.createFileSession(user)
             val repository = fileUploadSessionService.getRepositoryServiceOfSession(session)
             for (file in model.files) {
-                repository.saveFile("${model.mountPath}/${file.originalFilename}", file.inputStream)
+                val mountPath = if (model.mountPath == "/") { "." } else { model.mountPath }
+                if (!repository.fileExists(mountPath)) {
+                    throw BadRequestException("No directory at chosen path")
+                }
+                repository.saveFile("$mountPath/${file.originalFilename}", file.inputStream)
             }
             return ModelAndView(RedirectView("/upload/"))
         }

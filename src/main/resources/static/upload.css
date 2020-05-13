@@ -2,10 +2,16 @@
     overflow: hidden;
 }
 
+.rootgroup {
+    border-left: 1px solid rgba(0,0,0,.125);
+    border-right: 1px solid rgba(0,0,0,.125);
+    border-radius: 2px;
+}
+
 .list-group-collapse > li ul {
     border-radius: 0px !important;
     margin-right: -20px;
-    margin-bottom: -11px;
+    margin-bottom: -13px;
     border-radius: 0px;
     border-bottom: none;
 }
@@ -14,7 +20,6 @@
     border-radius: 0px !important;
     border-left: none;
     border-right: none;
-    padding-left: 2px;
 }
 
 .list-group-collapse > .subgroup {
@@ -27,4 +32,8 @@
 
 .subgroup {
     display: none;
+}
+
+#mount-path-input {
+    background-color: white;
 }
