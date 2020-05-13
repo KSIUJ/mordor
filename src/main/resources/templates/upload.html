@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload a file</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <h1>Upload new file</h1>
+    <form th:action="@{/upload/}" th:object="${form}" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="file">File</label>
+            <div class="custom-file">
+                <input type="file" class="custom-file-input " th:field="*{file}" id="file">
+                <label class="custom-file-label" for="file">Choose file</label>
+            </div>
+            <div class="alert alert-danger" th:if="${#fields.hasErrors('file')}" th:errors="*{file}">error</div>
+        </div>
+        <div class="form-group">
+            <label th:for="mountPath">File Destination</label>
+            <input type="text" class="form-control" th:name="mountPath" />
+            <div class="alert alert-danger" th:if="${#fields.hasErrors('mountPath')}" th:errors="*{mountPath}">error</div>
+        </div>
+        <button type="submit" class="btn btn-primary">Upload</button>
+    </form>
+</div>
+</body>
+<th:block layout:fragment="script">
+    <script>
+        $(document).ready(function(){
+            $('#file').on('change', function(e) {
+                let fileName =  e.target.files[0].name;
+                $(e.target).siblings('.custom-file-label').html(fileName);
+            })
+        })
+    </script>
+</th:block>
+</html>

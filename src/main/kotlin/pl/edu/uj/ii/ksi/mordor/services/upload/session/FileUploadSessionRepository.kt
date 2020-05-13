@@ -40,16 +40,7 @@ class FileUploadSessionRepository(
     }
 
     override fun findAll(): List<FileUploadSession> {
-        val directory = repositoryService.getEntity(pendingSessionsPath) as RepositoryDirectory
-
-        val ids = directory.getChildren()
-                .filterIsInstance<RepositoryDirectory>()
-                .flatMap { userFolder -> userFolder.getChildren()
-                        .filterIsInstance<RepositoryDirectory>()
-                        .map { getIdOfPath(Paths.get(it.relativePath)) } }
-                .toMutableList()
-
-        return findAllById(ids = ids)
+        return findAllById(ids = findAllIds().toMutableList())
     }
 
     override fun deleteById(id: Pair<Long, String>) {
@@ -69,8 +60,7 @@ class FileUploadSessionRepository(
     }
 
     override fun count(): Long {
-        val directory = repositoryService.getEntity(pendingSessionsPath) as RepositoryDirectory
-        return directory.getChildren().size.toLong()
+        return findAllIds().size.toLong()
     }
 
     override fun findAllById(ids: MutableIterable<Pair<Long, String>>): List<FileUploadSession> {
@@ -112,6 +102,22 @@ class FileUploadSessionRepository(
         } catch (e: NumberFormatException) {
             // TODO better exception handling
             throw IllegalArgumentException("Path $path is not uploadSession folder's path")
+        }
+    }
+
+    private fun findAllIds(): List<Pair<Long, String>> {
+        return when (val sessions = repositoryService.getEntity(pendingSessionsPath)) {
+            null -> emptyList()
+            else -> {
+                val sessionsDirectory = sessions as RepositoryDirectory
+                sessionsDirectory.getChildren()
+                        .filterIsInstance<RepositoryDirectory>()
+                        .flatMap { userFolder ->
+                            userFolder.getChildren()
+                                    .filterIsInstance<RepositoryDirectory>()
+                                    .map { getIdOfPath(Paths.get(it.relativePath)) }
+                        }
+            }
         }
     }
 

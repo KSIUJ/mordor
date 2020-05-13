@@ -40,60 +40,33 @@ class ReviewViewsFactory(
         return pathBreadcrumb
     }
 
-    private fun previewImage(file: RepositoryFile, path: String, sessionId: String, userId: Long): ModelAndView {
-        if (file.file.length() > maxImageBytes) {
-            return ModelAndView("review/preview", mapOf(
-                    "title" to createTitle(file),
-                    "path" to createBreadcrumb(file, sessionId, userId),
-                    "download" to "/download/$path",
-                    "type" to FileType.TOO_LARGE.previewType,
-                    "sessionId" to sessionId,
-                    "userId" to userId
-            ))
+    private fun previewTypeFor(file: RepositoryFile): String {
+        return when {
+            file.isPage ->
+                FileType.PAGE.previewType
+            file.isText && file.file.length() > maxTextBytes ->
+                FileType.TOO_LARGE.previewType
+            file.isText ->
+                FileType.CODE.previewType
+            file.isDisplayableImage && file.file.length() > maxImageBytes ->
+                FileType.TOO_LARGE.previewType
+            file.isDisplayableImage ->
+                FileType.IMAGE.previewType
+            else ->
+                FileType.PAGE.previewType
         }
-        return ModelAndView("review/preview", mapOf(
-                "title" to createTitle(file),
-                "path" to createBreadcrumb(file, sessionId, userId),
-                "download" to "/download/$path",
-                "type" to FileType.IMAGE.previewType,
-                "sessionId" to sessionId,
-                "userId" to userId
-        ))
     }
 
-    private fun previewText(file: RepositoryFile, path: String, sessionId: String, userId: Long): ModelAndView {
-        if (file.file.length() > maxTextBytes) {
-            return ModelAndView("review/preview", mapOf(
-                    "title" to createTitle(file),
-                    "path" to createBreadcrumb(file, sessionId, userId),
-                    "download" to "/download/$path",
-                    "type" to FileType.TOO_LARGE.previewType,
-                    "sessionId" to sessionId,
-                    "userId" to userId
-            ))
-        }
-        val text = FileUtils.readFileToString(file.file, "utf-8")
-        // TODO: detect encoding
-        return ModelAndView("review/preview", mapOf(
-                "title" to createTitle(file),
-                "text" to text,
-                "path" to createBreadcrumb(file, sessionId, userId),
-                "download" to "/download/$path",
-                "type" to FileType.CODE.previewType,
-                "sessionId" to sessionId,
-                "userId" to userId
-        ))
-    }
-
-    private fun previewPage(file: RepositoryFile, path: String, sessionId: String, userId: Long): ModelAndView {
+    private fun previewFor(file: RepositoryFile, path: String, sessionId: String, userId: Long): ModelAndView {
         return ModelAndView("review/preview", mapOf(
                 "title" to createTitle(file),
                 "raw" to "/raw/$path",
                 "path" to createBreadcrumb(file, sessionId, userId),
                 "download" to "/download/$path",
-                "type" to FileType.PAGE.previewType,
+                "type" to previewTypeFor(file),
                 "sessionId" to sessionId,
-                "userId" to userId
+                "userId" to userId,
+                "text" to FileUtils.readFileToString(file.file, "utf-8")
         ))
     }
 
@@ -101,14 +74,7 @@ class ReviewViewsFactory(
         val sessionRepositoryPath = fileUploadSessionRepository.getPathOfId(Pair(userId, sessionId))
         val entityPath = sessionRepositoryPath + "/" + entity.relativePath
         if (entity is RepositoryFile) {
-            when {
-                entity.isPage ->
-                    return previewPage(entity, entityPath, sessionId, userId)
-                entity.mimeType.startsWith("text/") || entity.isCode ->
-                    return previewText(entity, entityPath, sessionId, userId)
-                entity.isDisplayableImage ->
-                    return previewImage(entity, entityPath, sessionId, userId)
-            }
+            return previewFor(entity, entityPath, sessionId, userId)
         }
         return ModelAndView(RedirectView(urlEncodePath("/download/$entityPath")))
     }
