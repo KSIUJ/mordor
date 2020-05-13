@@ -2,6 +2,7 @@ package pl.edu.uj.ii.ksi.mordor.services.text.extractor
 
 import java.io.File
 import java.io.IOException
+import java.lang.StringBuilder
 import org.apache.tika.Tika
 import org.bytedeco.tesseract.TessBaseAPI
 import org.slf4j.LoggerFactory
@@ -18,12 +19,11 @@ class AutoDetectTextExtractor(
         private val logger = LoggerFactory.getLogger(RepositoryService::class.java)
     }
 
+    private val minWordLength = 4
+
     override fun extract(file: File, maxLength: Int): String? {
-        val content = extractRaw(file, maxLength)
-        if (FileContentValidator().isValid(content)) {
-            return content
-        }
-        return null
+        val content = cleanSmallWords(extractRaw(file, maxLength))
+        return if (FileContentValidator().isValid(content)) content else null
     }
 
     private fun extractRaw(file: File, maxLength: Int): String? {
@@ -49,9 +49,20 @@ class AutoDetectTextExtractor(
     }
 
     private fun isScanned(content: String?): Boolean {
+        return content?.trim()?.isEmpty() ?: true
+    }
+
+    private fun cleanSmallWords(content: String?): String? {
         if (content == null) {
-            return true
+            return null
         }
-        return content.trim().isEmpty()
+        val modified = content.replace('\n', ' ').replace('\t', ' ')
+        val b = StringBuilder()
+        for (seq in modified.split(" ")) {
+            if (seq.isNotEmpty() && seq.length > minWordLength) {
+                b.append("$seq ")
+            }
+        }
+        return b.toString()
     }
 }

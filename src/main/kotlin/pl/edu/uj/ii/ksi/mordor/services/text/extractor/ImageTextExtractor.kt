@@ -10,11 +10,9 @@ class ImageTextExtractor(private val tessBaseAPI: TessBaseAPI) : FileTextExtract
         tessBaseAPI.SetImage(pixRead(file.absolutePath))
 
         val res = tessBaseAPI.GetUTF8Text().string.trimIndent()
-
-        return if (maxLength >= 0 && maxLength < res.length) {
-            res.substring(0, maxLength)
-        } else {
-            res
+        if (maxLength < 0) {
+            return res
         }
+        return res.take(maxLength)
     }
 }
