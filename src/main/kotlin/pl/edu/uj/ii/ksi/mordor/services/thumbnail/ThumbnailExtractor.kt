@@ -1,8 +1,14 @@
 package pl.edu.uj.ii.ksi.mordor.services.thumbnail
 
 import java.io.File
+import org.slf4j.LoggerFactory
+import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryService
 
 abstract class ThumbnailExtractor {
+
+    companion object {
+        private val logger = LoggerFactory.getLogger(RepositoryService::class.java)
+    }
 
     val width: Int
         get() = 200
@@ -13,17 +19,15 @@ abstract class ThumbnailExtractor {
     val transparent: Int
         get() = 0x00FFFFFF
 
-    var next: ThumbnailExtractor?
-        get() = this
-        set(value) {
-            setNextExtractor(value)
-        }
+    var next: ThumbnailExtractor? = null
 
-    private fun setNextExtractor(extractor: ThumbnailExtractor?) {
+    fun addNext(extractor: ThumbnailExtractor?) {
         this.next = extractor
     }
 
-    abstract fun extract(file: File): ByteArray?
+    open fun extract(file: File): ByteArray? {
+        return null
+    }
 
     open fun canParse(file: File): Boolean {
         return true
@@ -31,10 +35,12 @@ abstract class ThumbnailExtractor {
 
     open fun parse(file: File): ByteArray? {
         if (canParse(file)) {
+            logger.info("Extracting thumbnail for " + file.absolutePath + " using " + this.javaClass.name)
             return extract(file)
         } else if (next != null) {
             return next!!.parse(file)
         }
+        logger.warn("No thumbnail extractor for file " + file.absolutePath)
         return null
     }
 }

@@ -2,13 +2,16 @@ package pl.edu.uj.ii.ksi.mordor.services
 
 import java.io.File
 import javax.persistence.EntityManager
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import pl.edu.uj.ii.ksi.mordor.persistence.entities.FileContent
 import pl.edu.uj.ii.ksi.mordor.persistence.entities.FileEntry
 import pl.edu.uj.ii.ksi.mordor.persistence.entities.FileMetadata
+import pl.edu.uj.ii.ksi.mordor.persistence.entities.FileThumbnail
 import pl.edu.uj.ii.ksi.mordor.persistence.repositories.FileMetadataRepository
 import pl.edu.uj.ii.ksi.mordor.services.hash.FileHashProvider
+import pl.edu.uj.ii.ksi.mordor.services.thumbnail.ThumbnailExtractor
 
 @Service
 class FileEntryCreator(
@@ -16,7 +19,8 @@ class FileEntryCreator(
     private val entityManager: EntityManager,
     private val fileTextExtractor: FileTextExtractor,
     private val hashProvider: FileHashProvider,
-    private val metadataRepository: FileMetadataRepository
+    private val metadataRepository: FileMetadataRepository,
+    @Qualifier("thumbnailChainOfResponsibility") private val thumbnailExtractor: ThumbnailExtractor
 ) {
 
     companion object {
@@ -33,21 +37,28 @@ class FileEntryCreator(
     }
 
     private fun createNewMetadata(file: File): FileEntry? {
-        val metadata: FileMetadata? = metadataExtractor.extract(file)
+        val metadata: FileMetadata = metadataExtractor.extract(file) ?: return null
+
         val contentText: String? = fileTextExtractor.extract(file, contentMaxLength)
+        val thumbnail: ByteArray? = thumbnailExtractor.parse(file)
 
-        if (metadata == null) return null
-
-        return saveMetadata(metadata, contentText, file)
+        return saveMetadata(metadata, contentText, thumbnail, file)
     }
 
-    private fun saveMetadata(metadata: FileMetadata, contentText: String?, file: File): FileEntry? {
+    private fun saveMetadata(
+        metadata: FileMetadata,
+        contentText: String?,
+        thumbnail: ByteArray?,
+        file: File
+    ): FileEntry? {
         entityManager.persist(metadata)
         val content = FileContent(id = metadata.id, text = contentText, file = metadata)
+        val fileThumbnail = FileThumbnail(id = metadata.id, thumbnail = thumbnail, file = metadata)
         metadata.crawledContent = content
+        metadata.thumbnail = fileThumbnail
         val result = addEntryToExistingMetadata(metadata, file)
         entityManager.persist(content)
-//        entityManager.persist(thumbnail)
+        entityManager.persist(fileThumbnail)
         return result
     }
 
