@@ -43,7 +43,7 @@ class AutoDetectTextExtractor(
                 return ImageTextExtractor(tessBaseAPI).extract(file, maxLength)
             }
         } catch (e: IOException) {
-            logger.error("File can not be read", e)
+            logger.error("File can not be read: " + file.absolutePath, e)
         }
         return null
     }
@@ -56,13 +56,12 @@ class AutoDetectTextExtractor(
         if (content == null) {
             return null
         }
-        val modified = content.replace('\n', ' ').replace('\t', ' ')
-        val b = StringBuilder()
-        for (seq in modified.split(" ")) {
+        val result = StringBuilder()
+        for (seq in content.split("\\s".toRegex())) {
             if (seq.isNotEmpty() && seq.length > minWordLength) {
-                b.append("$seq ")
+                result.append("$seq ")
             }
         }
-        return b.toString()
+        return result.toString()
     }
 }
