@@ -148,9 +148,10 @@ class RepositoryService(
         val entry: Optional<FileEntry> = entryRepository.findById(file.path)
         return if (entry.isPresent) {
             val metadata = entry.get().metadata!!
+            val thumbnail = ".thumbnail/" + file.absolutePath
             // TODO: add thumbnail
             RepositoryFile(file.name, rootPath.relativize(fullPath).toString(), file,
-                    metadata.title, metadata.author, metadata.description, metadata.mimeType, null)
+                    metadata.title, metadata.author, metadata.description, metadata.mimeType, thumbnail)
         } else {
             RepositoryFile(file.name, rootPath.relativize(fullPath).toString(), file,
                     null, null, null, null, null)

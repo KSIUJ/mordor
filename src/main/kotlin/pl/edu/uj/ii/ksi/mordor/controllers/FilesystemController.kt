@@ -130,9 +130,14 @@ class FilesystemController(
             val sortedChildren = entity.getChildren(canListHidden)
                 .sortedWith(compareBy({ it !is RepositoryDirectory }, { it.name }))
                 .map { entry ->
-                    FileEntry(entry.relativePath +
-                        if (entry is RepositoryDirectory) "/" else "",
-                            entry.name, iconNameProvider.getIconName(entry), entity.relativePath + entry.relativePath)
+                    FileEntry(entry.relativePath + if (entry is RepositoryDirectory) "/" else "",
+                            entry.name,
+                            if (entry is RepositoryFile && entry.thumbnail != null) {
+                                entry.thumbnail
+                            } else {
+                                iconNameProvider.getIconName(entry)
+                            },
+                            entity.relativePath + entry.relativePath)
                 }
 
             return ModelAndView("tree", mapOf(
@@ -147,6 +152,12 @@ class FilesystemController(
             }
         }
         return ModelAndView(RedirectView(urlEncodePath("/download/${entity.relativePath}")))
+    }
+
+    @Secured(Permission.READ_STR)
+    @GetMapping("/.thumbnail/**")
+    fun fileThumbnail(request: HttpServletRequest): ByteArray {
+       return ByteArray(200*200)
     }
 
     @Secured(Permission.READ_STR)
