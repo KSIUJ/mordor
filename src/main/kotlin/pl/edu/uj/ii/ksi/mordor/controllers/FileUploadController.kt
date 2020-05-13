@@ -74,6 +74,6 @@ class FileUploadController(
             }
             return ModelAndView(RedirectView("/upload/"))
         }
-        throw BadRequestException("No user for username $username")
+        throw InternalError("No user for username $username")
     }
 }
