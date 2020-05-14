@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload a file</title>
+    <link rel="stylesheet" href="../../static/style.css">
+    <link rel="stylesheet" href="../../static/upload.css">
+</head>
+<body>
+<div layout:fragment="content">
+    <h1>Upload new file</h1>
+    <form th:action="@{/upload/}" th:object="${form}" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="files">Files</label>
+            <div class="custom-file">
+                <input type="file" class="custom-file-input " th:field="*{files}" id="files" multiple="multiple">
+                <label class="custom-file-label" for="files">Choose files</label>
+            </div>
+            <div class="alert alert-danger" th:if="${#fields.hasErrors('files')}" th:errors="*{files}">error</div>
+        </div>
+        <div class="form-group">
+            <label th:for="mountPath">Files Destination</label>
+            <input id="mount-path-input"data-toggle="modal" th:attr="data-target='#path-modal'" placeholder="Choose file destination" type="text" class="form-control" th:name="mountPath" readonly/>
+            <div class="alert alert-danger" th:if="${#fields.hasErrors('mountPath')}" th:errors="*{mountPath}">error</div>
+        </div>
+        <button type="submit" class="btn btn-primary">Upload</button>
+    </form>
+
+    <div th:replace="upload/path_modal :: modal (directoriesTree=${directoriesTree})">
+
+</div>
+</body>
+<th:block layout:fragment="script">
+    <script>
+        $(document).ready(function(){
+            $('#files').on('change', function(e) {
+                let files = e.target.files;
+                if (files.length > 1) {
+                    let filenames = Array.from(files).map(file => file.name).reduce((acc, filename) => acc + "; " + filename) + ";";
+                    $(e.target).siblings('.custom-file-label').html(filenames);
+                } else {
+                    let filename =  e.target.files[0].name;
+                    $(e.target).siblings('.custom-file-label').html(filename);
+                }
+            });
+
+            $(document).on('click','.list-down-button', function(event) {
+                event.preventDefault();
+                $(event.target).parent().parent().children('ul').slideToggle()
+                let clicked = event.target;
+                $(clicked).toggleClass("fa-chevron-down  fa-chevron-up");
+            });
+
+            $('.directory-link').on('click', function (e) {
+                e.preventDefault();
+                let path = $(this).attr('data-path') || "/";
+                $('#mount-path-input').prop('readonly',false);
+                $('#mount-path-input').val(path);
+                $('#mount-path-input').prop('readonly',true);
+                $('#path-modal').modal('hide')
+            });
+        })
+    </script>
+</th:block>
+</html>
