@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.IOUtils
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.access.annotation.Secured
 import org.springframework.security.core.context.SecurityContextHolder
@@ -17,16 +18,19 @@ import org.springframework.web.util.UriUtils
 import pl.edu.uj.ii.ksi.mordor.exceptions.BadRequestException
 import pl.edu.uj.ii.ksi.mordor.exceptions.NotFoundException
 import pl.edu.uj.ii.ksi.mordor.persistence.entities.Permission
+import pl.edu.uj.ii.ksi.mordor.persistence.repositories.FileEntryRepository
 import pl.edu.uj.ii.ksi.mordor.services.IconNameProvider
 import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryDirectory
 import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryEntity
 import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryFile
 import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryService
+import java.io.ByteArrayInputStream
 
 @Controller
 class FilesystemController(
     private val repoService: RepositoryService,
     private val iconNameProvider: IconNameProvider,
+    private val entryRepository: FileEntryRepository,
     @Value("\${mordor.preview.max_text_bytes:1048576}") private val maxTextBytes: Int,
     @Value("\${mordor.preview.max_image_bytes:10485760}") private val maxImageBytes: Int,
     @Value("\${mordor.list_hidden_files:false}") private val listHiddenFiles: Boolean
@@ -35,8 +39,9 @@ class FilesystemController(
         val path: String,
         val name: String,
         val iconName: String,
-        val relativePath: String
-    )
+        val relativePath: String,
+        val thumbnailPath: String
+        )
 
     private data class RelativeDir(
         val name: String,
@@ -132,12 +137,13 @@ class FilesystemController(
                 .map { entry ->
                     FileEntry(entry.relativePath + if (entry is RepositoryDirectory) "/" else "",
                             entry.name,
+                            iconNameProvider.getIconName(entry),
+                            entity.relativePath + entry.relativePath,
                             if (entry is RepositoryFile && entry.thumbnail != null) {
                                 entry.thumbnail
                             } else {
-                                iconNameProvider.getIconName(entry)
-                            },
-                            entity.relativePath + entry.relativePath)
+                                "pusto"
+                            })
                 }
 
             return ModelAndView("tree", mapOf(
@@ -154,10 +160,31 @@ class FilesystemController(
         return ModelAndView(RedirectView(urlEncodePath("/download/${entity.relativePath}")))
     }
 
-    @Secured(Permission.READ_STR)
-    @GetMapping("/.thumbnail/**")
-    fun fileThumbnail(request: HttpServletRequest): ByteArray {
-       return ByteArray(200*200)
+    @GetMapping("/thumbnail/**")
+    fun fileThumbnail(request: HttpServletRequest, response: HttpServletResponse) {
+        val logger = LoggerFactory.getLogger(RepositoryService::class.java)
+        logger.info("THUUUMBNAIL")
+
+        val path = request.servletPath.removePrefix("/thumbnail")
+        logger.info("path: $path")
+
+        val entity = (repoService.getEntity(path)
+                ?: throw NotFoundException(path)) as? RepositoryFile
+                ?: throw BadRequestException("not a file")
+        val thumbnail = entryRepository.findById(path).get().metadata?.thumbnail?.thumbnail
+
+        response.contentType = entity.browserSafeMimeType
+        thumbnail?.size?.toLong()?.let { response.setContentLengthLong(it) }
+
+        val stream = ByteArrayInputStream(thumbnail)
+        logger.info("before stream")
+
+        stream.use {
+            IOUtils.copy(stream, response.outputStream)
+        }
+        response.flushBuffer()
+        logger.info("ENDOFTHUMBNAIL")
+
     }
 
     @Secured(Permission.READ_STR)

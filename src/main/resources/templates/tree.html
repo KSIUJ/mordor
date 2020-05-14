@@ -17,6 +17,9 @@
         <th:block th:each="entry, iter : ${children}">
             <li class="list-group-item">
                 <i th:attr="class='mx-2 fas fa-lg ' + ${entry.iconName}"></i>
+                <img th:src="${entry.thumbnailPath}"/>
+
+
                 <a th:attr="href='/file/'+${entry.path}" th:text="${entry.name}"></a>
 
                 <a class="btn btn-danger float-right"

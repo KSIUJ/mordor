@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import pl.edu.uj.ii.ksi.mordor.exceptions.BadRequestException
 import pl.edu.uj.ii.ksi.mordor.persistence.entities.FileEntry
+import pl.edu.uj.ii.ksi.mordor.persistence.entities.FileThumbnail
 import pl.edu.uj.ii.ksi.mordor.persistence.repositories.FileEntryRepository
 import pl.edu.uj.ii.ksi.mordor.services.FileEntryCreator
 
@@ -148,7 +149,9 @@ class RepositoryService(
         val entry: Optional<FileEntry> = entryRepository.findById(file.path)
         return if (entry.isPresent) {
             val metadata = entry.get().metadata!!
-            val thumbnail = ".thumbnail/" + file.absolutePath
+
+            val thumbnail = if (metadata.thumbnail?.thumbnail == null) null else "/thumbnail" + entry.get().path
+
             // TODO: add thumbnail
             RepositoryFile(file.name, rootPath.relativize(fullPath).toString(), file,
                     metadata.title, metadata.author, metadata.description, metadata.mimeType, thumbnail)
