@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import pl.edu.uj.ii.ksi.mordor.exceptions.BadRequestException
 import pl.edu.uj.ii.ksi.mordor.persistence.entities.FileEntry
-import pl.edu.uj.ii.ksi.mordor.persistence.entities.FileThumbnail
 import pl.edu.uj.ii.ksi.mordor.persistence.repositories.FileEntryRepository
 import pl.edu.uj.ii.ksi.mordor.services.FileEntryCreator
 

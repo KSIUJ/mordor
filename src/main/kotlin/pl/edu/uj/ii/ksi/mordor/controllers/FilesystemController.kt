@@ -1,10 +1,10 @@
 package pl.edu.uj.ii.ksi.mordor.controllers
 
+import java.io.ByteArrayInputStream
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.IOUtils
-import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.access.annotation.Secured
 import org.springframework.security.core.context.SecurityContextHolder
@@ -24,7 +24,6 @@ import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryDirectory
 import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryEntity
 import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryFile
 import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryService
-import java.io.ByteArrayInputStream
 
 @Controller
 class FilesystemController(
@@ -41,7 +40,7 @@ class FilesystemController(
         val iconName: String,
         val relativePath: String,
         val thumbnailPath: String?
-        )
+    )
 
     private data class RelativeDir(
         val name: String,
@@ -160,31 +159,23 @@ class FilesystemController(
         return ModelAndView(RedirectView(urlEncodePath("/download/${entity.relativePath}")))
     }
 
+    @Secured(Permission.READ_STR)
     @GetMapping("/thumbnail/**")
     fun fileThumbnail(request: HttpServletRequest, response: HttpServletResponse) {
-        val logger = LoggerFactory.getLogger(RepositoryService::class.java)
-        logger.info("THUUUMBNAIL")
-
         val path = request.servletPath.removePrefix("/thumbnail")
-        logger.info("path: $path")
-
         val entity = (repoService.getEntity(path)
                 ?: throw NotFoundException(path)) as? RepositoryFile
                 ?: throw BadRequestException("not a file")
-        val thumbnail = entryRepository.findById(path).get().metadata?.thumbnail?.thumbnail
 
+        val thumbnail = entryRepository.findById(path).get().metadata?.thumbnail?.thumbnail
         response.contentType = entity.browserSafeMimeType
         thumbnail?.size?.toLong()?.let { response.setContentLengthLong(it) }
 
         val stream = ByteArrayInputStream(thumbnail)
-        logger.info("before stream")
-
         stream.use {
             IOUtils.copy(stream, response.outputStream)
         }
         response.flushBuffer()
-        logger.info("ENDOFTHUMBNAIL")
-
     }
 
     @Secured(Permission.READ_STR)
