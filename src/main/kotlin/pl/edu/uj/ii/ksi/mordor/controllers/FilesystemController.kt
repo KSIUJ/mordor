@@ -138,11 +138,7 @@ class FilesystemController(
                             entry.name,
                             iconNameProvider.getIconName(entry),
                             entity.relativePath + entry.relativePath,
-                            if (entry is RepositoryFile && entry.thumbnail != null) {
-                                entry.thumbnail
-                            } else {
-                                null
-                            })
+                            if (entry is RepositoryFile && entry.thumbnail != null) entry.thumbnail else null)
                 }
 
             return ModelAndView("tree", mapOf(

@@ -39,10 +39,8 @@ class FileEntryCreator(
 
     private fun createNewMetadata(file: File): FileEntry? {
         val metadata: FileMetadata = metadataExtractor.extract(file) ?: return null
-
         val contentText: String? = fileTextExtractor.extract(file, contentMaxLength)
         val thumbnail: ByteArray? = thumbnailExtractor.parse(file)
-
         return saveMetadata(metadata, contentText, thumbnail, file)
     }
 
