@@ -23,6 +23,7 @@ class MetadataGarbageCollector(
 
     @Scheduled(fixedDelay = 60 * 60 * 1000)
     @Suppress("MagicNumber")
+    @Synchronized
     fun collect() {
         logger.info("Metadata garbage collection started")
         progress.active(true)

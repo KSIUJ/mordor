@@ -25,6 +25,7 @@ class MetadataCrawler(
 
     @Scheduled(fixedDelay = 60 * 1000 * 1000)
     @Suppress("MagicNumber")
+    @Synchronized
     fun crawl() {
         progress.active(true)
         logger.info("Metadata gathering started")
