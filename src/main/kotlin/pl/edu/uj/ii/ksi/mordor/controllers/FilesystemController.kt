@@ -40,7 +40,7 @@ class FilesystemController(
         val name: String,
         val iconName: String,
         val relativePath: String,
-        val thumbnailPath: String
+        val thumbnailPath: String?
         )
 
     private data class RelativeDir(
@@ -142,7 +142,7 @@ class FilesystemController(
                             if (entry is RepositoryFile && entry.thumbnail != null) {
                                 entry.thumbnail
                             } else {
-                                "pusto"
+                                null
                             })
                 }
 
