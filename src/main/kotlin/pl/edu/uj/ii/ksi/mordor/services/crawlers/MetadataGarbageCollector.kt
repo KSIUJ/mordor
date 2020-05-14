@@ -26,7 +26,7 @@ class MetadataGarbageCollector(
     @Synchronized
     fun collect() {
         logger.info("Metadata garbage collection started")
-        progress.active(true)
+        progress.active = true
         val metadata = metadataRepository.findAll()
         progress.total = metadata.size.toLong()
         metadata.forEach { fileMetadata ->
@@ -36,7 +36,7 @@ class MetadataGarbageCollector(
                     .format(progress.currentProgress() * 100))
         }
         logger.info("Metadata garbage collection finished successfully")
-        progress.active(false)
+        progress.active = false
     }
 
     private fun checkMetadata(metadata: FileMetadata) {

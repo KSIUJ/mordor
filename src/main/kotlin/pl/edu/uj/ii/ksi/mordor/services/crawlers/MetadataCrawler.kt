@@ -27,7 +27,7 @@ class MetadataCrawler(
     @Suppress("MagicNumber")
     @Synchronized
     fun crawl() {
-        progress.active(true)
+        progress.active = true
         logger.info("Metadata gathering started")
         val files = File(rootPathStr).walkTopDown().filter { file -> needMetadata(file) }.toList()
         logger.debug("Found ${progress.total} files with no metadata")
@@ -40,7 +40,7 @@ class MetadataCrawler(
             progress.done += 1
         }
         logger.info("Metadata gathering finished successfully")
-        progress.active(false)
+        progress.active = false
     }
 
     private fun needMetadata(file: File): Boolean {
