@@ -15,17 +15,10 @@
 
     <ul th:unless="${children.empty}" class="list-group list-group-flush">
         <th:block th:each="entry, iter : ${children}">
-            <li class="list-group-item">
-<!--                <i th:if="${entry.thumbnailPath == null}">-->
-<!--                    <i th:attr="class='mx-2 fas fa-lg ' + ${entry.iconName}"></i>-->
-<!--                </i>-->
-<!--                <img th:unless="${entry.thumbnailPath == null}">-->
-<!--                    <img th:src="${entry.thumbnailPath}"/>-->
-<!--                </img>-->
+            <li class="list-group-item align-items-center">
 
                 <i th:if="${entry.thumbnailPath == null}" th:attr="class='mx-2 fas fa-lg ' + ${entry.iconName}"></i>
-                <img th:if="${entry.thumbnailPath != null}" th:src="${entry.thumbnailPath}"/>
-
+                <img th:if="${entry.thumbnailPath != null}" th:src="${entry.thumbnailPath}" th:width="30" th:heigth="30"/>
 
                 <a th:attr="href='/file/'+${entry.path}" th:text="${entry.name}"></a>
 
