@@ -22,7 +22,7 @@ class FileEntryCreator(
 ) {
 
     companion object {
-        private const val contentMaxLength: Int = 24 * 1024
+        private const val contentMaxLength: Int = 200 * 1024
     }
 
     @Transactional
