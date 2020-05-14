@@ -9,8 +9,10 @@ import org.springframework.stereotype.Service
 @Service
 class PDFThumbnailExtractor(private val tika: Tika) : ThumbnailExtractor() {
     override fun extract(file: File): ByteArray? {
-        val firstPage = PDFRenderer(PDDocument.load(file)).renderImage(0)
-        return ImageThumbnailExtractor(tika).extract(firstPage)
+        val doc = PDDocument.load(file)
+        doc.use {
+            return ImageThumbnailExtractor(tika).extract(PDFRenderer(doc).renderImage(0))
+        }
     }
 
     override fun canParse(file: File): Boolean {
