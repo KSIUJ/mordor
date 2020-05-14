@@ -1,4 +1,4 @@
-package pl.edu.uj.ii.ksi.mordor.services
+package pl.edu.uj.ii.ksi.mordor.services.crawlers
 
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Scheduled
@@ -8,6 +8,7 @@ import pl.edu.uj.ii.ksi.mordor.persistence.entities.FileEntry
 import pl.edu.uj.ii.ksi.mordor.persistence.entities.FileMetadata
 import pl.edu.uj.ii.ksi.mordor.persistence.repositories.FileEntryRepository
 import pl.edu.uj.ii.ksi.mordor.persistence.repositories.FileMetadataRepository
+import pl.edu.uj.ii.ksi.mordor.services.ExternalUserService
 import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryService
 
 @Service
@@ -18,14 +19,25 @@ class MetadataGarbageCollector(
 ) {
     companion object {
         private val logger = LoggerFactory.getLogger(ExternalUserService::class.java)
+        var progress = CrawlerProgress()
     }
 
     @Scheduled(fixedDelay = 60 * 1000 * 1000)
+    @Suppress("MagicNumber")
+    @Synchronized
     fun collect() {
         logger.info("Metadata garbage collection started")
-        // TODO count done/total
-        metadataRepository.findAll().forEach { metadata -> checkMetadata(metadata) }
+        progress.active = true
+        val metadata = metadataRepository.findAll()
+        progress.total = metadata.size.toLong()
+        metadata.forEach { fileMetadata ->
+            checkMetadata(fileMetadata)
+            progress.done += 1
+            logger.debug("Metadata garbage collection completed in %.2f percent"
+                    .format(progress.currentProgress() * 100))
+        }
         logger.info("Metadata garbage collection finished successfully")
+        progress.active = false
     }
 
     private fun checkMetadata(metadata: FileMetadata) {
