@@ -7,11 +7,11 @@ import org.springframework.stereotype.Service
 import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryService
 
 @Service
-class ThumbnailAutoExtractor : ThumbnailExtractor() {
+class ThumbnailAutoExtractor(tika: Tika) : ThumbnailExtractor() {
+
+    private val extractors = listOf(ImageThumbnailExtractor(tika), PDFThumbnailExtractor(tika))
 
     companion object {
-        private val tika = Tika()
-        private val extractors = listOf(ImageThumbnailExtractor(tika), PDFThumbnailExtractor(tika))
         private val logger = LoggerFactory.getLogger(RepositoryService::class.java)
     }
 
