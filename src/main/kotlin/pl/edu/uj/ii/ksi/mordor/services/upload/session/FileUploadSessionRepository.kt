@@ -9,6 +9,7 @@ import java.time.ZoneId
 import java.util.Optional
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.repository.PagingAndSortingRepository
@@ -32,11 +33,30 @@ class FileUploadSessionRepository(
     }
 
     override fun findAll(sort: Sort): MutableIterable<FileUploadSession> {
-        TODO("Not yet implemented")
+        var comparator: Comparator<FileUploadSession>? = null
+
+        sort.map { order ->
+            val propertyComparator = getSessionComparator(order.property)
+
+            if (order.isDescending) {
+                propertyComparator
+            } else {
+                propertyComparator.reversed()
+            }
+        }.forEach { comparator = comparator?.then(it) ?: it }
+
+        var result = findAll()
+        comparator?.let { result = result.sortedWith(it) }
+
+        return result.toMutableList()
     }
 
     override fun findAll(pageable: Pageable): Page<FileUploadSession> {
-        TODO("Not yet implemented")
+        val sessions = findAll(pageable.sort).toMutableList()
+        val start = pageable.offset.toInt()
+        var end = start + pageable.pageSize
+        if (end > sessions.size) end = sessions.size
+        return PageImpl(sessions.subList(start, end))
     }
 
     override fun findAll(): List<FileUploadSession> {
@@ -56,7 +76,10 @@ class FileUploadSessionRepository(
     }
 
     override fun <S : FileUploadSession?> saveAll(entities: MutableIterable<S>): MutableIterable<S> {
-        TODO("Not yet implemented")
+        return entities
+                .map { it as FileUploadSession? }
+                .map { s -> s?.let { save(it) } as S }
+                .toMutableList()
     }
 
     override fun count(): Long {
@@ -100,9 +123,16 @@ class FileUploadSessionRepository(
             val userId = path.parent.fileName.toString().toLong()
             return Pair(userId, sessionId)
         } catch (e: NumberFormatException) {
-            // TODO better exception handling
             throw IllegalArgumentException("Path $path is not uploadSession folder's path")
         }
+    }
+
+    fun getPathOfId(id: Pair<Long, String>): String {
+        return "$pendingSessionsPath/${id.first}/${id.second}"
+    }
+
+    fun getPathOfSession(session: FileUploadSession): String {
+        return getPathOfId(Pair(session.user.id!!, session.id))
     }
 
     private fun findAllIds(): List<Pair<Long, String>> {
@@ -121,11 +151,14 @@ class FileUploadSessionRepository(
         }
     }
 
-    fun getPathOfId(id: Pair<Long, String>): String {
-        return "$pendingSessionsPath/${id.first}/${id.second}"
-    }
-
-    fun getPathOfSession(session: FileUploadSession): String {
-        return getPathOfId(Pair(session.user.id!!, session.id))
+    private fun getSessionComparator(field: String): java.util.Comparator<FileUploadSession> {
+        val dateComparator = Comparator<FileUploadSession> { x, y -> compareValues(x.creationDate, y.creationDate) }
+        return when (field) {
+            "id" -> Comparator { x, y -> compareValues(x.id, y.id) }
+            "user" -> Comparator { x, y -> compareValues(x.user.id, y.user.id) }
+            "creationDate" -> dateComparator
+            "date" -> dateComparator
+            else -> throw IllegalArgumentException("Unknown property of FileUploadSession: $field")
+        }
     }
 }
