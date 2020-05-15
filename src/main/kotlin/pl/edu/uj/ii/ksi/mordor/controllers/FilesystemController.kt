@@ -1,5 +1,6 @@
 package pl.edu.uj.ii.ksi.mordor.controllers
 
+import java.io.ByteArrayInputStream
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 import org.apache.commons.io.FileUtils
@@ -17,6 +18,7 @@ import org.springframework.web.util.UriUtils
 import pl.edu.uj.ii.ksi.mordor.exceptions.BadRequestException
 import pl.edu.uj.ii.ksi.mordor.exceptions.NotFoundException
 import pl.edu.uj.ii.ksi.mordor.persistence.entities.Permission
+import pl.edu.uj.ii.ksi.mordor.persistence.repositories.FileEntryRepository
 import pl.edu.uj.ii.ksi.mordor.services.IconNameProvider
 import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryDirectory
 import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryEntity
@@ -27,6 +29,7 @@ import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryService
 class FilesystemController(
     private val repoService: RepositoryService,
     private val iconNameProvider: IconNameProvider,
+    private val entryRepository: FileEntryRepository,
     @Value("\${mordor.preview.max_text_bytes:1048576}") private val maxTextBytes: Int,
     @Value("\${mordor.preview.max_image_bytes:10485760}") private val maxImageBytes: Int,
     @Value("\${mordor.list_hidden_files:false}") private val listHiddenFiles: Boolean
@@ -35,7 +38,8 @@ class FilesystemController(
         val path: String,
         val name: String,
         val iconName: String,
-        val relativePath: String
+        val relativePath: String,
+        val thumbnailPath: String?
     )
 
     private data class RelativeDir(
@@ -130,9 +134,11 @@ class FilesystemController(
             val sortedChildren = entity.getChildren(canListHidden)
                 .sortedWith(compareBy({ it !is RepositoryDirectory }, { it.name }))
                 .map { entry ->
-                    FileEntry(entry.relativePath +
-                        if (entry is RepositoryDirectory) "/" else "",
-                            entry.name, iconNameProvider.getIconName(entry), entity.relativePath + entry.relativePath)
+                    FileEntry(entry.relativePath + if (entry is RepositoryDirectory) "/" else "",
+                            entry.name,
+                            iconNameProvider.getIconName(entry),
+                            entity.relativePath + entry.relativePath,
+                            if (entry is RepositoryFile && entry.thumbnail != null) entry.thumbnail else null)
                 }
 
             return ModelAndView("tree", mapOf(
@@ -147,6 +153,21 @@ class FilesystemController(
             }
         }
         return ModelAndView(RedirectView(urlEncodePath("/download/${entity.relativePath}")))
+    }
+
+    @Secured(Permission.READ_STR)
+    @GetMapping("/thumbnail/**")
+    fun fileThumbnail(request: HttpServletRequest, response: HttpServletResponse) {
+        val path = request.servletPath.removePrefix("/thumbnail")
+        val thumbnail = entryRepository.findById(path).get().metadata?.thumbnail?.thumbnail
+        response.contentType = "image/png"
+        thumbnail?.size?.toLong()?.let { response.setContentLengthLong(it) }
+
+        val stream = ByteArrayInputStream(thumbnail)
+        stream.use {
+            IOUtils.copy(stream, response.outputStream)
+        }
+        response.flushBuffer()
     }
 
     @Secured(Permission.READ_STR)
