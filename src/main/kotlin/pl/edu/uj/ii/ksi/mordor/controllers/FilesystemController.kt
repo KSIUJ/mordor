@@ -159,12 +159,8 @@ class FilesystemController(
     @GetMapping("/thumbnail/**")
     fun fileThumbnail(request: HttpServletRequest, response: HttpServletResponse) {
         val path = request.servletPath.removePrefix("/thumbnail")
-        val entity = (repoService.getEntity(path)
-                ?: throw NotFoundException(path)) as? RepositoryFile
-                ?: throw BadRequestException("not a file")
-
         val thumbnail = entryRepository.findById(path).get().metadata?.thumbnail?.thumbnail
-        response.contentType = entity.browserSafeMimeType
+        response.contentType = "image/png"
         thumbnail?.size?.toLong()?.let { response.setContentLengthLong(it) }
 
         val stream = ByteArrayInputStream(thumbnail)

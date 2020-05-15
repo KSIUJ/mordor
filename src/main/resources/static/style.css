@@ -48,3 +48,8 @@ code.hljs {
     outline: none;
     overflow: hidden;
 }
+
+.thumbnail {
+    width: 30px;
+    height: 30px;
+}

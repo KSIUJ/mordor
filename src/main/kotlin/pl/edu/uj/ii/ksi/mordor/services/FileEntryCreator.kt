@@ -21,7 +21,7 @@ class FileEntryCreator(
     @Qualifier("autoDetectTextExtractor") private val fileTextExtractor: FileTextExtractor,
     private val hashProvider: FileHashProvider,
     private val metadataRepository: FileMetadataRepository,
-    @Qualifier("thumbnailChainOfResponsibility") private val thumbnailExtractor: ThumbnailExtractor
+    @Qualifier("thumbnailAutoExtractor") private val thumbnailExtractor: ThumbnailExtractor
 ) {
 
     companion object {
@@ -40,7 +40,7 @@ class FileEntryCreator(
     private fun createNewMetadata(file: File): FileEntry? {
         val metadata: FileMetadata = metadataExtractor.extract(file) ?: return null
         val contentText: String? = fileTextExtractor.extract(file, contentMaxLength)
-        val thumbnail: ByteArray? = thumbnailExtractor.parse(file)
+        val thumbnail: ByteArray? = thumbnailExtractor.extract(file)
         return saveMetadata(metadata, contentText, thumbnail, file)
     }
 
