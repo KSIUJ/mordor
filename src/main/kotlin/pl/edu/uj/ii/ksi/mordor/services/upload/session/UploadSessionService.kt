@@ -9,31 +9,31 @@ import pl.edu.uj.ii.ksi.mordor.services.FileEntryCreator
 import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryService
 
 @Service
-class FileUploadSessionService(
-    private val sessionRepository: FileUploadSessionRepository,
+class UploadSessionService(
+    private val sessionRepository: UploadSessionRepository,
     private val repositoryService: RepositoryService,
     private val entryCreator: FileEntryCreator,
     private val entryRepository: FileEntryRepository
 ) {
-    fun getRepositoryServiceOfSession(uploadSession: FileUploadSession): RepositoryService {
-        val path = sessionRepository.getPathOfSession(uploadSession)
+    fun getRepositoryService(session: UploadSession): RepositoryService {
+        val path = sessionRepository.getPathOfSession(session)
         val absolutePath = repositoryService.getAbsolutePath(path).toString()
         return RepositoryService(absolutePath, entryRepository, entryCreator)
     }
 
-    fun approve(uploadSession: FileUploadSession) {
-        val currentPath = sessionRepository.getPathOfSession(uploadSession)
+    fun approve(session: UploadSession) {
+        val currentPath = sessionRepository.getPathOfSession(session)
         val destinationPath = "."
         repositoryService.move(currentPath, destinationPath, true)
     }
 
-    fun reject(uploadSession: FileUploadSession) {
-        sessionRepository.delete(uploadSession)
+    fun reject(session: UploadSession) {
+        sessionRepository.delete(session)
     }
 
-    fun createFileSession(user: User): FileUploadSession {
+    fun createFileSession(user: User): UploadSession {
         val sessionId = UUID.randomUUID().toString()
-        val session = FileUploadSession(sessionId, user, LocalDateTime.now())
+        val session = UploadSession(sessionId, user, LocalDateTime.now())
         sessionRepository.save(session)
         return session
     }

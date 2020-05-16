@@ -17,14 +17,14 @@ import pl.edu.uj.ii.ksi.mordor.model.SessionEntry as SessionEntry
 import pl.edu.uj.ii.ksi.mordor.persistence.entities.Permission
 import pl.edu.uj.ii.ksi.mordor.persistence.repositories.UserRepository
 import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryDirectory
-import pl.edu.uj.ii.ksi.mordor.services.upload.session.FileUploadSessionRepository
-import pl.edu.uj.ii.ksi.mordor.services.upload.session.FileUploadSessionService
+import pl.edu.uj.ii.ksi.mordor.services.upload.session.UploadSessionRepository
+import pl.edu.uj.ii.ksi.mordor.services.upload.session.UploadSessionService
 
 @Controller
 class SessionReviewController(
     private val userRepository: UserRepository,
-    private val fileUploadSessionService: FileUploadSessionService,
-    private val sessionRepository: FileUploadSessionRepository,
+    private val uploadSessionService: UploadSessionService,
+    private val sessionRepository: UploadSessionRepository,
     private val previewFactory: ReviewViewsFactory
 ) {
 
@@ -55,7 +55,7 @@ class SessionReviewController(
     ): ModelAndView {
         val session = sessionRepository.findById(Pair(userId, sessionId))
         if (session.isPresent) {
-            val repository = fileUploadSessionService.getRepositoryServiceOfSession(session.get())
+            val repository = uploadSessionService.getRepositoryService(session.get())
             val path = request.servletPath.removePrefix("/review/files/$userId/$sessionId/")
             val entity = repository.getEntity(path) ?: throw NotFoundException("Session with $sessionId")
             if (entity is RepositoryDirectory) {
@@ -79,7 +79,7 @@ class SessionReviewController(
         if (user.isPresent) {
             val session = sessionRepository.findById(Pair(userId, sessionId))
             if (session.isPresent) {
-                fileUploadSessionService.approve(session.get())
+                uploadSessionService.approve(session.get())
                 return ModelAndView(RedirectView("/review/"))
             } else {
                 throw BadRequestException("No session found for user: $userId, session: $sessionId")
@@ -99,7 +99,7 @@ class SessionReviewController(
         if (user.isPresent) {
             val session = sessionRepository.findById(Pair(userId, sessionId))
             if (session.isPresent) {
-                fileUploadSessionService.reject(session.get())
+                uploadSessionService.reject(session.get())
                 return ModelAndView(RedirectView("/review/"))
             } else {
                 throw BadRequestException("No session found for user: $userId, session: $sessionId")

@@ -15,11 +15,11 @@ import pl.edu.uj.ii.ksi.mordor.services.IconNameProvider
 import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryDirectory
 import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryEntity
 import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryFile
-import pl.edu.uj.ii.ksi.mordor.services.upload.session.FileUploadSessionRepository
+import pl.edu.uj.ii.ksi.mordor.services.upload.session.UploadSessionRepository
 
 @Service
 class ReviewViewsFactory(
-    private val fileUploadSessionRepository: FileUploadSessionRepository,
+    private val uploadSessionRepository: UploadSessionRepository,
     private val iconNameProvider: IconNameProvider,
     @Value("\${mordor.preview.max_image_bytes:10485760}") private val maxImageBytes: Int,
     @Value("\${mordor.preview.max_text_bytes:1048576}") private val maxTextBytes: Int,
@@ -71,7 +71,7 @@ class ReviewViewsFactory(
     }
 
     fun previewFor(entity: RepositoryEntity, userId: Long, sessionId: String): ModelAndView {
-        val sessionRepositoryPath = fileUploadSessionRepository.getPathOfId(Pair(userId, sessionId))
+        val sessionRepositoryPath = uploadSessionRepository.getPathOfId(Pair(userId, sessionId))
         val entityPath = sessionRepositoryPath + "/" + entity.relativePath
         if (entity is RepositoryFile) {
             return previewFor(entity, entityPath, sessionId, userId)

@@ -18,12 +18,12 @@ import pl.edu.uj.ii.ksi.mordor.persistence.entities.Permission
 import pl.edu.uj.ii.ksi.mordor.persistence.repositories.UserRepository
 import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryDirectory
 import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryService
-import pl.edu.uj.ii.ksi.mordor.services.upload.session.FileUploadSessionService
+import pl.edu.uj.ii.ksi.mordor.services.upload.session.UploadSessionService
 
 @Controller
 class FileUploadController(
     private val userRepository: UserRepository,
-    private val fileUploadSessionService: FileUploadSessionService,
+    private val uploadSessionService: UploadSessionService,
     private val repositoryService: RepositoryService
 ) {
     private fun getDirectoriesTree(path: String = ""): List<DirectoriesTreeNodeEntry> {
@@ -63,11 +63,11 @@ class FileUploadController(
             return ModelAndView("upload/upload", HttpStatus.BAD_REQUEST)
         }
         user?.let {
-            val session = fileUploadSessionService.createFileSession(user)
-            val repository = fileUploadSessionService.getRepositoryServiceOfSession(session)
+            val session = uploadSessionService.createFileSession(user)
+            val repository = uploadSessionService.getRepositoryService(session)
             for (file in model.files) {
                 val mountPath = if (model.mountPath == "/") { "." } else { model.mountPath }
-                if (!repository.fileExists(mountPath)) {
+                if (!repositoryService.fileExists(mountPath)) {
                     throw BadRequestException("No directory at chosen path")
                 }
                 repository.saveFile("$mountPath/${file.originalFilename}", file.inputStream)
