@@ -67,7 +67,7 @@ class FileUploadController(
             val repository = fileUploadSessionService.getRepositoryServiceOfSession(session)
             for (file in model.files) {
                 val mountPath = if (model.mountPath == "/") { "." } else { model.mountPath }
-                if (!repository.fileExists(mountPath)) {
+                if (!repositoryService.fileExists(mountPath)) {
                     throw BadRequestException("No directory at chosen path")
                 }
                 repository.saveFile("$mountPath/${file.originalFilename}", file.inputStream)
