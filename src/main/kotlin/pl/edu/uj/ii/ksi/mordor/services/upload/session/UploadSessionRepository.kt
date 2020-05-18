@@ -20,20 +20,20 @@ import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryService
 
 @Suppress("NotImplementedDeclaration", "TooManyFunctions")
 @Service
-class FileUploadSessionRepository(
+class UploadSessionRepository(
     private val repositoryService: RepositoryService,
     private val userRepository: UserRepository,
     @Value("\${mordor.pending_sessions_path:}") private val pendingSessionsPath: String
-) : PagingAndSortingRepository<FileUploadSession, Pair<Long, String>> {
+) : PagingAndSortingRepository<UploadSession, Pair<Long, String>> {
 
-    override fun <S : FileUploadSession> save(session: S): S {
+    override fun <S : UploadSession> save(session: S): S {
         val absolutePath = repositoryService.getAbsolutePath(getPathOfSession(session))
         absolutePath.toFile().mkdirs()
         return session
     }
 
-    override fun findAll(sort: Sort): MutableIterable<FileUploadSession> {
-        var comparator: Comparator<FileUploadSession>? = null
+    override fun findAll(sort: Sort): MutableIterable<UploadSession> {
+        var comparator: Comparator<UploadSession>? = null
 
         sort.map { order ->
             val propertyComparator = getSessionComparator(order.property)
@@ -51,7 +51,7 @@ class FileUploadSessionRepository(
         return result.toMutableList()
     }
 
-    override fun findAll(pageable: Pageable): Page<FileUploadSession> {
+    override fun findAll(pageable: Pageable): Page<UploadSession> {
         val sessions = findAll(pageable.sort).toMutableList()
         val start = pageable.offset.toInt()
         var end = start + pageable.pageSize
@@ -59,7 +59,7 @@ class FileUploadSessionRepository(
         return PageImpl(sessions.subList(start, end))
     }
 
-    override fun findAll(): List<FileUploadSession> {
+    override fun findAll(): List<UploadSession> {
         return findAllById(ids = findAllIds().toMutableList())
     }
 
@@ -67,7 +67,7 @@ class FileUploadSessionRepository(
         repositoryService.delete(getPathOfId(id), true)
     }
 
-    override fun deleteAll(sessions: MutableIterable<FileUploadSession>) {
+    override fun deleteAll(sessions: MutableIterable<UploadSession>) {
         sessions.forEach { session -> delete(session) }
     }
 
@@ -75,9 +75,9 @@ class FileUploadSessionRepository(
         findAll().forEach { session -> delete(session) }
     }
 
-    override fun <S : FileUploadSession?> saveAll(entities: MutableIterable<S>): MutableIterable<S> {
+    override fun <S : UploadSession?> saveAll(entities: MutableIterable<S>): MutableIterable<S> {
         return entities
-                .map { it as FileUploadSession? }
+                .map { it as UploadSession? }
                 .map { s -> s?.let { save(it) } as S }
                 .toMutableList()
     }
@@ -86,7 +86,7 @@ class FileUploadSessionRepository(
         return findAllIds().size.toLong()
     }
 
-    override fun findAllById(ids: MutableIterable<Pair<Long, String>>): List<FileUploadSession> {
+    override fun findAllById(ids: MutableIterable<Pair<Long, String>>): List<UploadSession> {
         return ids.map { id -> findById(id) }
                 .filter { optional -> optional.isPresent }
                 .map { optional -> optional.get() }
@@ -96,14 +96,14 @@ class FileUploadSessionRepository(
         return findById(id).isPresent
     }
 
-    override fun findById(id: Pair<Long, String>): Optional<FileUploadSession> {
+    override fun findById(id: Pair<Long, String>): Optional<UploadSession> {
         val path = getPathOfId(id)
         return if (repositoryService.fileExists(path)) {
 
             val timestamp = repositoryService.getAbsolutePath(path).toFile().lastModified()
             val datetime = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.systemDefault())
 
-            Optional.of(FileUploadSession(
+            Optional.of(UploadSession(
                     user = userRepository.findById(id.first).get(),
                     id = id.second,
                     creationDate = datetime))
@@ -112,7 +112,7 @@ class FileUploadSessionRepository(
         }
     }
 
-    override fun delete(session: FileUploadSession) {
+    override fun delete(session: UploadSession) {
         val id = Pair(session.user.id!!, session.id)
         deleteById(id)
     }
@@ -131,7 +131,7 @@ class FileUploadSessionRepository(
         return "$pendingSessionsPath/${id.first}/${id.second}"
     }
 
-    fun getPathOfSession(session: FileUploadSession): String {
+    fun getPathOfSession(session: UploadSession): String {
         return getPathOfId(Pair(session.user.id!!, session.id))
     }
 
@@ -151,8 +151,8 @@ class FileUploadSessionRepository(
         }
     }
 
-    private fun getSessionComparator(field: String): java.util.Comparator<FileUploadSession> {
-        val dateComparator = Comparator<FileUploadSession> { x, y -> compareValues(x.creationDate, y.creationDate) }
+    private fun getSessionComparator(field: String): java.util.Comparator<UploadSession> {
+        val dateComparator = Comparator<UploadSession> { x, y -> compareValues(x.creationDate, y.creationDate) }
         return when (field) {
             "id" -> Comparator { x, y -> compareValues(x.id, y.id) }
             "user" -> Comparator { x, y -> compareValues(x.user.id, y.user.id) }
