@@ -18,7 +18,6 @@ class FileContentValidator {
     private fun whiteSpaceFilter(content: String): Boolean {
         val letters = content.filter { c -> c.isLetterOrDigit() }.length
         if (letters.toFloat().div(content.length) < minAlphanumericsPercent) {
-            logger.warn("Number of alphanumeric chars is less than 60%. OCR result will be turned to null")
             return false
         }
         return true
