@@ -30,13 +30,16 @@ class AutoDetectTextExtractor(
         try {
             val tikaContent = TikaFileTextExtractor(tika).extract(file, maxLength)
             if (!isScanned(tikaContent)) {
+                logger.debug("Extracted text from " + file.absolutePath + " using Tika")
                 return tikaContent
             }
             val type = tika.detect(file)
             if (type == "application/pdf") {
+                logger.debug("Extracting text from " + file.absolutePath + " using Bytedeco for PDF")
                 return PDFTextExtractor(tessBaseAPI).extract(file, maxLength)
             }
             if (type.startsWith("image")) {
+                logger.debug("Extracting text from " + file.absolutePath + " using Bytedeco")
                 return ImageTextExtractor(tessBaseAPI).extract(file, maxLength)
             }
         } catch (e: IOException) {

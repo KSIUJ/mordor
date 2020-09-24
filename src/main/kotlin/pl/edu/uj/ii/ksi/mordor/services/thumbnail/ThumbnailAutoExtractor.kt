@@ -18,6 +18,7 @@ class ThumbnailAutoExtractor(tika: Tika) : ThumbnailExtractor() {
     override fun extract(file: File): ByteArray? {
         for (extractor in extractors) {
             if (extractor.canParse(file)) {
+                logger.debug("Extracting thumbnail for " + file.absolutePath + " using " + extractor.javaClass.name)
                 return extractor.extract(file)
             }
         }
