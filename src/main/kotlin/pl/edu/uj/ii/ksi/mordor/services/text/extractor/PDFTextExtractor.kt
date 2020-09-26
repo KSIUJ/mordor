@@ -30,14 +30,14 @@ class PDFTextExtractor(private val tessBaseAPI: TessBaseAPI) : FileTextExtractor
         }
 
         val extracted = StringBuilder()
-        val outputFile = File.createTempFile("temp", "jpg")
+        val outputFile = File.createTempFile("temp", "png")
         for (image in bufferedImages) {
             if (maxLength >= 0 && extracted.length > maxLength) {
                 break
             }
 
             try {
-                ImageIO.write(correctTwisted(image), "jpg", outputFile)
+                ImageIO.write(correctTwisted(image), "png", outputFile)
                 val text: String? = ImageTextExtractor(tessBaseAPI).extract(outputFile, maxLength)
                 if (text != null) {
                     extracted.append(text)
