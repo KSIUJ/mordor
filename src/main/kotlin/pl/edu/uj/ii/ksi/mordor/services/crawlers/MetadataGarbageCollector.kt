@@ -1,6 +1,7 @@
 package pl.edu.uj.ii.ksi.mordor.services.crawlers
 
 import org.slf4j.LoggerFactory
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import pl.edu.uj.ii.ksi.mordor.exceptions.BadRequestException
@@ -12,6 +13,7 @@ import pl.edu.uj.ii.ksi.mordor.services.ExternalUserService
 import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryService
 
 @Service
+@ConditionalOnProperty(value = ["mordor.crawlers.enabled"], havingValue = "true", matchIfMissing = false)
 class MetadataGarbageCollector(
     val metadataRepository: FileMetadataRepository,
     val entryRepository: FileEntryRepository,
