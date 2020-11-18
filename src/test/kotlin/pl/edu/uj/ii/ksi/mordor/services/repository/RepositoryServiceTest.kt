@@ -11,8 +11,7 @@ import pl.edu.uj.ii.ksi.mordor.services.FileEntryCreator
 class RepositoryServiceTest {
     private val mockEntryRepository = mock<FileEntryRepository> {}
     private val mockEntryCreator = mock<FileEntryCreator> {}
-
-    private val repositoryService = RepositoryService("/srv/mordor", mockEntryRepository, mockEntryCreator)
+    private val repositoryService = RepositoryService("/srv/mordor", true, mockEntryRepository, mockEntryCreator)
 
     @Test
     fun getAbsolutePath_correct() {

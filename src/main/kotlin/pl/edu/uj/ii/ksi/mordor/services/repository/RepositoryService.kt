@@ -20,6 +20,7 @@ import pl.edu.uj.ii.ksi.mordor.services.FileEntryCreator
 @Service
 class RepositoryService(
     @Value("\${mordor.root_path}") private val rootPathStr: String,
+    @Value("\${mordor.allow_metadata_gathering}") private val metadataGatheringAllowed: Boolean,
     private val entryRepository: FileEntryRepository,
     private val entryCreator: FileEntryCreator
 ) {
@@ -60,7 +61,10 @@ class RepositoryService(
         outputPath.parent.toFile().mkdirs()
         val outputStream = FileOutputStream(outputPath.toString())
         inputStream.copyTo(outputStream)
-        entryCreator.create(outputPath.toFile())
+
+        if (metadataGatheringAllowed) {
+            entryCreator.create(outputPath.toFile())
+        }
 
         return getEntity(outputPath.toString())
     }

@@ -12,7 +12,10 @@ import pl.edu.uj.ii.ksi.mordor.services.FileEntryCreator
 import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryService
 
 @Service
-@ConditionalOnProperty(value = ["mordor.crawlers.enabled"], havingValue = "true", matchIfMissing = false)
+@ConditionalOnProperty(
+        value = ["mordor.crawlers.enabled", "allow_metadata_gathering"],
+        havingValue = "true",
+        matchIfMissing = false)
 class MetadataCrawler(
     @Value("\${mordor.root_path}") private val rootPathStr: String,
     private val repositoryService: RepositoryService,
