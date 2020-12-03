@@ -2,6 +2,7 @@ package pl.edu.uj.ii.ksi.mordor.services.upload.session
 
 import java.time.LocalDateTime
 import java.util.UUID
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import pl.edu.uj.ii.ksi.mordor.persistence.entities.User
 import pl.edu.uj.ii.ksi.mordor.persistence.repositories.FileEntryRepository
@@ -10,6 +11,7 @@ import pl.edu.uj.ii.ksi.mordor.services.repository.RepositoryService
 
 @Service
 class UploadSessionService(
+    @Value("\${mordor.allow_metadata_gathering}") private val metadataGatheringAllowed: Boolean,
     private val sessionRepository: UploadSessionRepository,
     private val repositoryService: RepositoryService,
     private val entryCreator: FileEntryCreator,
@@ -18,7 +20,7 @@ class UploadSessionService(
     fun getRepositoryService(session: UploadSession): RepositoryService {
         val path = sessionRepository.getPathOfSession(session)
         val absolutePath = repositoryService.getAbsolutePath(path).toString()
-        return RepositoryService(absolutePath, entryRepository, entryCreator)
+        return RepositoryService(absolutePath, metadataGatheringAllowed, entryRepository, entryCreator)
     }
 
     fun approve(session: UploadSession) {
