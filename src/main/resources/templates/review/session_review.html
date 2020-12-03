@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en"
+      layout:decorate="~{layout}">
+<head>
+    <title>Upload Session Review - Mordor</title>
+</head>
+<body>
+<div layout:fragment="content">
+
+    <div th:replace="review/session_management_bar :: session-bar (userId=${userId}, sessionId=${sessionId})"/>
+
+    <div th:replace="components/breadcrumb :: breadcrumb (path=${path}, dir=${dir})"/>
+
+    <div th:if="${files.empty}">
+        <h5>There are no files here.</h5>
+    </div>
+
+    <ul th:unless="${files.empty}" class="list-group list-group-flush">
+        <th:block th:each="entry : ${files}">
+            <li class="list-group-item">
+                <i th:attr="class='mx-2 fas fa-lg ' + ${entry.iconName}"></i>
+                <a th:attr="href='/review/files/'+${userId}+'/'+${sessionId}+'/'+${entry.path}" th:text="${entry.name}"></a>
+            </li>
+        </th:block>
+    </ul>
+
+</div>
+</body>
+</html>

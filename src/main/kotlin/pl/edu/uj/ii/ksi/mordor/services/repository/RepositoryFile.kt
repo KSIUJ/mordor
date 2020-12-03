@@ -73,6 +73,11 @@ class RepositoryFile(
             return pageFileNames.contains(FilenameUtils.getExtension(name.toLowerCase()))
         }
 
+    val isText: Boolean
+        get() {
+            return mimeType.startsWith("text/") || isCode
+        }
+
     val isDisplayableImage: Boolean
         get() {
             return displayableImageTypes.contains(mimeType)
@@ -95,5 +100,9 @@ class RepositoryFile(
 
     override fun hashCode(): Int {
         return relativePath.hashCode()
+    }
+
+    override fun needsMetadata(): Boolean {
+        return title == null && author == null && description == null && thumbnail == null
     }
 }

@@ -1,0 +1,10 @@
+<div th:fragment="preview-image (download)" th:assert="${!#strings.isEmpty(download)}">
+    <div class="card mt-2">
+        <div class="card-header">
+            <a href="#" th:href="@{${download}}" class="btn btn-secondary"><i class="fas fa-download"></i> Download</a>
+        </div>
+        <div class="card-body m-0 img-preview-wrapper">
+            <img th:src="@{${download}}" alt="" class="img-fluid mx-auto d-block img-preview">
+        </div>
+    </div>
+</div>
