@@ -107,8 +107,11 @@ class RepositoryService(
         val entity = getEntity(path)
 
         if (entity is RepositoryFile) {
+            val id = absolutePath.toString()
+            if (entryRepository.existsById(id)) {
+                entryRepository.deleteById(id)
+            }
             Files.delete(absolutePath)
-            entryRepository.deleteById(absolutePath.toString())
         } else if (entity is RepositoryDirectory && recursive) {
             entity.getChildren().forEach { child ->
                 val entityPath = entity.relativePath + "/" + Paths.get(child.relativePath).fileName

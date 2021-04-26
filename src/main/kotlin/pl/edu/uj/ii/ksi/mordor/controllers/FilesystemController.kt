@@ -137,7 +137,7 @@ class FilesystemController(
                     FileEntry(entry.relativePath + if (entry is RepositoryDirectory) "/" else "",
                             entry.name,
                             iconNameProvider.getIconName(entry),
-                            entity.relativePath + entry.relativePath,
+                            entry.relativePath,
                             if (entry is RepositoryFile && entry.thumbnail != null) entry.thumbnail else null)
                 }
 
@@ -215,20 +215,18 @@ class FilesystemController(
     @Secured(Permission.MANAGE_FILES_STR)
     @DeleteMapping("/delete/**")
     fun deleteResource(request: HttpServletRequest): ModelAndView {
-        val path = request.servletPath.removePrefix("/delete/")
+        val path = request.servletPath.removePrefix("/delete/").removeSuffix("/")
         val entity = repoService.getEntity(path) ?: throw NotFoundException(path)
-        val mountPathElements = if (path.endsWith("/")) path.dropLast(1).split("/") else path.split("/")
+        val mountPathElements = path.split("/").dropLast(1)
         val mountPath = mountPathElements.joinToString("/")
         if (entity is RepositoryDirectory) {
             repoService.delete(entity.relativePath, true)
-            return when (mountPathElements.size) {
-                1 -> ModelAndView(RedirectView("/file/"))
-                else -> ModelAndView(RedirectView("/file/$mountPath/"))
-            }
         } else if (entity is RepositoryFile) {
             repoService.delete(entity.relativePath, false)
-            return ModelAndView(RedirectView("/file/$mountPath/"))
         }
-        return ModelAndView("/file/")
+        return when (mountPathElements.size) {
+            0 -> ModelAndView(RedirectView("/file/"))
+            else -> ModelAndView(RedirectView("/file/$mountPath/"))
+        }
     }
 }
